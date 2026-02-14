@@ -7,10 +7,10 @@ const CaseStudies = () => {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Case Studies
+            案例研究
           </h2>
           <p className="mt-2 text-lg leading-8 text-gray-600">
-            Learn how we help enterprises achieve digital transformation through these successful cases
+            了解我们如何通过这些成功案例帮助企业实现数字化转型
           </p>
         </div>
         <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
@@ -30,7 +30,7 @@ const CaseStudies = () => {
                     href={study.href}
                     className="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100"
                   >
-                    View Details
+                    查看详情
                   </Link>
                 </div>
                 <div className="group relative">

@@ -7,10 +7,10 @@ const Testimonials = () => {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Customer Testimonials
+            客户评价
           </h2>
           <p className="mt-2 text-lg leading-8 text-gray-600">
-            Hear what our customers say
+            听听我们的客户怎么说
           </p>
         </div>
         <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2">

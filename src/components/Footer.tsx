@@ -6,15 +6,15 @@ interface IconProps extends React.SVGProps<SVGSVGElement> {
 
 const navigation = {
   support: [
-    { name: 'Contact Us', href: '/contact' },
+    { name: '联系我们', href: '/contact' },
   ],
   company: [
-    { name: 'About Us', href: '/about' },
-    { name: 'Join Us', href: '/careers' }
+    { name: '关于我们', href: '/about' },
+    { name: '加入我们', href: '/careers' }
   ],
   social: [
     {
-      name: 'Weibo',
+      name: '微博',
       href: 'https://weibo.com/company',
       icon: (props: IconProps) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
@@ -23,7 +23,7 @@ const navigation = {
       ),
     },
     {
-      name: 'WeChat',
+      name: '微信',
       href: '#',
       icon: (props: IconProps) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
@@ -44,10 +44,10 @@ const Footer = () => {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
             <Link href="/" className="text-2xl font-bold text-white">
-              Enterprise Website
+              猫猫头开发
             </Link>
             <p className="text-sm leading-6 text-white">
-              Building professional enterprise website solutions, empowering corporate digital transformation
+              构建专业的企业网站解决方案，助力企业数字化转型
             </p>
             <div className="flex space-x-6">
               {navigation.social.map((item) => (
@@ -95,7 +95,10 @@ const Footer = () => {
         </div>
         <div className="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
           <p className="text-xs leading-5 text-white">
-            &copy; {new Date().getFullYear()} Enterprise Website. All rights reserved.
+            &copy; {new Date().getFullYear()} 重庆三握云网络科技有限公司. 保留所有权利.
+          </p>
+          <p className="text-xs leading-5 text-white mt-2">
+            渝ICP备2025059102号-3
           </p>
         </div>
       </div>

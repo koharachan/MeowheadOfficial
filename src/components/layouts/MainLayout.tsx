@@ -9,7 +9,7 @@ interface MainLayoutProps {
   description?: string;
 }
 
-const MainLayout = ({ children, title = 'Technology Company Official Website', description = 'Welcome to our website' }: MainLayoutProps) => {
+const MainLayout = ({ children, title = '重庆三握云网络科技有限公司', description = '猫猫头开发的官网 - 重庆三握云网络科技有限公司' }: MainLayoutProps) => {
   return (
     <div className="min-h-screen bg-white">
       <Head>

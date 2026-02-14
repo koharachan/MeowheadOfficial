@@ -16,8 +16,9 @@ const HomePage: NextPage = () => {
     >
       <div className="min-h-screen bg-white">
         <Head>
-          <title>Company Website Template - Professional Enterprise Solutions</title>
-          <meta name="description" content="Providing professional website solutions for enterprises, facilitating digital transformation" />
+          <title>重庆三握云网络科技有限公司</title>
+          <meta name="description" content="猫猫头开发的官网 - 重庆三握云网络科技有限公司" />
+          <meta name="google-adsense-account" content="ca-pub-6041318726736667" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
 

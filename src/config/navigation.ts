@@ -4,18 +4,18 @@ export interface NavigationItem {
 }
 
 export const navigation: NavigationItem[] = [
-  { name: 'Case Studies', href: '/case-studies' },
-  { name: 'Team', href: '/team' },
-  { name: 'Career Opportunities', href: '/careers' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'UI Blocks', href: '/blocks' },
+  { name: '案例研究', href: '/case-studies' },
+  { name: '团队', href: '/team' },
+  { name: '招聘机会', href: '/careers' },
+  { name: '博客', href: '/blog' },
+  { name: 'UI组件', href: '/blocks' },
 ];
 
 export const siteConfig = {
-  name: 'Enterprise Website',
-  description: 'Professional enterprise website solution',
+  name: '猫猫头开发',
+  description: '专业的网站开发解决方案',
   getStarted: {
     href: '/get-started',
-    text: 'Get Started',
+    text: '开始使用',
   },
 }; 

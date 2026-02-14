@@ -9,20 +9,20 @@ export interface Feature {
 
 export const features: Feature[] = [
   {
-    name: 'Customization',
-    description: 'Customize every detail of the website according to your needs, creating a unique brand image.',
+    name: '个性化定制',
+    description: '根据您的需求定制网站的每一个细节，打造独特的品牌形象。',
     icon: CogIcon,
     href: '/',
   },
   {
-    name: 'Responsive Design',
-    description: 'Perfectly adapt to various devices, providing the best browsing experience for users.',
+    name: '响应式设计',
+    description: '完美适配各种设备，为用户提供最佳的浏览体验。',
     icon: DevicePhoneMobileIcon,
     href: '/',
   },
   {
-    name: 'Future-oriented',
-    description: 'Adopt the latest technology to ensure that your website always stays ahead.',
+    name: '面向未来',
+    description: '采用最新技术，确保您的网站始终保持领先地位。',
     icon: RocketLaunchIcon,
     href: '/',
   },

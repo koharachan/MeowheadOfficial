@@ -11,10 +11,10 @@ const Careers = () => {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Join Us
+            加入我们
           </h2>
           <p className="mt-2 text-lg leading-8 text-gray-600">
-            With an excellent team, creating extraordinary value
+            与优秀的团队一起，创造非凡的价值
           </p>
         </div>
         <div className="mx-auto mt-16 max-w-2xl">
@@ -57,7 +57,7 @@ const Careers = () => {
             ))}
           </div>
           <div className="mt-10 flex justify-center">
-            <LinkButton href="/careers">View All Positions</LinkButton>
+            <LinkButton href="/careers">查看所有职位</LinkButton>
           </div>
         </div>
       </div>
