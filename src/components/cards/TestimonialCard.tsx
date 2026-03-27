@@ -14,7 +14,7 @@ const TestimonialCard = ({ testimonial }: TestimonialCardProps) => {
           <StarIcon
             key={index}
             className={`h-5 w-5 ${
-              index < rating ? 'text-yellow-400' : 'text-gray-200'
+              index < rating ? 'text-yellow-400' : 'text-white/15'
             }`}
             aria-hidden="true"
           />
@@ -24,7 +24,7 @@ const TestimonialCard = ({ testimonial }: TestimonialCardProps) => {
   };
 
   return (
-    <div className="flex flex-col justify-between bg-white p-8 ring-1 ring-gray-200 rounded-2xl">
+    <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.06] p-8 backdrop-blur">
       <div>
         <div className="flex items-center gap-x-4">
           <div className="relative h-10 w-10 flex-shrink-0">
@@ -36,25 +36,26 @@ const TestimonialCard = ({ testimonial }: TestimonialCardProps) => {
             />
           </div>
           <div>
-            <div className="font-semibold text-gray-900">
+            <div className="font-semibold text-white">
               {testimonial.author.name}
             </div>
-            <div className="text-sm leading-6 text-gray-600">
+            <div className="text-sm leading-6 text-white/60">
               {testimonial.author.role} · {testimonial.author.company}
             </div>
           </div>
         </div>
+
         <div className="mt-4">
           {renderStars(testimonial.rating)}
         </div>
         <div className="mt-8">
-          <div className="text-lg font-semibold text-gray-900">
+          <div className="text-lg font-semibold text-white/80">
             &ldquo;
           </div>
-          <div className="mt-1 text-base leading-7 text-gray-700">
+          <div className="mt-1 text-base leading-7 text-white/70">
             {testimonial.content}
           </div>
-          <div className="text-lg font-semibold text-gray-900 text-right">
+          <div className="text-lg font-semibold text-white/80 text-right">
             &rdquo;
           </div>
         </div>
@@ -63,4 +64,4 @@ const TestimonialCard = ({ testimonial }: TestimonialCardProps) => {
   );
 };
 
-export default TestimonialCard; 
+export default TestimonialCard;

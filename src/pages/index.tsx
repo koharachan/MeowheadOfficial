@@ -1,7 +1,8 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
+import CompanyRegistrySection from '../components/CompanyRegistrySection';
+import CompanyTimelineSection from '../components/CompanyTimelineSection';
 import Features from '../components/Features';
 import CaseStudies from '../components/CaseStudies';
 import Testimonials from '../components/Testimonials';
@@ -14,7 +15,7 @@ const HomePage: NextPage = () => {
       title="Technology Company Official Website"
       description="Welcome to our website"
     >
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-black">
         <Head>
           <title>重庆三握云网络科技有限公司</title>
           <meta name="description" content="猫猫头开发的官网 - 重庆三握云网络科技有限公司" />
@@ -22,10 +23,10 @@ const HomePage: NextPage = () => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
 
-        <Navbar />
-        
         <main>
           <Hero />
+          <CompanyRegistrySection />
+          <CompanyTimelineSection />
           <Features />
           <CaseStudies />
           <Testimonials />
@@ -37,4 +38,4 @@ const HomePage: NextPage = () => {
   );
 };
 
-export default HomePage; 
+export default HomePage;

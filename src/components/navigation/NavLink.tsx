@@ -20,12 +20,12 @@ export const NavLink = ({ href, children, className = '', onClick, variant = 'de
 
   const activeStyles = {
     desktop: 'text-primary',
-    mobile: 'bg-gray-50 text-primary',
+    mobile: 'bg-white/5 text-primary',
   };
 
   const inactiveStyles = {
-    desktop: 'text-gray-900 hover:text-primary/80',
-    mobile: 'text-gray-900 hover:bg-gray-50',
+    desktop: 'text-white/80 hover:text-white',
+    mobile: 'text-white/85 hover:bg-white/5',
   };
 
   const styles = `${baseStyles[variant]} ${isActive ? activeStyles[variant] : inactiveStyles[variant]} ${className}`;

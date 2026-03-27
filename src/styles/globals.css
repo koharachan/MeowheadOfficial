@@ -8,45 +8,45 @@
   }
   
   body {
-    @apply text-gray-900 bg-white;
+    @apply text-white bg-black;
   }
 
   /* Title style */
   h1 {
-    @apply text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl leading-[1.1];
+    @apply text-4xl font-bold tracking-tight text-white sm:text-6xl leading-[1.1];
   }
 
   h2 {
-    @apply text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl leading-[1.2];
+    @apply text-3xl font-bold tracking-tight text-white sm:text-4xl leading-[1.2];
   }
 
   h3 {
-    @apply text-2xl font-bold tracking-tight text-gray-900 leading-[1.3];
+    @apply text-2xl font-bold tracking-tight text-white leading-[1.3];
   }
 
   h4 {
-    @apply text-xl font-bold tracking-tight text-gray-900 leading-[1.4];
+    @apply text-xl font-bold tracking-tight text-white leading-[1.4];
   }
 
   h5 {
-    @apply text-lg font-bold tracking-tight text-gray-900 leading-[1.5];
+    @apply text-lg font-bold tracking-tight text-white leading-[1.5];
   }
 
   h6 {
-    @apply text-base font-bold tracking-tight text-gray-900 leading-[1.6];
+    @apply text-base font-bold tracking-tight text-white leading-[1.6];
   }
 
   /* Body text style */
   .text-body-lg {
-    @apply text-lg leading-8 text-gray-600;
+    @apply text-lg leading-8 text-white/70;
   }
 
   .text-body {
-    @apply text-base leading-7 text-gray-600;
+    @apply text-base leading-7 text-white/70;
   }
 
   .text-body-sm {
-    @apply text-sm leading-6 text-gray-600;
+    @apply text-sm leading-6 text-white/60;
   }
 
   /* Button style */
@@ -102,26 +102,30 @@
 
   /* Text style */
   p {
-    @apply text-gray-600 leading-[1.75] mb-4 last:mb-0;
+    @apply text-white/70 leading-[1.75] mb-4 last:mb-0;
+  }
+
+  span.letter {
+    @apply inline-block will-change-transform;
   }
 
   /* List style */
   /* Unordered list */
   ul:not(.list-check, .list-none) {
-    @apply list-disc list-outside ml-5 space-y-1.5 text-gray-600 my-4 last:mb-0;
+    @apply list-disc list-outside ml-5 space-y-1.5 text-white/70 my-4 last:mb-0;
   }
 
   ul:not(.list-check, .list-none) li {
-    @apply pl-2 leading-[1.75];
+    @apply pl-2 leading-[1.75] text-white/70;
   }
 
   /* Ordered list */
   ol:not(.list-check, .list-none) {
-    @apply list-decimal list-outside ml-5 space-y-1.5 text-gray-600 my-4 last:mb-0;
+    @apply list-decimal list-outside ml-5 space-y-1.5 text-white/70 my-4 last:mb-0;
   }
 
   ol:not(.list-check, .list-none) li {
-    @apply pl-2 leading-[1.75];
+    @apply pl-2 leading-[1.75] text-white/70;
   }
 
   /* Icon list */
@@ -185,4 +189,13 @@
   .text-balance {
     text-wrap: balance;
   }
-} 
+
+  @keyframes magic-gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+}

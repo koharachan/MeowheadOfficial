@@ -7,31 +7,32 @@ const Careers = () => {
   const featuredJobs = jobPosts.slice(0, 3);
 
   return (
-    <div className="bg-gray-50 py-24 sm:py-32">
+    <div className="bg-black py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
             加入我们
           </h2>
-          <p className="mt-2 text-lg leading-8 text-gray-600">
+          <p className="mt-2 text-lg leading-8 text-white/70">
             与优秀的团队一起，创造非凡的价值
           </p>
         </div>
+
         <div className="mx-auto mt-16 max-w-2xl">
           <div className="grid gap-4">
             {featuredJobs.map((position) => (
               <div
                 key={position.id}
-                className="group relative flex items-center space-x-6 rounded-lg bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+                className="group relative flex items-center space-x-6 rounded-lg border border-white/10 bg-white/[0.06] p-6 shadow-sm backdrop-blur transition-shadow hover:bg-white/[0.09]"
               >
                 <div className="flex-auto">
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold text-white">
                     <Link href={position.href}>
                       <span className="absolute inset-0" />
                       {position.title}
                     </Link>
                   </h3>
-                  <div className="mt-1 flex items-center gap-x-4 text-sm leading-6 text-gray-600">
+                  <div className="mt-1 flex items-center gap-x-4 text-sm leading-6 text-white/70">
                     <div className="flex items-center gap-x-1">
                       <span>{position.department}</span>
                       <span className="mx-1">·</span>
@@ -42,7 +43,7 @@ const Careers = () => {
                   </div>
                 </div>
                 <svg
-                  className="h-5 w-5 flex-none text-gray-400 group-hover:text-gray-600"
+                  className="h-5 w-5 flex-none text-white/40 group-hover:text-white/70"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                   aria-hidden="true"

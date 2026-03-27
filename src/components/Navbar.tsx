@@ -11,8 +11,8 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-white">
-      <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/60 backdrop-blur">
+      <nav className="flex items-center justify-between p-4 lg:px-6" aria-label="Global">
         <div className="flex lg:flex-1">
           <Logo text={siteConfig.name} />
         </div>

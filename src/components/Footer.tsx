@@ -12,6 +12,9 @@ const navigation = {
     { name: '关于我们', href: '/about' },
     { name: '加入我们', href: '/careers' }
   ],
+  links: [
+    { name: '小原 Blog', href: 'https://blog.meowhead.cn' },
+  ],
   social: [
     {
       name: '微博',
@@ -36,7 +39,7 @@ const navigation = {
 
 const Footer = () => {
   return (
-    <footer className="bg-footer" aria-labelledby="footer-heading">
+    <footer className="bg-black" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>
@@ -46,7 +49,7 @@ const Footer = () => {
             <Link href="/" className="text-2xl font-bold text-white">
               猫猫头开发
             </Link>
-            <p className="text-sm leading-6 text-white">
+            <p className="text-sm leading-6 text-white/70">
               构建专业的企业网站解决方案，助力企业数字化转型
             </p>
             <div className="flex space-x-6">
@@ -57,19 +60,19 @@ const Footer = () => {
                   className="text-white hover:text-white"
                 >
                   <span className="sr-only">{item.name}</span>
+                  {item.icon && <item.icon className="h-6 w-6" aria-hidden={true} />}
                 </Link>
               ))}
             </div>
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
             <div className="md:grid md:grid-cols-2 md:gap-8">
-            
               <div className="mt-10 md:mt-0">
                 <h3 className="text-sm font-semibold leading-6 text-white">Support</h3>
                 <ul role="list" className="mt-6 space-y-4 list-none">
                   {navigation.support.map((item) => (
                     <li key={item.name}>
-                      <Link href={item.href} className="text-sm leading-6 text-white hover:text-white">
+                      <Link href={item.href} className="text-sm leading-6 text-white/70 hover:text-white">
                         {item.name}
                       </Link>
                     </li>
@@ -83,9 +86,26 @@ const Footer = () => {
                 <ul role="list" className="mt-6 space-y-4 list-none">
                   {navigation.company.map((item) => (
                     <li key={item.name}>
-                      <Link href={item.href} className="text-sm leading-6 text-white hover:text-white">
+                      <Link href={item.href} className="text-sm leading-6 text-white/70 hover:text-white">
                         {item.name}
                       </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="mt-10 md:mt-0">
+                <h3 className="text-sm font-semibold leading-6 text-white">Links</h3>
+                <ul role="list" className="mt-6 space-y-4 list-none">
+                  {navigation.links.map((item) => (
+                    <li key={item.name}>
+                      <a
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm leading-6 text-white/70 hover:text-white"
+                      >
+                        {item.name}
+                      </a>
                     </li>
                   ))}
                 </ul>
@@ -94,11 +114,18 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
-          <p className="text-xs leading-5 text-white">
+          <p className="text-xs leading-5 text-white/70">
             &copy; {new Date().getFullYear()} 重庆三握云网络科技有限公司. 保留所有权利.
           </p>
-          <p className="text-xs leading-5 text-white mt-2">
-            渝ICP备2025059102号-3
+          <p className="text-xs leading-5 text-white/70 mt-2">
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white hover:underline underline-offset-4"
+            >
+              渝ICP备2025059102号-3
+            </a>
           </p>
         </div>
       </div>
@@ -106,4 +133,4 @@ const Footer = () => {
   );
 };
 
-export default Footer; 
+export default Footer;

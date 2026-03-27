@@ -6,9 +6,12 @@
 
 - **前端框架**: Next.js 15.3.1+
 - **样式方案**: Tailwind CSS V4
-- **UI 组件**: shadcn/ui
+- **动效**: Framer Motion
+- **UI 组件**: shadcn/ui + 自定义组件
 - **类型系统**: TypeScript
 - **代码规范**: ESLint + Prettier
+- **风格组件**: Aceternity UI（按目录规范接入）
+- **效果组件**: Magic UI（示例：渐变动态文字）
 
 ## 功能特点
 
@@ -17,6 +20,13 @@
 - 🚀 静态页面生成（SSG），优秀的性能表现
 - 🔍 SEO 友好
 - 💻 TypeScript 支持，提供完整的类型定义
+- 🌑 全站黑色主题（暗色可读性优化）
+- ✨ 全站动效体系
+  - 开屏代码雨（Matrix Rain）
+  - 首页 Hero 飞入 + 错峰出现
+  - ScrollReveal：滚动进入视口动效
+- 🇨🇳 ICP 备案号按国内常见规范支持点击跳转查询页
+- 🔗 Footer 友情链接示例：小原 Blog（blog.meowhead.cn）
 
 ## 页面列表
 
@@ -92,22 +102,31 @@ NEXT_PUBLIC_FORMSPREE_ID=Formspree 联系我们提交时的表单 ID
 │   ├── components/  # 组件
 │   │   ├── cards/   # 卡片组件
 │   │   ├── layouts/ # 布局组件
+│   │   ├── aceternity-ui/ # Aceternity UI 风格组件
+│   │   ├── magicui/ # Magic UI 效果组件
 │   │   └── ui/      # UI 组件
+│   ├── lib/         # 工具函数（例如 cn）
 │   ├── config/      # 配置文件
 │   ├── pages/       # 页面
 │   └── styles/      # 样式文件
 ├── .eslintrc.js    # ESLint 配置
 ├── .prettierrc     # Prettier 配置
-├── next.config.js  # Next.js 配置
+├── next.config.ts  # Next.js 配置
 └── tailwind.config.js # Tailwind 配置
 ```
+
+### 动效相关组件
+
+- `src/components/SplashScreen.tsx`: 开屏容器（默认 session 仅展示一次）
+- `src/components/MatrixRain.tsx`: Canvas 代码雨背景
+- `src/components/ui/ScrollReveal.tsx`: 滚动进入视口动效封装
+- `src/components/Hero.tsx`: 首页 Hero 飞入动效
 
 ## 配置文件说明
 
 项目使用了多个配置文件来管理数据：
 
 - `config/articles.ts`: 博客文章数据
-- `config/careers.ts`: 职位信息
 - `config/get-started.ts`: 快速入门指南
 - `config/team.ts`: 团队成员信息
 

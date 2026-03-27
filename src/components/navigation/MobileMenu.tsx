@@ -37,7 +37,7 @@ export const MobileMenu = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500/75" />
+          <div className="fixed inset-0 bg-black/70" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -51,7 +51,7 @@ export const MobileMenu = ({
               leaveFrom="translate-y-0"
               leaveTo="translate-y-full"
             >
-              <Dialog.Panel className="relative w-full max-w-lg transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="relative w-full max-w-lg transform overflow-hidden rounded-lg border border-white/10 bg-black/80 p-6 text-left align-middle shadow-xl backdrop-blur transition-all">
                 <div className="flex items-center justify-between">
                   <Logo text={siteName} />
                   <IconButton

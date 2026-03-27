@@ -8,6 +8,13 @@ const nextConfig: NextConfig = {
     domains: [],
   },
   reactStrictMode: true,
+  webpack: (config) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: /(?:^|[\\/])(?:node_modules|\.git)(?:[\\/]|$)|(?:^|[\\/])(?:pagefile\.sys|swapfile\.sys|DumpStack\.log\.tmp)$/i,
+    };
+    return config;
+  },
 };
 
 export default nextConfig;
