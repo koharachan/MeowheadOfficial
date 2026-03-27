@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 
 interface StaggerLettersProps {
   text: string;
@@ -17,7 +18,7 @@ export default function StaggerLetters({
 }: StaggerLettersProps) {
   const Tag = as as any;
 
-  const container = {
+  const container: Variants = {
     hidden: {},
     show: {
       transition: {
@@ -27,7 +28,7 @@ export default function StaggerLetters({
     },
   };
 
-  const letter = {
+  const letter: Variants = {
     hidden: {
       opacity: 0,
       y: 10,
@@ -39,7 +40,7 @@ export default function StaggerLetters({
       filter: 'blur(0px)',
       transition: {
         duration: 0.55,
-        ease: [0.2, 0.7, 0.2, 1],
+        ease: [0.2, 0.7, 0.2, 1] as [number, number, number, number],
       },
     },
   };
