@@ -74,12 +74,12 @@ export const en: Dict = {
   },
 
   meta: {
-    title: 'MAOMAOTOU NETWORK TECHNOLOGY · See the sun, see tomorrow',
+    title: 'MAOMAOTOU NETWORK TECHNOLOGY · See sol, see life',
     description:
       'MAOMAOTOU NETWORK TECHNOLOGY builds satellite communication terminals, software and system integration, applied AI and information security — delivered by one company, not three vendors.',
     keywords:
       'MAOMAOTOU, satellite communication terminal, software development, system integration, artificial intelligence, information security, Shaoguan Guangdong',
-    ogAlt: 'MAOMAOTOU NETWORK TECHNOLOGY — from satellites to a single line of code',
+    ogAlt: 'MAOMAOTOU NETWORK TECHNOLOGY — see sol, see life',
   },
 
   brand: {
@@ -138,7 +138,7 @@ export const en: Dict = {
   splash: { boot: 'The doors are opening. Almost through.' },
   hero: {
     kicker: 'MAOMAOTOU NETWORK TECHNOLOGY · GUANGDONG',
-    lines: ['See the sun.', 'See tomorrow.'],
+    lines: ['See sol.', 'See life.'],
     lede:
       'The great way is simple — all in one',
     primary: { label: 'What we do', href: '#capability' },
