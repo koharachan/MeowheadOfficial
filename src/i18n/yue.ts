@@ -300,15 +300,14 @@ export const yue: Dict = {
     members: [
       {
         no: '01',
-        role: '法定代表人',
-        name: '',
+        role: '吉祥物',
         origin: '太湖人',
         name: '小岩',
         email: '',
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: '對外簽署、工商同合規事務。',
+        duty: '對外形象；尋美就係照住佢做嘅。',
       },
       {
         no: '02',

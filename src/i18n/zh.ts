@@ -296,14 +296,14 @@ export const zh: Dict = {
     members: [
       {
         no: '01',
-        role: '法定代表人',
+        role: '吉祥物',
         name: '小岩',
         email: '',
         origin: '太湖人',
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: '对外签署、工商与合规事务。',
+        duty: '对外形象；寻美就是照着她做的。',
       },
       {
         no: '02',

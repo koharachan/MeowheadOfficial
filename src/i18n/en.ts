@@ -306,20 +306,18 @@ export const en: Dict = {
     members: [
       {
         no: '01',
-        role: 'Legal representative',
-        name: '',
+        role: 'Mascot',
         origin: 'From Taihu',
         name: 'Xiao Yan',
         email: '',
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: 'Signing authority, corporate filings and compliance.',
+        duty: 'Public face — HIROMI is modelled on her.',
       },
       {
         no: '02',
         role: 'Shareholder / CEO',
-        name: '',
         origin: 'From Shaoguan',
         name: 'Koh',
         email: 'xy@6832.me',
@@ -331,7 +329,6 @@ export const en: Dict = {
       {
         no: '03',
         role: 'Algorithm advisor',
-        name: '',
         origin: 'From Zhengzhou',
         name: 'Luoaowoo',
         email: '',
