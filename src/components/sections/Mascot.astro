@@ -153,10 +153,27 @@ const m = t.mascot;
     overflow: hidden;
   }
 
-  .stage__tilt {
+  /* 飞入容器：整块从框底升上来，被 frame 的 overflow 裁掉，先露头再露身 */
+  .stage__rise {
     position: relative;
     width: 84%;
     height: 84%;
+    will-change: transform, opacity;
+    transform: translate3d(0, 62%, 0) rotate(-10deg) scale(0.9);
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage__rise {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  .stage__tilt {
+    position: relative;
+    width: 100%;
+    height: 100%;
     transition: transform 420ms var(--ease-out);
     will-change: transform;
   }

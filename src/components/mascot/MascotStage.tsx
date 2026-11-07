@@ -28,6 +28,7 @@ export default function MascotStage({
   const [manual, setManual] = useState(0);
   const root = useRef<HTMLDivElement>(null);
   const tilt = useRef<HTMLDivElement>(null);
+  const rise = useRef<HTMLDivElement>(null);
   const reduce = useRef(false);
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
 
@@ -50,6 +51,22 @@ export default function MascotStage({
         const p = Math.min(1, Math.max(0, raw));
         const next = Math.min(count - 1, Math.floor(p * count));
         setIndex(next);
+
+        /* 飞入：从框底升上来，先露头再露身；落定后随滚动继续往上顶 */
+        const r = rise.current;
+        if (r) {
+          const flight = Math.min(1, p / 0.24);
+          // easeOutBack：落地时有一点点回弹，但不过头
+          const c1 = 1.34;
+          const e = 1 + (c1 + 1) * Math.pow(flight - 1, 3) + c1 * Math.pow(flight - 1, 2);
+          // 落定后 24%→100% 再缓缓上顶 8%，越往下滑露出的越多
+          const settle = Math.min(1, Math.max(0, (p - 0.24) / 0.76));
+          const y = (1 - e) * 62 - settle * 8;
+          const rot = (1 - e) * -10;
+          const scale = 0.9 + e * 0.1;
+          r.style.transform = 'translate3d(0,' + y.toFixed(2) + '%,0) rotate(' + rot.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')';
+          r.style.opacity = String(Math.min(1, flight * 3));
+        }
       });
     };
 
@@ -100,6 +117,7 @@ export default function MascotStage({
   return (
     <div className="stage" ref={root}>
       <div className="stage__frame">
+        <div className="stage__rise" ref={rise}>
         <div className="stage__tilt" ref={tilt}>
           <button type="button" className="stage__hit" onClick={next} aria-label={`${alt} · ${reduceLabel}`}>
             {states.map((s) => (
@@ -118,6 +136,7 @@ export default function MascotStage({
               />
             ))}
           </button>
+        </div>
         </div>
 
         <div className="stage__shadow" aria-hidden="true" />
