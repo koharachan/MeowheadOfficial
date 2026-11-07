@@ -447,11 +447,52 @@ function initCopy() {
   });
 }
 
+
+/* ------------------------------------------------------------------ */
+/* 世界线：钉住一屏，横向随滚动推进 + 轴线填充                          */
+/* ------------------------------------------------------------------ */
+function initWorldline() {
+  const section = document.querySelector<HTMLElement>('[data-worldline]');
+  const track = section?.querySelector<HTMLElement>('[data-wl-track]');
+  const fill = section?.querySelector<HTMLElement>('[data-wl-fill]');
+  if (!section || !track) return;
+  if (reduceMotion || window.matchMedia('(max-width: 1023px)').matches) return;
+
+  let shift = 0;
+  const measure = () => {
+    shift = Math.max(0, track.scrollWidth - track.parentElement!.clientWidth);
+  };
+  measure();
+
+  const tween = gsap.to(track, {
+    x: () => -shift,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 78%',
+      end: () => '+=' + Math.max(320, shift * 0.9),
+      scrub: 0.7,
+      invalidateOnRefresh: true,
+      onUpdate: (self) => {
+        if (fill) fill.style.width = (self.progress * 100).toFixed(1) + '%';
+      },
+    },
+  });
+
+  ScrollTrigger.addEventListener('refreshInit', measure);
+  window.addEventListener('resize', () => {
+    measure();
+    tween.scrollTrigger?.refresh();
+  });
+  void fill;
+}
+
 /* ------------------------------------------------------------------ */
 const boot = () => {
   initTextStream();
   initCopy();
   initCollapse();
+  initWorldline();
   initSmoothScroll();
   initAnchors();
   initReveals();

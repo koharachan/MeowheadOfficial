@@ -7,57 +7,65 @@ interface Props {
 }
 const { t } = Astro.props;
 const lang = t.lang;
-const items = worldline;
+const copy = {
+  zh: { since: '自 2026', label: 'WORLDLINE / 世界线', title: '每篇日志都是一个坐标。', lede: '公司、终端、地球、吉祥物——同一条线。下面每篇日志都挂在其中一点上。', hint: '往下滑，世界线向左走' },
+  en: { since: 'Since 2026', label: 'WORLDLINE', title: 'Every log is a coordinate.', lede: 'The company, the terminal, the globe, the mascot — one line. Each post below hangs on one of these points.', hint: 'Scroll to move the line' },
+  yue: { since: '自 2026', label: 'WORLDLINE / 世界線', title: '每篇日誌都係一個座標。', lede: '公司、終端、地球、吉祥物——同一條線。下面每篇日誌都掛喺呢五個點其中一個度。', hint: '向下滑，世界線向左行' },
+}[lang];
+const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
 ---
 
-<section class="wl" aria-labelledby="wl-title">
-  <div class="wl__head">
-    <p class="mono wl__label">WORLDLINE / 世界线</p>
-    <h2 class="h3 wl__title" id="wl-title">
-      {lang === 'en' ? 'Every log is a coordinate.' : lang === 'yue' ? '每篇日誌都係一個座標。' : '每篇日志都是一个坐标。'}
-    </h2>
-    <p class="wl__lede">
-      {
-        lang === 'en'
-          ? 'The company, the terminal, the globe, the mascot — same line. Each post below hangs on one of these five points.'
-          : lang === 'yue'
-            ? '公司、終端、地球、吉祥物——同一條線。下面每篇日誌都掛喺呢五個點其中一個度。'
-            : '公司、终端、地球、吉祥物——同一条线。下面每篇日志都挂在其中一点上。'
-      }
-    </p>
-  </div>
+<section class="wl" data-worldline aria-labelledby="wl-title">
+  <div class="wl__inner">
+    <header class="wl__head">
+      <p class="wl__since">{copy.since}</p>
+      <p class="mono wl__label">{copy.label}</p>
+      <h2 class="h3 wl__title" id="wl-title" data-stream>{copy.title}</h2>
+      <p class="wl__lede">{copy.lede}</p>
+    </header>
 
-  <ol class="wl__track">
-    {
-      items.map((m) => (
-        <li class="wl__item">
-          <span class="mono wl__no">{m.no}</span>
-          <span class="wl__dot" aria-hidden="true" />
-          <time class="mono wl__date" datetime={m.date}>
-            {m.date.replace(/-/g, '.')}
-          </time>
-          <h3 class="wl__name">{m[lang].title}</h3>
-          <span class={['mono wl__tag', { 'is-set': m[lang].tag === '设定' || m[lang].tag === '設定' || m[lang].tag === 'Design' }]}>
-            {m[lang].tag}
-          </span>
-          <p class="wl__body">{m[lang].body}</p>
-        </li>
-      ))
-    }
-  </ol>
+    <div class="wl__viewport">
+      <ol class="wl__track" data-wl-track>
+        {
+          items.map((m) => (
+            <li class="wl__item">
+              <span class="wl__year">{m.date.slice(0, 4)}</span>
+              <span class="mono wl__date">{m.date.slice(5).replace('-', '.')}</span>
+              <span class="wl__node" aria-hidden="true" />
+              <h3 class="wl__name">{m[lang].title}</h3>
+              <span class:list={['mono wl__tag', { 'is-set': m[lang].tag !== '事实' && m[lang].tag !== 'Fact' && m[lang].tag !== '事實' }]}>
+                {m[lang].tag}
+              </span>
+              <p class="wl__body">{m[lang].body}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <span class="wl__axis" aria-hidden="true"><i class="wl__fill" data-wl-fill /></span>
+    </div>
+
+    <p class="mono wl__hint">{copy.hint}</p>
+  </div>
 </section>
 
 <style>
   .wl {
-    margin: clamp(2.5rem, 5vw, 4rem) 0 clamp(2.5rem, 5vw, 4rem);
-    padding-top: clamp(1.5rem, 3vw, 2.5rem);
-    border-top: var(--hair);
+    margin: clamp(2.5rem, 5vw, 4rem) 0;
   }
 
   .wl__head {
     display: grid;
-    gap: 0.65rem;
+    gap: 0.6rem;
     margin-bottom: clamp(1.75rem, 3.5vw, 2.75rem);
+  }
+
+  .wl__since {
+    font-family: var(--font-cjk);
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--ink);
   }
 
   .wl__label {
@@ -66,7 +74,7 @@ const items = worldline;
   }
 
   .wl__title {
-    margin: 0;
+    margin: 0.4rem 0 0;
   }
 
   .wl__lede {
@@ -76,41 +84,57 @@ const items = worldline;
     line-height: 1.75;
   }
 
+  .wl__viewport {
+    position: relative;
+    overflow: hidden;
+  }
+
   .wl__track {
-    display: grid;
+    display: flex;
     gap: 1px;
     background: var(--cream);
   }
 
   .wl__item {
+    position: relative;
+    flex: 0 0 clamp(300px, 30vw, 400px);
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.4rem 0.9rem;
-    padding: clamp(1rem, 1.8vw, 1.4rem) clamp(0.9rem, 1.6vw, 1.4rem);
+    gap: 0.55rem;
+    padding: 1.5rem 1.2rem 1.5rem;
     background: var(--surface-0);
-    align-items: start;
   }
 
-  .wl__no {
-    color: var(--orange);
-    font-size: 0.5rem;
-    letter-spacing: 0.12em;
-    padding-top: 0.15rem;
-  }
-
-  .wl__dot {
-    display: none;
+  .wl__year {
+    font-family: var(--font-latin);
+    font-size: clamp(2rem, 3.6vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
   }
 
   .wl__date {
     color: var(--ink-38);
     font-size: 0.5rem;
-    letter-spacing: 0.1em;
-    grid-column: 2;
+    letter-spacing: 0.12em;
+  }
+
+  .wl__node {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--surface-0);
+    box-shadow: inset 0 0 0 1.5px var(--ink-20);
+    margin: 0.15rem 0 0.35rem;
+  }
+
+  .wl__item:first-child .wl__node {
+    background: var(--orange);
+    box-shadow: 0 0 0 4px var(--orange-soft);
   }
 
   .wl__name {
-    grid-column: 2;
     font-family: var(--font-cjk);
     font-size: var(--fs-h4);
     font-weight: 700;
@@ -118,7 +142,6 @@ const items = worldline;
   }
 
   .wl__tag {
-    grid-column: 2;
     justify-self: start;
     padding: 0.15em 0.45em;
     border-radius: 4px;
@@ -133,59 +156,48 @@ const items = worldline;
   }
 
   .wl__body {
-    grid-column: 2;
     color: var(--ink-56);
     font-size: 0.8125rem;
     line-height: 1.7;
     text-wrap: pretty;
   }
 
-  @media (min-width: 920px) {
+  .wl__axis {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--ink-12);
+  }
+
+  .wl__fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--orange);
+    transition: width 120ms linear;
+  }
+
+  .wl__hint {
+    margin-top: 0.9rem;
+    color: var(--ink-38);
+    font-size: 0.4375rem;
+    letter-spacing: 0.16em;
+  }
+
+  @media (max-width: 1023px) {
     .wl__track {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      flex-direction: column;
     }
 
     .wl__item {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-      position: relative;
-      padding-top: 1.75rem;
+      flex: 1 1 auto;
     }
 
-    /* 轴：一条横线串起五个点 */
-    .wl__item::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0.95rem;
-      height: 1px;
-      background: var(--ink-12);
-    }
-
-    .wl__dot {
-      display: block;
-      position: absolute;
-      left: clamp(0.9rem, 1.6vw, 1.4rem);
-      top: 0.55rem;
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: var(--surface-0);
-      box-shadow: inset 0 0 0 1.5px var(--ink-20);
-    }
-
-    .wl__item:first-child .wl__dot {
-      background: var(--orange);
-      box-shadow: none;
-    }
-
-    .wl__no,
-    .wl__date,
-    .wl__name,
-    .wl__tag,
-    .wl__body {
-      grid-column: auto;
+    .wl__hint {
+      display: none;
     }
   }
 </style>
