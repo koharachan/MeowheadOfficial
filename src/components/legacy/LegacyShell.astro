@@ -1,8 +1,9 @@
 ---
 /**
- * 千禧年兼容主题（IE 友好版）。
- * 刻意不复用现代设计系统：表格布局、斜面边框、宋体、marquee、计数器、88×31 按钮。
- * 不依赖任何 JS / flex / grid / CSS 变量，IE5.5+ 也能看。
+ * 千禧年兼容主题 · 真·IE6 可用版
+ * 不用：flex / grid / CSS 变量 / border-radius / box-shadow / transform /
+ *      > + ~ 选择器 / data URI / SVG / max-width / HTML5 DOCTYPE
+ * 只用：表格布局、bgcolor、<font>、a:hover、GIF（IE6 不认 PNG alpha）
  */
 interface Props {
   lang: 'zh' | 'en';
@@ -22,333 +23,252 @@ interface Props {
 }
 const p = Astro.props;
 const isZh = p.lang === 'zh';
+const digits = '000915'.split('');
 ---
 
-<!doctype html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang={isZh ? 'zh-CN' : 'en'}>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
     <title>{p.title}</title>
     <meta name="description" content={p.description} />
     <meta name="robots" content="noindex, follow" />
+    <meta name="generator" content="Notepad" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/fonts/fonts.css" />
-    <style is:global>
-      /* ---- 千禧年基础样式：只用 IE5.5 就支持的东西 ---- */
-      html {
-        background-color: #e8ddcc;
-        background-image: repeating-linear-gradient(45deg, #efe4d4 0 2px, #e8ddcc 2px 4px);
-        background-image: url('data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22%3E%3Crect width=%2216%22 height=%2216%22 fill=%22%23efe5d4%22/%3E%3Cpath d=%22M0 8h16M8 0v16%22 stroke=%22%23e3d7c3%22 stroke-width=%221%22/%3E%3C/svg%3E');
-      }
+
+    <style type="text/css">
       body {
         margin: 0;
-        padding: 18px 0 40px;
-        font-family: "宋体", SimSun, "Times New Roman", serif;
+        padding: 0;
+        background-color: #e8ddcc;
+        background-image: url(/ie/tile.gif);
+        color: #000000;
+        font-family: 宋体, SimSun, serif;
         font-size: 12px;
-        color: #141210;
-        line-height: 1.75;
+        line-height: 160%;
         text-align: center;
       }
-      a { color: #141210; text-decoration: underline; }
-      a:visited { color: #4a3f36; }
-      a:hover { color: #ff5a1a; }
-      img { border: 0; vertical-align: middle; }
-
-      .page {
-        width: 780px;
-        margin: 0 auto;
-        text-align: left;
+      td, th, p, li, div { font-family: 宋体, SimSun, serif; font-size: 12px; line-height: 160%; }
+      img { border: 0; }
+      a:link { color: #0000cc; text-decoration: underline; }
+      a:visited { color: #800080; text-decoration: underline; }
+      a:hover { color: #ff0000; text-decoration: underline; }
+      .wrap { background-color: #ffffff; border: 2px solid #7b7166; }
+      .bar { background-color: #000080; color: #ffffff; }
+      .panelhead { background-color: #000080; color: #ffffff; font-weight: bold; padding: 2px 6px; }
+      .navcell {
+        background-color: #d4d0c8;
+        border-top: 2px solid #ffffff;
+        border-left: 2px solid #ffffff;
+        border-right: 2px solid #808080;
+        border-bottom: 2px solid #808080;
+        padding: 3px 6px;
       }
-
-      /* 顶部跑马灯 */
-      .ticker {
-        border: 1px solid #141210;
-        background: #141210;
-        color: #fff9f1;
-        font-size: 12px;
-        padding: 4px 0;
-        overflow: hidden;
-        white-space: nowrap;
-        margin-bottom: 6px;
-      }
-      .ticker span {
-        display: inline-block;
-        padding-left: 100%;
-        animation: slide 18s linear infinite;
-      }
-      @keyframes slide {
-        to { transform: translateX(-100%); }
-      }
-
-      /* 页头 */
-      .masthead {
-        background: #fff9f1;
-        border: 2px solid #141210;
-        padding: 8px 10px;
-        margin-bottom: 8px;
-      }
-      .masthead table { width: 100%; }
-      .logo-cell { width: 64px; }
-      .site-name {
-        font-family: "黑体", SimHei, "Arial Black", sans-serif;
-        font-size: 22px;
-        font-weight: bold;
-        letter-spacing: 1px;
-        line-height: 1.2;
-      }
-      .site-sub {
-        font-size: 11px;
-        color: #6b6259;
-        letter-spacing: 1px;
-      }
-      .badge-new {
-        display: inline-block;
-        background: #ff5a1a;
-        color: #fff9f1;
-        font-size: 10px;
-        padding: 0 4px;
-        font-family: "黑体", SimHei, sans-serif;
-        margin-left: 6px;
-        vertical-align: 2px;
-      }
-
-      /* 主布局（表格） */
-      .layout { width: 780px; border-collapse: collapse; }
-      .layout td { vertical-align: top; }
-      .sidebar { width: 156px; padding-right: 8px; }
-      .main { }
-
-      /* 面板：经典斜面 */
-      .panel {
-        background: #fff9f1;
-        border: 2px solid #141210;
-        margin-bottom: 8px;
-      }
-      .panel-title {
-        background: #141210;
-        color: #fff9f1;
-        font-family: "黑体", SimHei, sans-serif;
-        font-size: 12px;
-        padding: 3px 8px;
-        letter-spacing: 1px;
-      }
-      .panel-body { padding: 8px 10px; }
-
-      /* 导航 */
-      .nav-list { list-style: none; margin: 0; padding: 0; }
-      .nav-list li {
-        border-bottom: 1px dotted #b7a894;
-        padding: 5px 0;
-      }
-      .nav-list li:last-child { border-bottom: 0; }
-      .nav-list a { display: block; text-decoration: none; }
-      .nav-list a:hover { background: #f3e8d9; }
-      .nav-list .arrow { color: #ff5a1a; margin-right: 4px; }
-
-      /* 正文 */
-      h2.section {
-        font-family: "黑体", SimHei, sans-serif;
+      .navcell a:link { text-decoration: none; color: #0000cc; }
+      .navcell a:visited { text-decoration: none; color: #800080; }
+      .navcell a:hover { text-decoration: underline; color: #ff0000; }
+      .small { font-size: 11px; color: #666666; }
+      .tiny { font-size: 10px; color: #888888; }
+      .counter {
+        background-color: #000000;
+        color: #00ff00;
+        font-family: "Courier New", Courier, monospace;
         font-size: 14px;
-        margin: 14px 0 6px;
-        padding-left: 8px;
-        border-left: 4px solid #ff5a1a;
+        font-weight: bold;
+        letter-spacing: 2px;
+        padding: 2px 6px;
+        border: 1px inset #808080;
       }
-      h2.section:first-child { margin-top: 0; }
-      p { margin: 6px 0; }
-      ul.dot { margin: 6px 0 6px 18px; padding: 0; }
-      ul.dot li { margin: 3px 0; }
-
-      /* 表格数据 */
-      table.data { width: 100%; border-collapse: collapse; margin: 6px 0; }
-      table.data th, table.data td {
-        border: 1px solid #c9bcaa;
-        padding: 4px 6px;
-        font-size: 12px;
-        text-align: left;
-      }
-      table.data th { background: #f3e8d9; font-weight: normal; width: 96px; }
-
-      /* 按钮：凹凸立体 */
-      .btn {
-        display: inline-block;
-        padding: 3px 10px;
-        background: #e8ddcc;
-        border-top: 1px solid #fff;
-        border-left: 1px solid #fff;
-        border-right: 1px solid #8d8073;
-        border-bottom: 1px solid #8d8073;
-        text-decoration: none;
-        font-size: 12px;
-        margin-right: 6px;
-      }
-      .btn:active {
-        border-top-color: #8d8073;
-        border-left-color: #8d8073;
-        border-right-color: #fff;
-        border-bottom-color: #fff;
-      }
-
-      /* 88×31 按钮 */
-      .buttons { margin-top: 8px; }
-      .b88 {
-        display: inline-block;
+      .btn88 {
         width: 88px;
         height: 31px;
-        border: 1px solid #141210;
-        background: #fff9f1;
-        font-size: 9px;
-        line-height: 1.15;
+        background-color: #000080;
+        border: 1px outset #d4d0c8;
+        color: #ffffff;
+        font-size: 10px;
         text-align: center;
         vertical-align: middle;
-        margin: 0 4px 4px 0;
-        overflow: hidden;
-        font-family: "宋体", SimSun, serif;
-        padding-top: 2px;
-        box-sizing: border-box;
       }
-      .b88 b { color: #ff5a1a; display: block; font-size: 10px; }
+      .stripe { background-image: url(/ie/stripe.gif); }
+      .marquee-box { background-color: #ffffcc; border: 1px solid #b0a89c; padding: 2px 0; }
 
-      /* 计数器 */
-      .counter {
-        display: inline-block;
-        background: #141210;
-        color: #ff5a1a;
-        font-family: "Courier New", monospace;
-        font-size: 13px;
-        letter-spacing: 3px;
-        padding: 2px 6px;
-        border: 1px solid #6b6259;
+      /* ---- 正文块：老式分组框 ---- */
+      .section { margin: 0 0 14px 0; }
+      .panel { border: 1px solid #7b7166; background-color: #ffffff; margin: 0 0 14px 0; }
+      .panel-title {
+        background-color: #000080;
+        color: #ffffff;
+        font-weight: bold;
+        padding: 3px 8px;
+        font-size: 12px;
+        border-bottom: 1px solid #7b7166;
       }
-
-      /* 施工中 */
-      .under-construction {
-        height: 14px;
-        border: 1px solid #141210;
-        background: repeating-linear-gradient(45deg, #ff5a1a 0 8px, #fff9f1 8px 16px);
-        margin: 8px 0;
+      .panel-body { padding: 10px 12px; }
+      .panel-body p { margin: 0 0 8px 0; }
+      .panel-body ul { margin: 0 0 8px 0; padding-left: 18px; }
+      .panel-body li { list-style: square; margin: 0 0 3px 0; }
+      .panel-body td { border-bottom: 1px dotted #b0a89c; padding: 3px 6px; }
+      .data { color: #000080; font-weight: bold; }
+      .dot { color: #ff0000; font-weight: bold; }
+      .btn {
+        background-color: #d4d0c8;
+        border-top: 2px solid #ffffff;
+        border-left: 2px solid #ffffff;
+        border-right: 2px solid #808080;
+        border-bottom: 2px solid #808080;
+        padding: 2px 10px;
+        color: #000000;
+        font-size: 12px;
       }
-
-      .foot {
-        margin-top: 8px;
-        border: 2px solid #141210;
-        background: #fff9f1;
-        padding: 8px 10px;
-        font-size: 11px;
-        color: #6b6259;
-        text-align: center;
-      }
-      .foot .sep { color: #b7a894; margin: 0 6px; }
-
-      .marquee-hint { font-size: 10px; color: #8d8073; }
-
-      @media (max-width: 800px) {
-        .page, .layout { width: auto; }
-        .layout, .layout tbody, .layout tr, .layout td { display: block; width: auto; }
-        .sidebar { width: auto; padding-right: 0; }
-        body { padding: 8px; }
-      }
+      .marquee-hint { color: #666666; font-size: 11px; }
     </style>
   </head>
 
-  <body>
-    <div class="page">
-      <div class="ticker"><span>{p.ticker}</span></div>
-
-      <div class="masthead">
-        <table cellpadding="0" cellspacing="0">
-          <tr>
-            <td class="logo-cell">
-              <img src="/brand/mark_primary.svg" alt="" width="52" height="52" />
-            </td>
-            <td>
-              <div class="site-name">
-                {p.siteName}<span class="badge-new">NEW</span>
-              </div>
-              <div class="site-sub">MAOMAO NETWORK TECHNOLOGY · EST. 2026 · 粤ICP备（办理中）</div>
-            </td>
-            <td align="right" valign="bottom">
-              <a class="btn" href={p.backHref}>{p.backLabel}</a>
-            </td>
-          </tr>
-        </table>
-      </div>
-
-      <table class="layout" cellpadding="0" cellspacing="0">
+  <body bgcolor="#e8ddcc" text="#000000" link="#0000cc" vlink="#800080" alink="#ff0000">
+    <center>
+      <table class="wrap" width="780" border="0" cellpadding="0" cellspacing="0" align="center">
         <tr>
-          <td class="sidebar">
-            <div class="panel">
-              <div class="panel-title">{p.navTitle}</div>
-              <div class="panel-body">
-                <ul class="nav-list">
-                  {
-                    p.navItems.map((item) => (
-                      <li>
-                        <a href={item.href}>
-                          <span class="arrow">»</span>
-                          {item.label}
-                          {item.hot && <span class="badge-new">HOT</span>}
-                        </a>
-                      </li>
-                    ))
-                  }
-                </ul>
-              </div>
-            </div>
+          <td class="bar" height="24" align="left">
+            <font color="#ffffff" face="宋体" size="2"><b>&nbsp;★ {p.siteName} ★</b></font>
+          </td>
+          <td class="bar" align="right">
+            <font color="#ffffff" face="宋体" size="1">
+              &nbsp;{isZh ? '建议使用 800×600 分辨率浏览' : 'Best viewed at 800×600'}&nbsp;
+            </font>
+          </td>
+        </tr>
 
-            <div class="panel">
-              <div class="panel-title">COUNTER</div>
-              <div class="panel-body">
-                <div class="marquee-hint">{p.counterLabel}</div>
-                <div class="counter">000915</div>
-              </div>
-            </div>
+        <tr>
+          <td colspan="2" class="marquee-box">
+            <marquee scrollamount="3" behavior="scroll" direction="left" width="100%">
+              <font face="宋体" size="2" color="#333333">{p.ticker}</font>
+            </marquee>
+          </td>
+        </tr>
 
-            <div class="panel">
-              <div class="panel-title">BROWSER</div>
-              <div class="panel-body">
-                <div class="marquee-hint">
-                  {isZh
-                    ? '本站最佳浏览分辨率 800×600，建议使用 IE 5.5 及以上版本浏览器访问。'
-                    : 'Best viewed at 800×600. Internet Explorer 5.5 or later recommended.'}
-                </div>
-              </div>
-            </div>
+        <tr>
+          <td colspan="2" class="stripe" height="8">
+            <img src="/ie/stripe.gif" width="1" height="8" alt="" />
+          </td>
+        </tr>
+
+        <tr>
+          <td width="150" valign="top" bgcolor="#f2ece3">
+            <table width="100%" border="0" cellpadding="3" cellspacing="0">
+              <tr>
+                <td class="panelhead" align="center">
+                  <font color="#ffffff" face="宋体" size="2"><b>{p.navTitle}</b></font>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table width="100%" border="0" cellpadding="2" cellspacing="3">
+                    {
+                      p.navItems.map((item) => (
+                        <tr>
+                          <td class="navcell" align="left">
+                            <a href={item.href}>
+                              <font face="宋体" size="2">◆&nbsp;{item.label}</font>
+                            </a>
+                            {item.hot && (
+                              <font color="#ff0000" face="宋体" size="1">
+                                <b>&nbsp;HOT!</b>
+                              </font>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <img src="/ie/building.gif" width="140" height="20" alt="正在建设中" />
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <font class="tiny" face="宋体" size="1">
+                    {isZh ? '本站正在建设中' : 'Under construction'}
+                  </font>
+                </td>
+              </tr>
+            </table>
           </td>
 
-          <td class="main">
-            <slot />
+          <td valign="top" bgcolor="#ffffff">
+            <table width="100%" border="0" cellpadding="10" cellspacing="0">
+              <tr>
+                <td valign="top">
+                  <slot />
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-            <div class="under-construction" title="under construction"></div>
+        <tr>
+          <td colspan="2" class="stripe" height="8">
+            <img src="/ie/stripe.gif" width="1" height="8" alt="" />
+          </td>
+        </tr>
 
-            <div class="panel">
-              <div class="panel-title">{isZh ? '本站已加入' : 'WEBRING'}</div>
-              <div class="panel-body buttons">
-                <span class="b88"><b>MAOMAO</b>NET</span>
-                <span class="b88">
-                  <b>{isZh ? '最佳浏览' : 'BEST VIEWED'}</b>800×600
-                </span>
-                <span class="b88">
-                  <b>{isZh ? '手工打造' : 'HAND CODED'}</b>{isZh ? '纯 HTML' : 'PURE HTML'}
-                </span>
-                <span class="b88">
-                  <b>{isZh ? '本站' : 'IE'}</b>{isZh ? '支持 IE' : 'FRIENDLY'}
-                </span>
-              </div>
-            </div>
+        <tr>
+          <td colspan="2" bgcolor="#f2ece3" align="center">
+            <table width="100%" border="0" cellpadding="8" cellspacing="0">
+              <tr>
+                <td align="center" width="50%">
+                  <font class="small" face="宋体" size="1">{p.counterLabel}</font><br />
+                  <font class="counter" face="Courier New">
+                    {digits.map((d) => (
+                      <span>{d}</span>
+                    ))}
+                  </font>
+                </td>
+                <td align="center" width="50%">
+                  <font class="small" face="宋体" size="1">{p.updatedLabel}：{p.updated}</font><br />
+                  <font class="small" face="宋体" size="1">
+                    {isZh ? '站长信箱：' : 'Webmaster: '}
+                    <a href="mailto:xy@6832.me">xy@6832.me</a>
+                  </font>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan="2" bgcolor="#000080" align="center" height="22">
+            <font color="#ffffff" face="宋体" size="1">&nbsp;{p.footerNote}&nbsp;</font>
           </td>
         </tr>
       </table>
 
-      <div class="foot">
-        {p.updatedLabel}: {p.updated}
-        <span class="sep">|</span>
-        {p.webmasterLabel}: <a href="mailto:xy@6832.me">xy@6832.me</a>
-        <span class="sep">|</span>
-        {p.footerNote}
-        <br />
-        <a href={p.backHref}>{p.backLabel}</a>
-      </div>
-    </div>
+      <table width="780" border="0" cellpadding="4" cellspacing="0" align="center">
+        <tr>
+          <td align="center">
+            <table border="0" cellpadding="0" cellspacing="4">
+              <tr>
+                <td class="btn88"><font face="宋体" size="1">猫猫头<br />MAOMAO</font></td>
+                <td class="btn88"><font face="宋体" size="1">寻美<br />HIROMI</font></td>
+                <td class="btn88"><font face="宋体" size="1">Made with<br />Notepad</font></td>
+                <td class="btn88"><font face="宋体" size="1">800×600<br />Best View</font></td>
+                <td class="btn88"><font face="宋体" size="1">HTML 4.01<br />Valid</font></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td align="center">
+            <font class="tiny" face="宋体" size="1">
+              {isZh ? '本站为千禧年兼容版　|　' : 'Compatibility edition　|　'}
+              <a href={p.backHref}>{p.backLabel}</a>
+            </font>
+          </td>
+        </tr>
+      </table>
+    </center>
   </body>
 </html>
