@@ -12,21 +12,21 @@ const copy = {
     since: '自 2021',
     label: 'WORLDLINE / 世界线',
     title: '每篇日志都是一个坐标。',
-    lede: '地表开发组 → 猫猫头开发组 → 猫猫头网络科技（广东）有限公司。九站，每一站都真的发生过。',
+    lede: '地表开发组 → 猫猫头开发组（备案挂靠三握云）→ 猫猫头网络科技（广东）有限公司。九站，每一站都真的发生过。',
     hint: '往下滑，世界线向左走',
   },
   en: {
     since: 'Since 2021',
     label: 'WORLDLINE',
     title: 'Every log is a coordinate.',
-    lede: 'Surface dev group → the Meowhead dev group → Maomaotou Network Technology (Guangdong). Nine stops, all real.',
+    lede: 'Surface dev group → the Meowhead dev group (filing held under Sanwoyun) → Maomaotou Network Technology (Guangdong). Nine stops, all real.',
     hint: 'Scroll to move the line',
   },
   yue: {
     since: '自 2021',
     label: 'WORLDLINE / 世界線',
     title: '每篇日誌都係一個座標。',
-    lede: '地表開發組 → 貓貓頭開發組 → 貓貓頭網絡科技（廣東）有限公司。九站，每一站都真係發生過。',
+    lede: '地表開發組 → 貓貓頭開發組（備案掛喺三握雲）→ 貓貓頭網絡科技（廣東）有限公司。九站，每一站都真係發生過。',
     hint: '向下滑，世界線向左行',
   },
 }[lang];
@@ -76,10 +76,10 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     <p class="wl__rel">
       {
         lang === 'en'
-          ? 'Note: Meowhead and Sanwoyun are separate organisations with no affiliation. Sanwoyun was named by Koh and run day to day by Zhu Bolin; Meowhead is planned and led by Koh.'
+          ? 'Note: there is no parent-child relationship between the two. Sanwoyun was named by Koh and run day to day by Zhu Bolin; Meowhead was planned and led by Koh. From 2025 to 2026 Meowhead operated with its website filing and similar licences held under Sanwoyun, and began trading as its own legal entity once the Guangdong company was registered on 2026.11.04.'
           : lang === 'yue'
-            ? '註：貓貓頭同三握雲係兩個獨立組織，冇任何隸屬關係。三握雲由小原起名、朱柏霖直接領導；貓貓頭由小原直接規劃同領導。'
-            : '注：猫猫头与三握云是两个独立组织，没有任何隶属关系。三握云由小原起名、朱柏霖直接领导；猫猫头由小原直接规划和领导。'
+            ? '註：兩間公司冇隸屬關係。三握雲由小原起名、朱柏霖直接領導；貓貓頭由小原直接規劃同領導。2025 至 2026 年期間，貓貓頭嘅網站備案等資質掛喺三握雲名下；2026.11.04 廣東公司成立後，以獨立法人身份營運。'
+            : '注：两家公司没有隶属关系。三握云由小原起名、朱柏霖直接领导；猫猫头由小原直接规划和领导。2025 至 2026 年期间，猫猫头的网站备案等资质挂在三握云名下；2026.11.04 广东公司成立后，以独立法人身份运营。'
       }
     </p>
 

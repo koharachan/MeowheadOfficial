@@ -37,17 +37,17 @@ export const worldline: Milestone[] = [
     no: '03',
     zh: {
       title: '猫猫头正式公开',
-      body: '重庆三握云网络科技有限公司成立，名字由小原所起，日常由朱柏霖直接领导。同一时期，猫猫头由小原直接规划和领导，以开发组形式正式公开存在——两条线各自独立，互不隶属。',
+      body: '重庆三握云网络科技有限公司成立，名字由小原所起，日常由朱柏霖直接领导。同一时期，猫猫头由小原直接规划和领导，以开发组形式正式公开存在；这一阶段的网站备案等资质，挂在三握云名下。',
       tag: '事实',
     },
     en: {
       title: 'Meowhead goes public',
-      body: 'Chongqing Sanwoyun Network Technology is founded — named by Koh, run day to day by Zhu Bolin. In the same period Meowhead exists publicly as a dev group, planned and led by Koh. Two separate lines, neither under the other.',
+      body: 'Chongqing Sanwoyun Network Technology is founded — named by Koh, run day to day by Zhu Bolin. In the same period Meowhead exists publicly as a dev group, planned and led by Koh. During this stage its website filing and similar licences sat under Sanwoyun.',
       tag: 'Fact',
     },
     yue: {
       title: '貓貓頭正式公開',
-      body: '重慶三握雲網絡科技有限公司成立，個名由小原所起，日常由朱柏霖直接領導。同一時期，貓貓頭由小原直接規劃同領導，以開發組形式正式公開存在——兩條線各自獨立，互不隸屬。',
+      body: '重慶三握雲網絡科技有限公司成立，個名由小原所起，日常由朱柏霖直接領導。同一時期，貓貓頭由小原直接規劃同領導，以開發組形式正式公開存在；呢個階段嘅網站備案等資質，掛喺三握雲名下。',
       tag: '事實',
     },
   },
