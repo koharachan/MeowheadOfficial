@@ -12,8 +12,8 @@ export const yue: Dict = {
 
   downloads: {
     label: '資源 / RESOURCES',
-    title: '要咩，直接下。',
-    lede: '標誌、吉祥物、3D 模型，原樣俾你。改色、二次創作、商業授權，問聲先。',
+    title: '啱使就攞去用。',
+    lede: '標誌、吉祥物、3D 模型，原樣擺喺度。改色、二次創作、賣都得——MIT，唔使問。',
     note: '檔案放喺本站，直接下載，唔使註冊。',
     action: '下載',
     items: [

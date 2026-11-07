@@ -8,8 +8,8 @@ export const en: Dict = {
 
   downloads: {
     label: 'RESOURCES',
-    title: 'Take what you need.',
-    lede: 'Logo, mascot, 3D model — as-is. Recolours, derivatives and commercial licensing: ask first.',
+    title: 'Take it if it helps.',
+    lede: 'Logo, mascot, 3D model — all sitting here. Recolour it, remix it, sell with it. MIT: no need to ask.',
     note: 'Hosted here. Direct download, no account.',
     action: 'Download',
     items: [

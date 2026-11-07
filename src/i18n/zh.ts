@@ -8,8 +8,8 @@ export const zh: Dict = {
 
   downloads: {
     label: '资源 / RESOURCES',
-    title: '要什么，直接下。',
-    lede: '标志、吉祥物、3D 模型，原样给你。改色、二次创作、商业授权，先问一声。',
+    title: '用得着就拿去。',
+    lede: '标志、吉祥物、3D 模型都摆在这儿。改色、二次创作、拿去卖都行——MIT，不用问。',
     note: '文件托管在本站，直接下载，不需要注册。',
     action: '下载',
     items: [
