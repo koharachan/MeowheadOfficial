@@ -153,13 +153,35 @@ const m = t.mascot;
     overflow: hidden;
   }
 
+  /* 舞台前沿：她是从台后升上来的，不是被裁掉的断头 */
+  .stage__ledge {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 13%;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--surface-1) 0%, transparent) 0%,
+      var(--surface-1) 42%,
+      var(--surface-2) 100%
+    );
+    box-shadow:
+      0 -18px 26px -14px rgba(20, 18, 16, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
   /* 飞入容器：整块从框底升上来，被 frame 的 overflow 裁掉，先露头再露身 */
   .stage__rise {
     position: relative;
-    width: 84%;
-    height: 84%;
+    width: 82%;
+    height: 88%;
+    /* 整体抬高，让脚落在台面后沿之下，露出的部分才像站在台上 */
+    margin-bottom: 6%;
     will-change: transform, opacity;
-    transform: translate3d(0, 62%, 0) rotate(-10deg) scale(0.9);
+    transform: translate3d(0, 58%, 0) rotate(-10deg) scale(0.9);
     opacity: 0;
   }
 

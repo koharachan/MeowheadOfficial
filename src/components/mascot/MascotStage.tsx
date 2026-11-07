@@ -139,6 +139,7 @@ export default function MascotStage({
         </div>
         </div>
 
+        <div className="stage__ledge" aria-hidden="true" />
         <div className="stage__shadow" aria-hidden="true" />
 
         <div className="stage__companion">

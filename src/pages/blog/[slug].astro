@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import SectionField from '../../components/ui/SectionField.astro';
 import { getDict } from '../../i18n';
 import { posts } from '../../data/posts';
+import { milestoneFor } from '../../data/worldline';
 
 export function getStaticPaths() {
   return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
@@ -16,6 +17,7 @@ const lang = t.lang;
 const copy = post.zh;
 const titleOf = (p: (typeof posts)[number]) => p[lang].title;
 const tagOf = (p: (typeof posts)[number]) => p.tag[lang];
+const mark = milestoneFor(post.date);
 const others = posts.filter((p) => p.slug !== post.slug).slice(0, 2);
 ---
 
@@ -41,6 +43,11 @@ const others = posts.filter((p) => p.slug !== post.slug).slice(0, 2);
               <span class="mono post__tag">{tagOf(post)}</span>
               <span class="mono post__read">{post.readMinutes} {t.blog.readUnit}</span>
             </div>
+
+            <p class="post__worldline mono">
+              <span class="post__worldline-dot" aria-hidden="true"></span>
+              WORLDLINE {mark.no} · {mark[lang].title}
+            </p>
 
             <h1 class="post__title" data-anim="fade">{copy.title}</h1>
             <p class="post__epigraph" data-anim="fade" data-delay="0.04">{copy.epigraph}</p>
@@ -196,6 +203,24 @@ const others = posts.filter((p) => p.slug !== post.slug).slice(0, 2);
 
   .post__back:hover {
     color: var(--orange);
+  }
+
+
+  .post__worldline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--orange);
+    font-size: 0.5rem;
+    letter-spacing: 0.14em;
+  }
+
+  .post__worldline-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-soft);
   }
 
   .post__head {
