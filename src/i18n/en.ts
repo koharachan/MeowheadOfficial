@@ -235,7 +235,7 @@ export const en: Dict = {
   mascot: {
     no: '05',
     label: 'MASCOT / HIROMI',
-    title: 'She is the human part of the system.',
+    title: 'She is the one part of this system that breathes',
     body: [
       'HIROMI is our mascot. She only shows up where you actually look: page loads, a submitted form, a 404, and the head that leans in at the end of the page.',
       'She follows your cursor and changes expression when you poke her. If she is in the way, close her with the small cross.',
