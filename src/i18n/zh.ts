@@ -297,7 +297,8 @@ export const zh: Dict = {
       {
         no: '01',
         role: '法定代表人',
-        name: '',
+        name: '小岩',
+        email: '',
         origin: '太湖人',
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
@@ -307,7 +308,8 @@ export const zh: Dict = {
       {
         no: '02',
         role: '股东 / CEO',
-        name: '',
+        name: '小原',
+        email: 'xy@6832.me',
         origin: '韶关人',
         handle: 'blog.meowhead.cn',
         href: 'https://blog.meowhead.cn',
@@ -317,7 +319,8 @@ export const zh: Dict = {
       {
         no: '03',
         role: '算法顾问',
-        name: '',
+        name: '洛嗷呜',
+        email: '',
         origin: '郑州人',
         handle: 'luoaowoo.cn',
         href: 'https://luoaowoo.cn',
@@ -353,7 +356,7 @@ export const zh: Dict = {
     facts: [
       { k: '办公地址', v: '广东省韶关市武江区百旺西路 8 号 5 号厂房 B 区 F469 房（仅限办公使用）' },
       { k: '统一社会信用代码', v: '91440200MAKT9DRH5P' },
-      { k: '电子邮箱', v: 'hello@maomaotou.tech（占位地址）' },
+      { k: '电子邮箱', v: 'xy@6832.me' },
       { k: '注册资本', v: '人民币壹仟万元' },
     ],
     map: {
@@ -372,10 +375,10 @@ export const zh: Dict = {
       topics: ['卫星通信终端', '软件开发与系统集成', '人工智能', '信息安全', '其他'],
       message: '一句话说清需求',
       submit: '发送',
-      note: '当前为演示表单，提交不会真正发送数据。',
+      note: '提交后会调用你的邮件客户端，把内容发到 xy@6832.me。',
       successTitle: '收到了。',
       resetLabel: '再发一条',
-      successBody: '这是演示表单，没有数据被发出。真实上线时，这里会换成我们的回复时间承诺。',
+      successBody: '邮件客户端已经打开，内容发到 xy@6832.me。没反应的话，直接把上面那段复制到你的邮箱里发给我们。',
       error: '请至少填写称呼、邮箱与需求描述。',
       placeholder: {
         name: '比如：陈先生',
@@ -435,7 +438,7 @@ export const zh: Dict = {
     bodyGlobal: '这是一个管理后台路径，只对持有凭据的人开放。',
     home: { label: '回到首页', href: '/' },
     mascot: { label: '认识寻美', href: '/mascot/' },
-    note: '如果你认为自己应该有权访问，写信到 hello@maomaotou.tech。',
+    note: '如果你认为自己应该有权访问，写信到 xy@6832.me。',
     regionNote: '提示：按你的网络所在地区，这一页的说明会不同。',
   },
   notFound: {

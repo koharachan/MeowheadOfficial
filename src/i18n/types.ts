@@ -211,7 +211,7 @@ export interface Dict {
     label: string;
     title: string;
     lede: string;
-    members: { no: string; role: string; name: string; handle: string; href: string; duty: string; avatar: string; origin: string }[];
+    members: { no: string; role: string; name: string; handle: string; href: string; duty: string; avatar: string; origin: string; email: string }[];
     note: string;
   };
   location: {

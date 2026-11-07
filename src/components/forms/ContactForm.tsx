@@ -1,5 +1,8 @@
 import { useRef, useState } from 'react';
 
+/** 真实收件地址（静态站没有后端，表单走 mailto） */
+export const CONTACT_EMAIL = 'xy@6832.me';
+
 export interface FormCopy {
   legend: string;
   name: string;
@@ -49,7 +52,25 @@ export default function ContactForm({
       return;
     }
 
-    // 演示表单：不出网，不存数据
+    // 真表单：组装 mailto，打开用户邮件客户端（静态站没有后端，这是最诚实的一条路）
+    const org = String(data.get('org') ?? '').trim();
+    const topic = String(data.get('topic') ?? '').trim();
+    const subject = '[官网咨询] ' + (topic || '项目') + ' · ' + name;
+    const body = [
+      '称呼：' + name,
+      org ? '公司 / 团队：' + org : '',
+      '邮箱：' + email,
+      topic ? '想聊什么：' + topic : '',
+      '',
+      message,
+      '',
+      '—— 来自官网联系表单',
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    const href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    window.location.href = href;
     setStatus('done');
   };
 

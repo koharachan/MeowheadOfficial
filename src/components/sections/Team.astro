@@ -42,6 +42,11 @@ const tm = t.team;
             </div>
 
             {m.name && <p class="member__name">{m.name}</p>}
+            {m.email && (
+              <a class="member__mail mono" href={'mailto:' + m.email}>
+                {m.email}
+              </a>
+            )}
 
             <a class="member__link" href={m.href} target="_blank" rel="noopener noreferrer">
               <span class="member__handle">{m.handle}</span>
@@ -189,6 +194,28 @@ const tm = t.team;
   }
 
   /* 籍贯标签：小圆角，明度分层不用描边 */
+  .member__name {
+    font-family: var(--font-cjk);
+    font-size: var(--fs-h3);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .member__mail {
+    align-self: start;
+    color: var(--orange);
+    font-size: 0.5625rem;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 200ms var(--ease-out);
+  }
+
+  .member__mail:hover {
+    border-color: var(--orange);
+  }
+
   .member__origin {
     display: inline-flex;
     align-items: center;
