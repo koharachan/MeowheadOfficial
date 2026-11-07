@@ -2,7 +2,7 @@
  * 单一真源：所有文案的结构定义。
  * zh / en 两份字典必须实现同一个 interface —— 缺键在 tsc 阶段就会报错。
  */
-export type Lang = 'zh' | 'en' | 'yue';
+export type Lang = 'zh' | 'en' | 'yue' | 'ja';
 
 export interface LangLink {
   code: Lang;

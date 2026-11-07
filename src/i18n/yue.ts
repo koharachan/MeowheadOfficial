@@ -113,6 +113,7 @@ export const yue: Dict = {
     { code: 'zh', label: '中', name: '中文（普通話）' },
     { code: 'yue', label: '粵', name: '粵語（廣東話）' },
     { code: 'en', label: 'EN', name: 'English' },
+    { code: 'ja', label: '日', name: '日本語' },
   ],
   langSwitch: { label: '中', short: '中', href: '/' },
 

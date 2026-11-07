@@ -110,6 +110,7 @@ export const en: Dict = {
     { code: 'zh', label: '中', name: 'Chinese' },
     { code: 'yue', label: '粵', name: 'Cantonese' },
     { code: 'en', label: 'EN', name: 'English' },
+    { code: 'ja', label: '日', name: 'Japanese' },
   ],
   langSwitch: { label: '中文', short: '中', href: '/' },
 

@@ -72,7 +72,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
             <a
               class:list={['foot__lang', { 'is-active': l === t.lang }]}
               href={pathFor(l, basePath(Astro.url.pathname))}
-              hreflang={l === 'zh' ? 'zh-CN' : l === 'yue' ? 'zh-HK' : 'en'}
+              hreflang={l === 'zh' ? 'zh-CN' : l === 'yue' ? 'zh-HK' : l === 'ja' ? 'ja' : 'en'}
             >
               {t.langs.find((x) => x.code === l)?.label ?? l}
             </a>

@@ -24,7 +24,7 @@ const isEn = lang === 'en';
 /* 三种语言一一对应：由当前路径推出 zh / yue / en 的同一页 */
 const base = basePath(Astro.url.pathname);
 const altHrefs = Object.fromEntries(LANGS.map((l) => [l, new URL(pathFor(l, base), site).href])) as Record<Lang, string>;
-const hreflangOf: Record<Lang, string> = { zh: 'zh-CN', yue: 'zh-HK', en: 'en' };
+const hreflangOf: Record<Lang, string> = { zh: 'zh-CN', yue: 'zh-HK', en: 'en', ja: 'ja' };
 const altLang = lang === 'en' ? 'zh-CN' : 'en';
 const resolvedAlt = altPath ?? pathFor(lang === 'zh' ? 'en' : 'zh', base);
 const altHref = new URL(resolvedAlt, site).href;

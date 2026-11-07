@@ -15,7 +15,8 @@ const pageBase = basePath(Astro.url.pathname);
 const langHref = (l: (typeof LANGS)[number]) => pathFor(l, pageBase);
 const langLabel = (code: string) => t.langs.find((x) => x.code === code)?.label ?? code;
 const langName = (code: string) => t.langs.find((x) => x.code === code)?.name ?? code;
-const hreflangFor = (code: string) => (code === 'zh' ? 'zh-CN' : code === 'yue' ? 'zh-HK' : 'en');
+const hreflangFor = (code: string) =>
+  code === 'zh' ? 'zh-CN' : code === 'yue' ? 'zh-HK' : code === 'ja' ? 'ja' : 'en';
 const base = isHome ? '' : t.path.home;
 const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
 /** 导航编号直接取章节表里的真实编号，避免和正文里的 03/04 对不上 */

@@ -1,7 +1,7 @@
 # 自托管字体（public/fonts）
 
 > 由 `site/scripts/build-fonts.py` 自动生成，**不要手改产物**。改文案/换字重后重跑脚本即可。
-> 生成时间：2026-11-07 02:39:29
+> 生成时间：2026-11-08 05:25:21
 
 ## 为什么自托管
 
@@ -11,11 +11,11 @@
 
 | 文件 | 用途 | 体积 | 字形数 | 子集字符数 |
 | --- | --- | ---: | ---: | ---: |
-| [`noto-sans-sc-critical.woff2`](./noto-sans-sc-critical.woff2) | 中文首屏关键子集（preload，覆盖首屏文字/导航） | 104.1 KB | 530 | 318 |
-| [`noto-sans-sc-full.woff2`](./noto-sans-sc-full.woff2) | 中文全站子集（unicode-range 与 critical 互补） | 589.4 KB | 2653 | 1439 |
-| [`archivo-latin.woff2`](./archivo-latin.woff2) | 拉丁字母/数字/符号（可变 100-900） | 24.7 KB | 194 | 180 |
-| [`jetbrains-mono-400.woff2`](./jetbrains-mono-400.woff2) | 等宽 400（工程感标签/编号） | 19.1 KB | 394 | 235 |
-| [`jetbrains-mono-500.woff2`](./jetbrains-mono-500.woff2) | 等宽 500（强调） | 19.9 KB | 394 | 235 |
+| [`noto-sans-sc-critical.woff2`](./noto-sans-sc-critical.woff2) | 中文首屏关键子集（preload，覆盖首屏文字/导航） | 104.0 KB | 530 | 318 |
+| [`noto-sans-sc-full.woff2`](./noto-sans-sc-full.woff2) | 中文全站子集（unicode-range 与 critical 互补） | 728.0 KB | 3264 | 1800 |
+| [`archivo-latin.woff2`](./archivo-latin.woff2) | 拉丁字母/数字/符号（可变 100-900） | 24.5 KB | 193 | 179 |
+| [`jetbrains-mono-400.woff2`](./jetbrains-mono-400.woff2) | 等宽 400（工程感标签/编号） | 19.1 KB | 392 | 233 |
+| [`jetbrains-mono-500.woff2`](./jetbrains-mono-500.woff2) | 等宽 500（强调） | 19.8 KB | 392 | 233 |
 
 
 ## 字体来源与许可

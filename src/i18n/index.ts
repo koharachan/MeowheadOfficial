@@ -2,11 +2,12 @@ import type { Dict, Lang } from './types';
 import { zh } from './zh';
 import { en } from './en';
 import { yue } from './yue';
+import { ja } from './ja';
 
 export type { Dict, Lang };
 export * from './types';
 
-const dicts: Record<Lang, Dict> = { zh, en, yue };
+const dicts: Record<Lang, Dict> = { zh, en, yue, ja };
 
 export function getDict(lang: Lang): Dict {
   return dicts[lang];
@@ -18,7 +19,7 @@ export function useDict(lang: Lang): Dict {
 }
 
 /** 语言顺序固定：中文 → 粤语 → English */
-export const LANGS: Lang[] = ['zh', 'yue', 'en'];
+export const LANGS: Lang[] = ['zh', 'yue', 'en', 'ja'];
 
 export function otherLang(lang: Lang): Lang {
   return lang === 'zh' ? 'en' : 'zh';
@@ -26,7 +27,7 @@ export function otherLang(lang: Lang): Lang {
 
 /** 去掉语言前缀后的基线路径；'/' 保持 '/' */
 export function basePath(pathname: string): string {
-  const stripped = pathname.replace(/^\/(en|yue)(?=\/|$)/, '');
+  const stripped = pathname.replace(/^\/(en|yue|ja)(?=\/|$)/, '');
   return stripped === '' ? '/' : stripped;
 }
 

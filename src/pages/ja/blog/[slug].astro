@@ -1,0 +1,655 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import SectionField from '../../../components/ui/SectionField.astro';
+import { getDict } from '../../../i18n';
+import { posts } from '../../../data/posts';
+import { milestoneFor } from '../../../data/worldline';
+
+export function getStaticPaths() {
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const t = getDict('ja');
+const lang = t.lang;
+const copy = post.ja;
+const titleOf = (p: (typeof posts)[number]) => p[lang].title;
+const tagOf = (p: (typeof posts)[number]) => p.tag[lang];
+const mark = milestoneFor(post.date);
+const others = posts.filter((p) => p.slug !== post.slug).slice(0, 2);
+---
+
+<Base
+  lang="ja"
+  title={`${copy.title} · ${t.brand.name}`}
+  description={copy.excerpt}
+  altPath={`/en/blog/${post.slug}/`}
+>
+  <Nav t={t} isHome={false} />
+
+  <main id="main" class="post">
+    <SectionField no="B" align="right" />
+
+    <article class="post__inner">
+      <div class="post__grid">
+        <div class="post__col">
+          <a class="post__back mono" href={t.path.blog}>← {t.blog.back}</a>
+
+          <header class="post__head">
+            <div class="post__meta">
+              <time class="mono" datetime={post.date}>{post.date.replace(/-/g, '.')}</time>
+              <span class="mono post__tag">{tagOf(post)}</span>
+              <span class="mono post__read">{post.readMinutes} {t.blog.readUnit}</span>
+            </div>
+
+            <p class="post__worldline mono">
+              <span class="post__worldline-dot" aria-hidden="true"></span>
+              WORLDLINE {mark.no} · {mark[lang].title}
+            </p>
+
+            <h1 class="post__title" data-anim="fade">{copy.title}</h1>
+            <p class="post__epigraph" data-anim="fade" data-delay="0.04">{copy.epigraph}</p>
+            <p class="lead post__excerpt" data-anim="fade" data-delay="0.06">{copy.excerpt}</p>
+          </header>
+
+          <div class="post__toc-mobile" data-collapse>
+            <button class="post__toc-toggle mono" type="button" data-collapse-toggle aria-expanded="false">
+              {t.blog.toc}
+              <span class="post__toc-chev" aria-hidden="true"></span>
+            </button>
+            <div class="post__toc-body"><ol>
+              {
+                copy.body.map((block, i) => (
+                  <li>
+                    <a href={`#s${i + 1}`}>
+                      <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+                      {block.h}
+                    </a>
+                  </li>
+                ))
+              }
+            </ol></div>
+          </div>
+
+            <div class="post__body">
+              {
+                copy.body.map((block, i) => (
+                  <section class="post__section" id={`s${i + 1}`}>
+                    <h2 class="post__h">
+                      <span class="mono post__h-no">{String(i + 1).padStart(2, '0')}</span>
+                      {block.h}
+                    </h2>
+                    <p class="post__para">{block.p}</p>
+                  </section>
+                ))
+              }
+            </div>
+        </div>
+
+          <aside class="post__toc" aria-label={t.blog.toc}>
+            <p class="mono post__toc-label">{t.blog.toc}</p>
+            <ol class="post__toc-list">
+              {
+                copy.body.map((block, i) => (
+                  <li>
+                    <a href={`#s${i + 1}`} data-toc data-index={i}>
+                      <span class="mono post__toc-no">{String(i + 1).padStart(2, '0')}</span>
+                      <span>{block.h}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ol>
+
+            {
+              others.length > 0 && (
+                <div class="post__rail-more">
+                  <p class="mono post__toc-label">{t.blog.more}</p>
+                  <ul>
+                    {others.map((o) => (
+                      <li>
+                        <a href={`${t.path.blog}${o.slug}/`}>
+                          <span class="mono post__rail-date">{o.date.replace(/-/g, '.')}</span>
+                          {titleOf(o)}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
+
+            <a class="post__totop mono" href="#main">{t.blog.top} ↑</a>
+          </aside>
+      </div>
+
+      <footer class="post__foot">
+        <div class="post__lic">
+          <p class="mono-sm post__note">{t.blog.note}</p>
+          <p class="mono-sm post__lic-line">
+            <a class="post__lic-badge" href="https://creativecommons.org/licenses/by/4.0/" rel="license noopener" target="_blank">CC BY 4.0</a>
+            {t.blog.license}
+          </p>
+        </div>
+        <a class="post__more" href={t.path.blog}>← {t.blog.back}</a>
+      </footer>
+    </article>
+
+    {
+      others.length > 0 && (
+        <aside class="post__others">
+          <p class="mono post__others-label">{t.blog.more}</p>
+          <ul>
+            {others.map((o) => (
+              <li>
+                <a href={`${t.path.blog}${o.slug}/`}>
+                  <span class="mono post__others-date">{o.date.replace(/-/g, '.')}</span>
+                  <span>{titleOf(o)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )
+    }
+  </main>
+
+  <Footer t={t} isHome={false} />
+</Base>
+
+<script is:inline>
+  // 右侧目录：滚动高亮当前小节
+  (function () {
+    var links = [].slice.call(document.querySelectorAll('[data-toc]'));
+    if (!links.length) return;
+    var secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+    function set(i) {
+      links.forEach(function (a, k) {
+        if (k === i) a.setAttribute('data-active', 'true');
+        else a.removeAttribute('data-active');
+      });
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          var i = secs.indexOf(e.target);
+          if (i >= 0) set(i);
+        });
+      },
+      { rootMargin: '-22% 0px -62% 0px', threshold: 0 }
+    );
+    secs.forEach(function (s) { if (s) io.observe(s); });
+    set(0);
+  })();
+</script>
+
+<style>
+  .post {
+    position: relative;
+    padding-top: clamp(110px, 15vh, 170px);
+    padding-bottom: clamp(4rem, 8vw, 6rem);
+    overflow: clip;
+  }
+
+  .post__back {
+    display: inline-block;
+    color: var(--ink-38);
+    font-size: 0.5625rem;
+    transition: color 220ms var(--ease-out);
+  }
+
+  .post__back:hover {
+    color: var(--orange);
+  }
+
+
+  .post__worldline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--orange);
+    font-size: 0.5rem;
+    letter-spacing: 0.14em;
+  }
+
+  .post__worldline-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-soft);
+  }
+
+  .post__head {
+    display: grid;
+    gap: 1rem;
+    margin: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(2rem, 4vw, 3rem);
+    padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
+    border-bottom: var(--hair);
+  }
+
+  .post__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem;
+    color: var(--ink-38);
+    font-size: 0.5625rem;
+  }
+
+  .post__tag {
+    padding: 0.25em 0.5em;
+    border: 1px solid var(--ink-20);
+    border-radius: 999px;
+    color: var(--ink-56);
+    font-size: 0.5rem;
+  }
+
+  .post__title {
+    font-family: var(--font-cjk);
+    font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+    font-weight: 900;
+    line-height: 1.24;
+    letter-spacing: -0.02em;
+    max-width: 24ch;
+  }
+
+  .post__epigraph {
+    font-size: clamp(1.0625rem, 1.7vw, 1.25rem);
+    font-weight: 600;
+    line-height: 1.7;
+    color: var(--ink-90);
+    border-left: 2px solid var(--orange);
+    padding-left: 1rem;
+    max-width: 44ch;
+  }
+
+  .post__excerpt {
+    max-width: 52ch;
+  }
+
+  /* ---------------- 正文 + 右侧目录 ---------------- */
+  /* 文章块收窄居中：正文 + 右栏 ≈ 1000px，避免右侧空掉三分之一 */
+  .post__inner {
+    width: 100%;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .post__grid {
+    display: grid;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
+
+  .post__col {
+    min-width: 0;
+  }
+
+  .post__body {
+    display: grid;
+    gap: clamp(2rem, 3.5vw, 3rem);
+  }
+
+  .post__section {
+    scroll-margin-top: 96px;
+  }
+
+  .post__h {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin: 0 0 0.85rem;
+    font-family: var(--font-cjk);
+    font-size: clamp(1.125rem, 1.7vw, 1.375rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--ink-12);
+  }
+
+  .post__h-no {
+    color: var(--orange);
+    font-size: 0.5625rem;
+    letter-spacing: 0.12em;
+  }
+
+  .post__para {
+    margin: 0;
+    font-size: var(--fs-body);
+    line-height: 1.95;
+    color: var(--ink-70);
+  }
+
+  /* ---------------- 右栏 ---------------- */
+  .post__rail-more {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: var(--hair);
+  }
+
+  .post__rail-more ul {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .post__rail-more a {
+    display: grid;
+    gap: 0.2rem;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--ink-56);
+    transition: color 220ms var(--ease-out);
+  }
+
+  .post__rail-more a:hover {
+    color: var(--orange);
+  }
+
+  .post__rail-date {
+    color: var(--ink-38);
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .post__totop {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--ink-38);
+    font-size: 0.5625rem;
+    letter-spacing: 0.14em;
+    border-bottom: 1px solid var(--ink-12);
+    padding-bottom: 0.15em;
+    transition:
+      color 220ms var(--ease-out),
+      border-color 220ms var(--ease-out);
+  }
+
+  .post__totop:hover {
+    color: var(--orange);
+    border-color: var(--orange);
+  }
+
+  /* ---------------- 目录 ---------------- */
+  .post__toc {
+    display: none;
+  }
+
+  .post__toc-label {
+    color: var(--ink-38);
+    font-size: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .post__toc-list {
+    display: grid;
+    border-left: 1px solid var(--ink-12);
+  }
+
+  .post__toc-list a {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.6rem;
+    align-items: baseline;
+    padding: 0.5rem 0 0.5rem 0.9rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--ink-56);
+    transition:
+      color 220ms var(--ease-out),
+      background-color 220ms var(--ease-out);
+  }
+
+  .post__toc-list a::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0.35rem;
+    bottom: 0.35rem;
+    width: 2px;
+    background: var(--orange);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 260ms var(--ease-out);
+  }
+
+  .post__toc-list a:hover {
+    color: var(--ink);
+    background: var(--cream-2);
+  }
+
+  .post__toc-list a[data-active='true'] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .post__toc-list a[data-active='true']::before {
+    transform: scaleY(1);
+  }
+
+  .post__toc-no {
+    color: var(--ink-38);
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .post__toc-list a[data-active='true'] .post__toc-no {
+    color: var(--orange);
+  }
+
+  /* 移动端：折叠目录 */
+  /* 折叠：grid-template-rows 0fr → 1fr，浏览器自己插值，不问 JS 要高度 */
+  .post__toc-mobile {
+    margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+    padding: 0.35rem 0.85rem;
+    border-radius: 12px;
+    background: var(--surface-1);
+  }
+
+  .post__toc-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: 0.6rem 0;
+    border: 0;
+    background: none;
+    color: var(--ink-56);
+    font-size: 0.5625rem;
+    letter-spacing: 0.14em;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .post__toc-chev {
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid var(--orange);
+    border-bottom: 1.5px solid var(--orange);
+    transform: rotate(45deg) translateY(-2px);
+    transition: transform 420ms var(--spring-drag);
+  }
+
+  .post__toc-toggle[aria-expanded='true'] .post__toc-chev {
+    transform: rotate(-135deg) translateY(-1px);
+  }
+
+  .post__toc-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 460ms var(--spring-drag);
+  }
+
+  .post__toc-body > * {
+    overflow: hidden;
+  }
+
+  .post__toc-mobile.is-open .post__toc-body {
+    grid-template-rows: 1fr;
+  }
+
+  .post__toc-mobile ol {
+    display: grid;
+    gap: 0.6rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.85rem;
+  }
+
+  .post__toc-mobile a {
+    display: flex;
+    gap: 0.6rem;
+    font-size: 0.875rem;
+    color: var(--ink-70);
+  }
+
+  .post__toc-mobile .mono {
+    color: var(--orange);
+    font-size: 0.5rem;
+  }
+
+  .post__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding-top: 1.5rem;
+    border-top: var(--hair);
+  }
+
+  .post__lic {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .post__lic-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ink-56);
+    text-transform: none;
+    letter-spacing: 0.03em;
+    font-size: 0.625rem;
+    line-height: 1.6;
+  }
+
+  .post__lic-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25em 0.55em;
+    border: 1px solid var(--orange);
+    border-radius: 3px;
+    color: var(--orange);
+    font-size: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    transition:
+      background-color 220ms var(--ease-out),
+      color 220ms var(--ease-out);
+  }
+
+  .post__lic-badge:hover {
+    background: var(--orange);
+    color: var(--cream);
+  }
+
+  .post__note {
+    color: var(--ink-38);
+    text-transform: none;
+    letter-spacing: 0.05em;
+    font-size: 0.625rem;
+  }
+
+  .post__more {
+    font-size: var(--fs-small);
+    font-weight: 600;
+    border-bottom: 1px solid var(--ink-20);
+    padding-bottom: 0.15em;
+    transition:
+      color 220ms var(--ease-out),
+      border-color 220ms var(--ease-out);
+  }
+
+  .post__more:hover {
+    color: var(--orange);
+    border-color: var(--orange);
+  }
+
+  /* 底部「更多日志」只在窄屏出现（宽屏已挪进右栏） */
+  .post__others {
+    max-width: 1060px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding-top: clamp(1.5rem, 3vw, 2.5rem);
+    border-top: var(--hair);
+  }
+
+  .post__others-label {
+    color: var(--ink-38);
+    margin-bottom: 1.25rem;
+  }
+
+  .post__others ul {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .post__others a {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    font-size: var(--fs-h4);
+    font-weight: 700;
+    transition: color 220ms var(--ease-out);
+  }
+
+  .post__others a:hover {
+    color: var(--orange);
+  }
+
+  .post__others-date {
+    color: var(--ink-38);
+    font-size: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 1024px) {
+    /* 正文列占满剩余宽度但内部居中；目录贴页面右缘 */
+    .post__grid {
+      grid-template-columns: minmax(0, 1fr) 236px;
+      column-gap: clamp(2rem, 4vw, 4rem);
+    }
+
+    .post__col {
+      width: 100%;
+      max-width: 62ch;
+      margin-inline: auto;
+    }
+
+    .post__toc {
+      display: block;
+      position: sticky;
+      top: 104px;
+    }
+
+    .post__toc-mobile {
+      display: none;
+    }
+
+    .post__others {
+      display: none;
+    }
+  }
+</style>
