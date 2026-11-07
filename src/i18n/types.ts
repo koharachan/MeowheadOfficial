@@ -276,8 +276,11 @@ export interface Dict {
   forbidden: {
     label: string;
     titleCn: string;
+    /** 日本 IP 分支（404/403 的地区差异） */
+    titleJp: string;
     titleGlobal: string;
     bodyCn: string;
+    bodyJp: string;
     bodyGlobal: string;
     home: Link;
     mascot: Link;

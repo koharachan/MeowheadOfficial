@@ -440,8 +440,10 @@ export const yue: Dict = {
   forbidden: {
     label: '403 / FORBIDDEN',
     titleCn: '呢道門只係對一部分地區開。',
+    titleJp: '老實搵錢，好悶咩？',
     titleGlobal: '呢一頁要通行證。',
     bodyCn: '呢個係一個管理後台路徑，我哋冇將佢放喺公開存取範圍。',
+    bodyJp: '呢個係一個管理後台路徑，冇對外開放。',
     bodyGlobal: '呢個係一個管理後台路徑，只係對持有憑據嘅人開放。',
     home: { label: '返首頁', href: '/yue/' },
     mascot: { label: '識下尋美', href: '/yue/mascot/' },

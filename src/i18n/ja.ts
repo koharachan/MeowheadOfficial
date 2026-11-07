@@ -437,8 +437,10 @@ export const ja: Dict = {
   forbidden: {
     label: '403 / FORBIDDEN',
     titleCn: '地道にアクセスするのって、バカバカしいでしょ',
-    titleGlobal: '地道に稼ぐのって、バカバカしいでしょ',
+    titleJp: '地道に稼ぐのって、バカバカしいでしょ',
+    titleGlobal: 'ここは通行証がないと入れないよ',
     bodyCn: 'ここは管理画面のパスです。公開の範囲には置いていません。',
+    bodyJp: 'ここは管理画面のパスで、一般には公開していません。',
     bodyGlobal: 'ここは管理画面のパスで、資格情報を持つ人だけが開けます。',
     home: { label: 'ホームへ', href: '/ja/' },
     mascot: { label: '尋美を知る', href: '/ja/mascot/' },

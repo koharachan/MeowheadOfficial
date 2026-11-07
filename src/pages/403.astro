@@ -55,13 +55,19 @@ const poemJaGlobal = ['扉はここにある。鍵がここにないだけ。', 
           var qRegion = params.get('region');
           var qLang = params.get('lang');
 
-          if (qRegion === 'global' || qRegion === 'cn') {
+          if (qRegion === 'cn' || qRegion === 'jp' || qRegion === 'global') {
             region = qRegion;
-          } else if (root.dataset.regionHint === 'global' || root.dataset.regionHint === 'cn') {
+          } else if (root.dataset.regionHint) {
             region = root.dataset.regionHint;
           } else {
             var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-            region = /^Asia\/(Shanghai|Chongqing|Harbin|Urumqi|Kashgar)$/.test(tz) ? 'cn' : 'global';
+            if (/^Asia\/(Shanghai|Chongqing|Harbin|Urumqi|Kashgar)$/.test(tz)) {
+              region = 'cn';
+            } else if (tz === 'Asia/Tokyo') {
+              region = 'jp';
+            } else {
+              region = 'global';
+            }
           }
 
           if (qLang === 'en' || qLang === 'zh' || qLang === 'ja' || qLang === 'yue') {
@@ -96,17 +102,23 @@ const poemJaGlobal = ['扉はここにある。鍵がここにないだけ。', 
       <p class="mono fb__label">{fz.label}</p>
 
       <h1 class="fb__title" data-lang="zh" data-region-cn>{fz.titleCn}</h1>
+      <h1 class="fb__title" data-lang="zh" data-region-jp>{fz.titleJp}</h1>
       <h1 class="fb__title" data-lang="zh" data-region-global>{fz.titleGlobal}</h1>
       <h1 class="fb__title" data-lang="en" data-region-cn>{fe.titleCn}</h1>
+      <h1 class="fb__title" data-lang="en" data-region-jp>{fe.titleJp}</h1>
       <h1 class="fb__title" data-lang="en" data-region-global>{fe.titleGlobal}</h1>
       <h1 class="fb__title" data-lang="ja" data-region-cn>{fj.titleCn}</h1>
+      <h1 class="fb__title" data-lang="ja" data-region-jp>{fj.titleJp}</h1>
       <h1 class="fb__title" data-lang="ja" data-region-global>{fj.titleGlobal}</h1>
 
       <p class="fb__body" data-lang="zh" data-region-cn>{fz.bodyCn}</p>
+      <p class="fb__body" data-lang="zh" data-region-jp>{fz.bodyJp}</p>
       <p class="fb__body" data-lang="zh" data-region-global>{fz.bodyGlobal}</p>
       <p class="fb__body" data-lang="en" data-region-cn>{fe.bodyCn}</p>
+      <p class="fb__body" data-lang="en" data-region-jp>{fe.bodyJp}</p>
       <p class="fb__body" data-lang="en" data-region-global>{fe.bodyGlobal}</p>
       <p class="fb__body" data-lang="ja" data-region-cn>{fj.bodyCn}</p>
+      <p class="fb__body" data-lang="ja" data-region-jp>{fj.bodyJp}</p>
       <p class="fb__body" data-lang="ja" data-region-global>{fj.bodyGlobal}</p>
 
       <div class="fb__poem">
@@ -160,11 +172,18 @@ const poemJaGlobal = ['扉はここにある。鍵がここにないだけ。', 
     display: revert !important;
   }
 
-  html:not([data-region='global']) [data-region-global] {
+  html:not([data-region='global']) [data-region-global],
+  html:not([data-region='cn']) [data-region-cn],
+  html:not([data-region='jp']) [data-region-jp] {
     display: none !important;
   }
 
-  html[data-region='global'] [data-region-cn] {
+  html[data-region='global'] [data-region-cn],
+  html[data-region='global'] [data-region-jp],
+  html[data-region='jp'] [data-region-cn],
+  html[data-region='jp'] [data-region-global],
+  html[data-region='cn'] [data-region-jp],
+  html[data-region='cn'] [data-region-global] {
     display: none !important;
   }
 

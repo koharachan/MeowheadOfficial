@@ -434,8 +434,10 @@ export const zh: Dict = {
   forbidden: {
     label: '403 / FORBIDDEN',
     titleCn: '这个门只对一部分地区开。',
-    titleGlobal: '老实赚钱，很枯燥吧？',
+    titleJp: '老实赚钱，很枯燥吧？',
+    titleGlobal: '这一页需要通行证。',
     bodyCn: '这是一个管理后台路径，我们没有把它放在公开访问的范围内。',
+    bodyJp: '这是一个管理后台路径，没有对外开放。',
     bodyGlobal: '这是一个管理后台路径，只对持有凭据的人开放。',
     home: { label: '回到首页', href: '/' },
     mascot: { label: '认识寻美', href: '/mascot/' },

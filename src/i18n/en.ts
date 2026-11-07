@@ -445,8 +445,10 @@ export const en: Dict = {
   forbidden: {
     label: '403 / FORBIDDEN',
     titleCn: 'This door only opens in some regions.',
+    titleJp: 'Honest money too boring for you?',
     titleGlobal: 'This page needs a pass.',
     bodyCn: 'This is an admin path. We do not expose it publicly.',
+    bodyJp: 'This is an admin path. It is not open to the public.',
     bodyGlobal: 'This is an admin path. It is open only to people holding credentials.',
     home: { label: 'Back home', href: '/en/' },
     mascot: { label: 'Meet HIROMI', href: '/en/mascot/' },
