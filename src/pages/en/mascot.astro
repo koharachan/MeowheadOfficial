@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import MascotPageBody from '../../components/mascot/MascotPageBody.astro';
+import { getDict } from '../../i18n';
+
+const t = getDict('en');
+---
+
+<Base lang="en" title={t.mascotPage.meta.title} description={t.mascotPage.meta.description} altPath="/mascot/">
+  <Nav t={t} isHome={false} />
+  <MascotPageBody t={t} />
+  <Footer t={t} isHome={false} />
+</Base>

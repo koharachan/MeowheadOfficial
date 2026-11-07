@@ -1,0 +1,166 @@
+---
+import type { Dict } from '../../i18n';
+import SectionHead from '../ui/SectionHead.astro';
+import SectionField from '../ui/SectionField.astro';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const c = t.capability;
+---
+
+<section class="cap section" id="capability">
+  <SectionField no={c.no} lines={4} />
+  <div class="shell">
+    <SectionHead no={c.no} label={c.label} title={c.title} lede={c.lede} />
+
+    <ol class="cap__grid" data-anim="stagger">
+      {
+        c.items.map((item) => (
+          <li class="cap__cell">
+            <div class="cap__top">
+              <span class="mono cap__code">{item.code}</span>
+              <span class="cap__tick" aria-hidden="true" data-scrub data-scrub-rotate="120" data-scrub-y="10"></span>
+            </div>
+
+            <h3 class="h3 cap__title">{item.title}</h3>
+            <p class="cap__summary">{item.summary}</p>
+
+            <ul class="cap__list">
+              {item.bullets.map((b) => (
+                <li>
+                  <span class="dash" aria-hidden="true"></span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="cap__foot mono-sm" data-anim="fade">{c.footnote}</p>
+  </div>
+</section>
+
+<style>
+  /* 不用描边切格子：格子之间留 1px 缝，缝里透出页面底色，靠 --surface 的明度差分块 */
+  .cap__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--cream);
+  }
+
+  .cap__cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: clamp(1.5rem, 2.6vw, 2.5rem);
+    background: var(--surface-0);
+    transition: background-color 420ms var(--ease-out);
+    min-height: clamp(15rem, 24vw, 19rem);
+  }
+
+  .cap__cell:hover {
+    background: var(--surface-1);
+  }
+
+  .cap__cell::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 2px;
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 500ms var(--ease-out);
+  }
+
+  .cap__cell:hover {
+    background: var(--cream-2);
+  }
+
+  .cap__cell:hover::after {
+    transform: scaleX(1);
+  }
+
+  .cap__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cap__code {
+    color: var(--ink-38);
+    transition: color 300ms var(--ease-out);
+  }
+
+  .cap__cell:hover .cap__code {
+    color: var(--orange);
+  }
+
+  .cap__tick {
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--ink-20);
+    transform: rotate(45deg);
+  }
+
+  .cap__title {
+    font-size: clamp(1.375rem, 2.1vw, 1.75rem);
+  }
+
+  .cap__summary {
+    font-size: var(--fs-small);
+    color: var(--ink-56);
+    line-height: 1.7;
+  }
+
+  .cap__list {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 1rem;
+  }
+
+  .cap__list li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    font-size: var(--fs-small);
+    color: var(--ink-70);
+    line-height: 1.65;
+  }
+
+  .dash {
+    width: 10px;
+    height: 1px;
+    background: var(--ink-20);
+    flex-shrink: 0;
+    transform: translateY(-0.3em);
+  }
+
+  .cap__foot {
+    margin-top: 1.5rem;
+    color: var(--ink-38);
+    text-transform: none;
+    letter-spacing: 0.04em;
+    font-size: 0.625rem;
+    line-height: 1.7;
+  }
+
+  @media (min-width: 720px) {
+    .cap__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1180px) {
+    .cap__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

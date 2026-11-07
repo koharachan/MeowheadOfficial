@@ -1,0 +1,629 @@
+---
+import type { Dict } from '../i18n';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+---
+
+<!--
+  00 启动态 / SPLASH
+  ZZZ 路子的三件事：
+  1) 斜切叠层（slab / panel / sticker 互相压边，硬投影，无圆角）
+  2) 元素共享（标题的橙色重影与本体共框；tible 贴纸在退场时 FLIP 飞进导航 logo）
+  3) 滑动驱动（滚轮 / 触摸 / 点击都能把启动序列「推」到终点，而不是干等）
+-->
+<div class="splash" data-splash aria-hidden="true">
+  <div class="splash__dots" aria-hidden="true"></div>
+  <div class="splash__slab splash__slab--a" aria-hidden="true"></div>
+  <div class="splash__slab splash__slab--b" aria-hidden="true"></div>
+  <div class="splash__stripes" aria-hidden="true"></div>
+
+  <div class="splash__stage">
+    <div class="splash__card" aria-hidden="true"></div>
+
+    <div class="splash__panel">
+      <div class="splash__meta">
+        <span class="mono">BOOT / 00</span>
+        <span class="mono">SHAOGUAN · GD</span>
+      </div>
+
+      <h2 class="splash__title">
+        <span class="splash__ghost" aria-hidden="true">MAOMAO</span>
+        <span class="splash__title-main">MAOMAO</span>
+      </h2>
+
+      <p class="splash__boot">{t.splash.boot}</p>
+      <p class="splash__sub mono">NETWORK TECHNOLOGY / 猫猫头网络科技</p>
+
+      <div class="splash__chips" aria-hidden="true">
+        <span class="mono">ALL IN ONE</span>
+        <span class="mono">EST. 2026</span>
+        <span class="mono">CN / GD</span>
+      </div>
+
+      <div class="splash__bar" data-bar aria-hidden="true">
+        {Array.from({ length: 10 }).map(() => <i data-seg></i>)}
+        <span class="splash__pct" data-pct>000</span>
+      </div>
+
+      <div class="splash__foot">
+        <span class="mono">{t.ux.loading}</span>
+        <span class="mono splash__hint">SCROLL · TAP · ENTER</span>
+      </div>
+    </div>
+
+    <div class="splash__sticker" data-sticker aria-hidden="true">
+      <img src="/img/mascot/tible-happy.webp" alt="" width="150" height="150" decoding="async" />
+      <span class="splash__sticker-tape" aria-hidden="true"></span>
+    </div>
+  </div>
+
+  <span class="splash__strap mono" aria-hidden="true">SYSTEM BOOT · MAOMAO NETWORK TECHNOLOGY · ALL IN ONE</span>
+
+  <span class="splash__corner splash__corner--tl mono" aria-hidden="true">01 / SPLASH</span>
+  <span class="splash__corner splash__corner--br mono" aria-hidden="true">MIBO-01 · ONLINE</span>
+  <span class="splash__corner splash__corner--tr mono" aria-hidden="true">© 2026</span>
+  <span class="splash__corner splash__corner--bl mono" aria-hidden="true">91440200MAKT9DRH5P</span>
+</div>
+
+<style>
+  .splash {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: var(--cream);
+    overflow: hidden;
+    isolation: isolate;
+    /* 无 JS 时也必须自己退场 */
+    animation: splashAuto 500ms var(--ease-out) 2.8s forwards;
+  }
+
+  /* 退场时底色立刻变透明：让色块滑开时直接露出真正的页面，而不是一块奶油白 */
+  .splash.is-done {
+    animation: splashFade 560ms 560ms forwards;
+    background-color: transparent;
+    transition: background-color 180ms linear;
+    pointer-events: none;
+  }
+
+  @keyframes splashFade {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  @keyframes splashAuto {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* ---------------- 底层：半调网点 ---------------- */
+  .splash__dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(var(--ink) 1.1px, transparent 1.1px);
+    background-size: 13px 13px;
+    opacity: 0.07;
+    transform: scale(1.02);
+    animation: dotsDrift 6s linear infinite;
+  }
+
+  @keyframes dotsDrift {
+    to {
+      background-position: 13px 13px;
+    }
+  }
+
+  /* ---------------- 斜切色块 ---------------- */
+  .splash__slab {
+    position: absolute;
+    will-change: transform;
+  }
+
+  .splash__slab--a {
+    left: -14%;
+    top: -20%;
+    width: 74%;
+    height: 150%;
+    background: var(--ink);
+    transform: skewX(-9deg) translateX(-108%);
+    animation: slabIn 620ms var(--ease-out) 60ms forwards;
+    transition: transform 760ms var(--ease-out);
+  }
+
+  .splash__slab--b {
+    right: -18%;
+    top: -26%;
+    width: 46%;
+    height: 160%;
+    background: var(--orange);
+    transform: skewX(-9deg) translateX(112%);
+    animation: slabIn 640ms var(--ease-out) 140ms forwards;
+    transition: transform 760ms var(--ease-out);
+  }
+
+  @keyframes slabIn {
+    to {
+      transform: skewX(-9deg) translateX(0);
+    }
+  }
+
+  .splash__stripes {
+    position: absolute;
+    left: 50%;
+    bottom: -6%;
+    width: 140%;
+    height: 46px;
+    transform: translateX(-50%) rotate(-7deg);
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--ink) 0 14px,
+      transparent 14px 28px
+    );
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  /* ---------------- 主视觉卡片 ---------------- */
+  .splash__stage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: clamp(1.5rem, 5vw, 4rem);
+  }
+
+  .splash__panel {
+    position: relative;
+    width: min(560px, 86vw);
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    box-shadow: 10px 10px 0 var(--ink);
+    padding: clamp(1.1rem, 2.6vw, 1.9rem);
+    transform: translateY(18px) rotate(-2.2deg);
+    opacity: 0;
+    animation: panelIn 520ms var(--ease-out) 260ms forwards;
+    transition:
+      transform 620ms var(--ease-out),
+      opacity 400ms var(--ease-out);
+    z-index: 2;
+  }
+
+  @keyframes panelIn {
+    to {
+      transform: translateY(0) rotate(-2.2deg);
+      opacity: 1;
+    }
+  }
+
+  /* 背面第二张卡：交叠用的 */
+  .splash__card {
+    position: absolute;
+    width: min(500px, 78vw);
+    height: 44%;
+    background-color: var(--cream);
+    background-image: repeating-linear-gradient(-45deg, var(--ink-08) 0 1px, transparent 1px 9px);
+    border: 2px solid var(--ink);
+    transform: translate(30px, -34px) rotate(5deg);
+    opacity: 0;
+    animation: cardIn 560ms var(--ease-out) 180ms forwards;
+    z-index: 1;
+  }
+
+  @keyframes cardIn {
+    to {
+      transform: translate(26px, -30px) rotate(5deg);
+      opacity: 1;
+    }
+  }
+
+  /* 左边缘竖排条 */
+  .splash__strap {
+    position: absolute;
+    left: clamp(0.9rem, 3vw, 1.8rem);
+    top: 50%;
+    transform: translateY(-50%) rotate(180deg);
+    writing-mode: vertical-rl;
+    font-size: 0.5rem;
+    letter-spacing: 0.32em;
+    color: var(--cream);
+    opacity: 0.55;
+    z-index: 4;
+    white-space: nowrap;
+  }
+
+  .splash__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--ink-38);
+    font-size: 0.5rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--ink-20);
+  }
+
+  .splash__title {
+    position: relative;
+    margin: 0.9rem 0 0;
+    font-family: var(--font-latin), var(--font-cjk);
+    font-weight: 900;
+    font-size: clamp(2.6rem, 8.4vw, 4.4rem);
+    line-height: 0.84;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+  }
+
+  /* 元素共享：本体与橙色重影共框，错位 6px */
+  .splash__ghost {
+    position: absolute;
+    inset: 0;
+    color: var(--orange);
+    transform: translate(6px, 5px);
+    z-index: -1;
+    clip-path: inset(0 0 0 0);
+  }
+
+  .splash__title-main {
+    position: relative;
+    display: block;
+    color: var(--ink);
+  }
+
+  .splash__boot {
+    margin: 0.7rem 0 0;
+    font-size: clamp(0.8125rem, 1.1vw, 0.9375rem);
+    line-height: 1.55;
+    color: var(--ink-90);
+    letter-spacing: 0.01em;
+    font-weight: 500;
+  }
+
+  .splash__sub {
+    margin-top: 0.4rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.16em;
+    color: var(--ink-56);
+  }
+
+  .splash__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .splash__chips span {
+    font-size: 0.5rem;
+    padding: 0.3em 0.5em;
+    border: 1px solid var(--ink-20);
+    color: var(--ink-56);
+  }
+
+  .splash__chips span:first-child {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--cream);
+  }
+
+  /* ---------------- 分段进度 ---------------- */
+  .splash__bar {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    margin-top: 1.2rem;
+    height: 14px;
+  }
+
+  .splash__pct {
+    position: absolute;
+    right: 0;
+    top: -1.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    color: var(--orange);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .splash__bar i {
+    background: var(--ink-12);
+    transition:
+      background-color 160ms linear,
+      transform 160ms var(--ease-out);
+    transform-origin: bottom;
+  }
+
+  .splash__bar i[data-on] {
+    background: var(--orange);
+  }
+
+  .splash__bar i[data-on]:last-child, /* 无意义占位，防止样式合并 */
+  .splash__bar i[data-on] {
+    transform: scaleY(1);
+  }
+
+  .splash__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.9rem;
+    color: var(--ink-38);
+    font-size: 0.5rem;
+  }
+
+  .splash__hint {
+    color: var(--orange);
+    animation: hintBlink 1.4s steps(2, end) infinite;
+  }
+
+  @keyframes hintBlink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  /* ---------------- 贴纸（与卡片交叠） ---------------- */
+  .splash__sticker {
+    position: absolute;
+    right: clamp(-10px, 4vw, 60px);
+    bottom: clamp(6%, 12vh, 18%);
+    width: clamp(112px, 15vw, 178px);
+    padding: 8px;
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    box-shadow: 7px 7px 0 var(--orange);
+    transform: rotate(9deg) translateY(26px) scale(0.9);
+    opacity: 0;
+    animation: stickerIn 480ms cubic-bezier(0.2, 1.5, 0.4, 1) 520ms forwards;
+    transition:
+      transform 620ms var(--ease-out),
+      opacity 500ms var(--ease-out);
+    z-index: 3;
+    will-change: transform;
+  }
+
+  @keyframes stickerIn {
+    to {
+      transform: rotate(9deg) translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .splash__sticker img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .splash__sticker-tape {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    width: 54px;
+    height: 20px;
+    transform: translateX(-50%) rotate(-4deg);
+    background: color-mix(in srgb, var(--orange) 32%, var(--cream));
+    border: 1px solid color-mix(in srgb, var(--orange) 60%, var(--ink));
+    opacity: 0.92;
+  }
+
+  /* ---------------- 四角标 ---------------- */
+  .splash__corner {
+    position: absolute;
+    font-size: 0.5rem;
+    letter-spacing: 0.16em;
+    color: var(--ink-38);
+    z-index: 4;
+    mix-blend-mode: normal;
+  }
+
+  .splash__corner--tl {
+    top: clamp(0.9rem, 3vw, 1.8rem);
+    left: clamp(0.9rem, 3vw, 1.8rem);
+    color: var(--cream);
+  }
+
+  .splash__corner--tr {
+    top: clamp(0.9rem, 3vw, 1.8rem);
+    right: clamp(0.9rem, 3vw, 1.8rem);
+    color: var(--ink);
+    opacity: 0.72;
+  }
+
+  .splash__corner--bl {
+    bottom: clamp(0.9rem, 3vw, 1.8rem);
+    left: clamp(0.9rem, 3vw, 1.8rem);
+    color: var(--cream);
+  }
+
+  .splash__corner--br {
+    bottom: clamp(0.9rem, 3vw, 1.8rem);
+    right: clamp(0.9rem, 3vw, 1.8rem);
+    padding: 0.25em 0.5em;
+    background: var(--ink);
+    color: var(--cream);
+  }
+
+  /* ---------------- 退场 ---------------- */
+  /* 注意：入场用了 animation + forwards，所以退场也必须用 animation，
+     否则 fill-mode 会盖掉 class 上的 transform，动画根本不会播。 */
+  .splash.is-done .splash__slab--a {
+    animation: slabOutA 780ms var(--ease-out) forwards;
+  }
+
+  .splash.is-done .splash__slab--b {
+    animation: slabOutB 780ms var(--ease-out) forwards;
+  }
+
+  .splash.is-done .splash__panel {
+    animation: panelOut 620ms var(--ease-out) forwards;
+  }
+
+  .splash.is-done .splash__card {
+    animation: cardOut 620ms var(--ease-out) forwards;
+  }
+
+  @keyframes slabOutA {
+    to {
+      transform: skewX(-9deg) translateX(-122%);
+    }
+  }
+
+  @keyframes slabOutB {
+    to {
+      transform: skewX(-9deg) translateX(126%);
+    }
+  }
+
+  @keyframes panelOut {
+    to {
+      transform: translateY(-42px) rotate(-8deg) scale(0.92);
+      opacity: 0;
+    }
+  }
+
+  @keyframes cardOut {
+    to {
+      transform: translateY(-58px) rotate(9deg) scale(0.9);
+      opacity: 0;
+    }
+  }
+
+  .splash.is-done .splash__stripes {
+    opacity: 0;
+    transition: opacity 400ms;
+  }
+
+  .splash.is-done .splash__corner {
+    opacity: 0;
+    transition: opacity 240ms;
+  }
+
+  .splash.is-done .splash__dots {
+    opacity: 0;
+    transition: opacity 300ms;
+  }
+
+  /* ---------------- 移动端 ---------------- */
+  @media (max-width: 640px) {
+    .splash__title {
+      font-size: clamp(2.2rem, 13vw, 3rem);
+    }
+
+    .splash__panel {
+      width: 84vw;
+      box-shadow: 7px 7px 0 var(--ink);
+    }
+
+    .splash__card {
+      width: 74vw;
+      height: 40%;
+    }
+
+    .splash__sticker {
+      right: -6px;
+      bottom: 18%;
+      width: 104px;
+      box-shadow: 5px 5px 0 var(--orange);
+    }
+
+    .splash__slab--a {
+      width: 88%;
+    }
+
+    .splash__slab--b {
+      width: 40%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .splash {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  (() => {
+    const el = document.querySelector<HTMLElement>('[data-splash]');
+    if (!el) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      el.remove();
+      document.documentElement.classList.add('is-ready');
+      return;
+    }
+
+    const segs = Array.from(el.querySelectorAll<HTMLElement>('[data-seg]'));
+    const pct = el.querySelector<HTMLElement>('[data-pct]');
+    let done = false;
+
+    /* tible 贴纸 → 导航 logo：共享元素飞行 */
+    const flySticker = () => {
+      const sticker = el.querySelector<HTMLElement>('[data-sticker]');
+      const target = document.querySelector<HTMLElement>('.brand__mark');
+      if (!sticker || !target) return;
+
+      // 入场动画带 forwards，会盖掉内联 transform，先摘掉
+      sticker.style.animation = 'none';
+      const a = sticker.getBoundingClientRect();
+      const b = target.getBoundingClientRect();
+      const dx = b.left + b.width / 2 - (a.left + a.width / 2);
+      const dy = b.top + b.height / 2 - (a.top + a.height / 2);
+      const scale = Math.max(0.12, b.width / a.width);
+
+      // 到位后溶解掉，避免和导航 logo 重影
+      sticker.style.transition = 'transform 660ms cubic-bezier(.16,1,.3,1), opacity 260ms 420ms linear';
+      sticker.style.transform = `translate(${dx}px, ${dy}px) scale(${scale}) rotate(0deg)`;
+      sticker.style.opacity = '0';
+    };
+
+    const close = () => {
+      if (done) return;
+      done = true;
+      flySticker();
+      el.classList.add('is-done');
+      document.documentElement.classList.add('is-ready');
+      window.setTimeout(() => el.remove(), 1000);
+    };
+
+    /* 分段推进：有一点不均匀的节奏，像在自检 */
+    const rhythm = [90, 70, 120, 60, 150, 80, 60, 130, 70, 90];
+    let i = 0;
+    const step = () => {
+      if (done) return;
+      if (i >= segs.length) {
+        window.setTimeout(close, 140);
+        return;
+      }
+      segs[i].setAttribute('data-on', '');
+      if (pct) pct.textContent = String(Math.round(((i + 1) / segs.length) * 100)).padStart(3, '0');
+      const wait = rhythm[i] ?? 100;
+      i += 1;
+      window.setTimeout(step, wait);
+    };
+    window.setTimeout(step, 380);
+
+    /* 滑动 / 触摸 / 点击 / 按键都可以把序列推到终点 */
+    const rush = () => {
+      if (done) return;
+      segs.forEach((s) => s.setAttribute('data-on', ''));
+      if (pct) pct.textContent = '100';
+      window.setTimeout(close, 80);
+    };
+    ['wheel', 'touchstart', 'touchmove', 'keydown', 'click', 'pointerdown'].forEach((ev) =>
+      window.addEventListener(ev, rush, { once: true, passive: true })
+    );
+
+    /* 兜底：最多 2.6s 也要走 */
+    window.setTimeout(close, 2600);
+  })();
+</script>

@@ -1,0 +1,62 @@
+---
+import type { Dict } from '../../i18n';
+import Nav from '../Nav.astro';
+import Footer from '../Footer.astro';
+import Hero from '../sections/Hero.astro';
+import Claim from '../sections/Claim.astro';
+import Capability from '../sections/Capability.astro';
+import Method from '../sections/Method.astro';
+import Mascot from '../sections/Mascot.astro';
+import Why from '../sections/Why.astro';
+import Process from '../sections/Process.astro';
+import Team from '../sections/Team.astro';
+import Location from '../sections/Location.astro';
+import Contact from '../sections/Contact.astro';
+import MascotPeek from '../mascot/MascotPeek.tsx';
+import NarrativeRail from '../nav/NarrativeRail.tsx';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+---
+
+<Nav t={t} />
+
+<NarrativeRail
+  client:idle
+  chapters={t.chapters}
+  ariaLabel={t.ux.sectionNav}
+  mascotAlt={t.mascot.companion.alt}
+  mascot={{
+    idle: '/img/mascot/tible-idle.webp',
+    happy: '/img/mascot/tible-happy.webp',
+    sleep: '/img/mascot/tible-sleep.webp',
+    alert: '/img/mascot/tible-alert.webp',
+  }}
+/>
+
+<main id="main">
+  <Hero t={t} />
+  <Claim t={t} />
+  <Capability t={t} />
+  <Method t={t} />
+  <Mascot t={t} />
+  <Why t={t} />
+  <Process t={t} />
+  <Team t={t} />
+  <Location t={t} />
+  <Contact t={t} />
+</main>
+
+<Footer t={t} />
+
+<MascotPeek
+  client:idle
+  image="/img/mascot/hiromi-peek.webp"
+  alt={t.mascot.alt}
+  closeLabel={t.ux.close}
+  href={t.path.mascot}
+  cta={t.ux.peek.cta}
+  bubble={t.ux.peek.bubble}
+/>

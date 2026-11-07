@@ -1,0 +1,480 @@
+---
+import type { Dict } from '../../i18n';
+import GlobeToMap from '../map/GlobeToMap.tsx';
+import SectionField from '../ui/SectionField.astro';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const l = t.location;
+---
+
+<section class="loc on-dark" id="location">
+  <SectionField no={l.no} tone="dark" align="left" />
+
+  <div class="shell loc__head">
+    <div class="loc__meta" data-anim="fade">
+      <span class="mono loc__no">{l.no}</span>
+      <span class="loc__rule" aria-hidden="true"></span>
+      <span class="mono">{l.label}</span>
+    </div>
+
+    <div class="loc__intro">
+      <h2 class="h2 loc__title" data-stream data-anim="fade" data-delay="0.05">{l.title}</h2>
+      <p class="lead loc__lede" data-anim="fade" data-delay="0.1">{l.lede}</p>
+    </div>
+
+    <dl class="loc__chips" data-anim="stagger">
+      {
+        l.chips.map((c) => (
+          <div>
+            <dt class="mono">{c.k}</dt>
+            <dd>{c.v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+
+  <div class="loc__track">
+    <div class="loc__pin">
+      <div class="loc__frame">
+        <GlobeToMap
+          client:visible
+          label={l.hint}
+          coordinates={l.coordinates}
+          fail={l.fail}
+          aria={l.aria}
+          attribution={l.attribution}
+        />
+      </div>
+
+      <p class="loc__caption mono-sm">{l.caption}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .loc {
+    position: relative;
+    background: #141210;
+    color: var(--ink);
+    padding-top: clamp(4rem, 8vw, 7rem);
+    overflow: clip;
+  }
+
+  .loc__head {
+    display: grid;
+    gap: clamp(1.25rem, 3vw, 2rem);
+    padding-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .loc__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: rgba(255, 249, 241, 0.45);
+  }
+
+  .loc__no {
+    color: var(--orange);
+  }
+
+  .loc__rule {
+    width: clamp(28px, 5vw, 64px);
+    height: 1px;
+    background: rgba(255, 249, 241, 0.24);
+  }
+
+  .loc__intro {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .loc__title {
+    max-width: 20ch;
+  }
+
+  .loc__lede {
+    max-width: 46ch;
+    color: rgba(255, 249, 241, 0.6);
+  }
+
+  .loc__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    border-top: 1px solid rgba(255, 249, 241, 0.16);
+    padding-top: 1.25rem;
+  }
+
+  .loc__chips dt {
+    color: rgba(255, 249, 241, 0.38);
+    font-size: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .loc__chips dd {
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  /* sticky 舞台：滚动驱动「地球 → 地图」 */
+  .loc__track {
+    position: relative;
+    height: 200vh;
+  }
+
+  .loc__pin {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+    padding-inline: var(--gutter);
+    padding-block: clamp(1rem, 3vh, 2rem);
+  }
+
+  .loc__frame {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    border: 1px solid rgba(255, 249, 241, 0.14);
+    overflow: hidden;
+  }
+
+  .loc__caption {
+    color: rgba(255, 249, 241, 0.42);
+    text-align: center;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    font-size: 0.625rem;
+  }
+
+  @media (max-width: 720px) {
+    .loc__track {
+      height: 170vh;
+    }
+    .loc__caption {
+      font-size: 0.5625rem;
+      line-height: 1.6;
+    }
+  }
+</style>
+
+<style is:global>
+  .globe {
+    position: absolute;
+    inset: 0;
+  }
+
+  .globe__stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(120% 90% at 50% 45%, #1c1a17 0%, #141210 62%);
+  }
+
+  .globe__orbit {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: min(62vh, 62vw);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border: 1px dashed rgba(255, 249, 241, 0.1);
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .globe__globe {
+    position: absolute;
+    inset: 0;
+    opacity: 1;
+    transition: opacity 720ms var(--ease-out);
+  }
+
+  .globe__globe[data-dim='true'] {
+    opacity: 0;
+  }
+
+  .globe__globe canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Cesium 注入的容器：去掉自带背景与 UI 边框，让地球浮在深色底上 */
+  .globe__globe .cesium-viewer,
+  .globe__globe .cesium-viewer-cesiumWidgetContainer,
+  .globe__globe .cesium-widget,
+  .globe__globe .cesium-widget canvas {
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+  }
+
+  .globe__globe .cesium-viewer-bottom,
+  .globe__globe .cesium-viewer-toolbar,
+  .globe__globe .cesium-viewer-animationContainer,
+  .globe__globe .cesium-viewer-timelineContainer {
+    display: none !important;
+  }
+
+  /* 懒加载期间：先用离线烘的球体海报顶着，Cesium 就绪后淡出 */
+  .globe__poster {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    top: 50%;
+    width: min(64vh, 64vw);
+    height: auto;
+    transform-origin: center;
+    opacity: 0;
+    transition:
+      opacity 900ms var(--ease-out),
+      transform 220ms linear;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 40px 90px rgba(0, 0, 0, 0.55));
+  }
+
+  .globe__poster[data-show='true'] {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .globe__poster {
+      transition: none;
+    }
+  }
+
+  .globe__map {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 900ms var(--ease-out);
+    filter: saturate(0.66) sepia(0.16) contrast(1.04) brightness(1.02);
+    pointer-events: none;
+  }
+
+  .globe__map[data-show='true'] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .globe__mapmarker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 400ms var(--ease-out);
+    will-change: transform;
+  }
+
+  .globe__mapmarker[data-show='true'] {
+    opacity: 1;
+  }
+
+  .globe__mapmarker img {
+    display: block;
+    width: 64px;
+    height: auto;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+  }
+
+  /* 放在左下角：顶部会被固定导航压住 */
+  .globe__hud {
+    position: absolute;
+    z-index: 4;
+    left: clamp(0.75rem, 2vw, 1.5rem);
+    bottom: clamp(0.75rem, 2vw, 1.25rem);
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: rgba(255, 249, 241, 0.55);
+    pointer-events: none;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  }
+
+  .globe__hud-label {
+    color: var(--orange);
+    font-size: 0.5rem;
+  }
+
+  .globe__hud-coords,
+  .globe__hud-pct {
+    font-size: 0.5rem;
+  }
+
+  .globe__hud-pct {
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 249, 241, 0.32);
+  }
+
+  /* 缩放按钮（三维与兜底 2D 通用） */
+  .globe__zoom {
+    position: absolute;
+    z-index: 4;
+    right: clamp(0.75rem, 2vw, 1.5rem);
+    bottom: clamp(3.4rem, 5vw, 4.2rem);
+    display: grid;
+    gap: 1px;
+    border: 1px solid rgba(255, 249, 241, 0.2);
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(20, 18, 16, 0.6);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 300ms var(--ease-out),
+      visibility 300ms;
+  }
+
+  .globe__zoom[data-show='true'] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .globe__zoom-btn {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 249, 241, 0.8);
+    cursor: pointer;
+    transition:
+      background-color 200ms var(--ease-out),
+      color 200ms var(--ease-out);
+  }
+
+  .globe__zoom-btn + .globe__zoom-btn {
+    border-top: 1px solid rgba(255, 249, 241, 0.16);
+  }
+
+  .globe__zoom-btn:hover {
+    background: var(--orange);
+    color: var(--cream);
+  }
+
+  .globe__loading {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    bottom: 12%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(20, 18, 16, 0.55);
+    color: rgba(255, 249, 241, 0.72);
+    font-size: 0.5625rem;
+    letter-spacing: 0.14em;
+    text-transform: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 300ms var(--ease-out);
+    pointer-events: none;
+  }
+
+  .globe__loading[data-show='true'] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* 兜底 2D 地图阶段：天地图自己的 logo 在左下角，把 HUD 抬起来别盖住 */
+  .globe[data-phase='map'] .globe__hud {
+    bottom: clamp(3.5rem, 5vw, 4.5rem);
+  }
+
+  /* 审图号：法规要求随图标注，固定显示，不随进度变化 */
+  .globe__hud-attr {
+    margin-left: 0.35rem;
+    padding-left: 0.9rem;
+    border-left: 1px solid rgba(255, 249, 241, 0.22);
+    font-size: 0.5rem;
+    letter-spacing: 0.06em;
+    color: rgba(255, 249, 241, 0.62);
+    text-transform: none;
+  }
+
+  @media (max-width: 720px) {
+    .globe__hud {
+      flex-wrap: wrap;
+      gap: 0.35rem 0.9rem;
+      max-width: 82%;
+    }
+
+    .globe__hud-attr {
+      margin-left: 0;
+      padding-left: 0;
+      border-left: 0;
+      width: 100%;
+    }
+  }
+
+  .globe__open {
+    position: absolute;
+    z-index: 4;
+    right: clamp(0.75rem, 2vw, 1.5rem);
+    bottom: clamp(0.75rem, 2vw, 1.25rem);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0.5rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 249, 241, 0.72);
+    background: rgba(20, 18, 16, 0.6);
+    border: 1px solid rgba(255, 249, 241, 0.2);
+    border-radius: 999px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 300ms var(--ease-out),
+      visibility 300ms,
+      background-color 200ms var(--ease-out);
+    backdrop-filter: blur(6px);
+  }
+
+  .globe__open[data-show='true'] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .globe__open:hover {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--cream);
+  }
+
+  .globe__fail {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 28ch;
+    text-align: center;
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    color: rgba(255, 249, 241, 0.6);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .globe__globe,
+    .globe__map {
+      transition-duration: 1ms;
+    }
+  }
+</style>

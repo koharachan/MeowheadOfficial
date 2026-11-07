@@ -1,0 +1,263 @@
+---
+import type { Dict } from '../../i18n';
+import SectionField from '../ui/SectionField.astro';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const tm = t.team;
+---
+
+<section class="team section" id="team">
+  <SectionField no={tm.no} align="right" />
+
+  <div class="shell">
+    <header class="team__head">
+      <div class="team__meta" data-anim="fade">
+        <span class="mono team__no">{tm.no}</span>
+        <span class="team__rule" aria-hidden="true"></span>
+        <span class="mono">{tm.label}</span>
+      </div>
+
+      <div class="team__intro">
+        <h2 class="h2 team__title" data-stream data-anim="fade" data-delay="0.05">{tm.title}</h2>
+        <p class="lead team__lede" data-anim="fade" data-delay="0.1">{tm.lede}</p>
+      </div>
+    </header>
+
+    <ul class="team__grid" data-anim="stagger">
+      {
+        tm.members.map((m) => (
+          <li class="member">
+            <div class="member__top">
+              <span class="member__avatar">
+                <img src={m.avatar} alt="" width="96" height="96" loading="lazy" decoding="async" />
+              </span>
+              <span class="member__id">
+                <span class="mono member__no">{m.no}</span>
+                <span class="mono member__role">{m.role}</span>
+              </span>
+            </div>
+
+            {m.name && <p class="member__name">{m.name}</p>}
+
+            <a class="member__link" href={m.href} target="_blank" rel="noopener noreferrer">
+              <span class="member__handle">{m.handle}</span>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M7 17L17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+
+            <p class="member__duty">{m.duty}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="team__note mono-sm" data-anim="fade">{tm.note}</p>
+  </div>
+</section>
+
+<style>
+  .team {
+    position: relative;
+    background: var(--cream);
+    overflow: clip;
+  }
+
+  .team__head {
+    display: grid;
+    gap: clamp(1.25rem, 3vw, 2rem);
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .team__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: var(--ink-56);
+  }
+
+  .team__no {
+    color: var(--orange);
+  }
+
+  .team__rule {
+    width: clamp(28px, 5vw, 64px);
+    height: 1px;
+    background: var(--ink-20);
+  }
+
+  .team__intro {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .team__title {
+    max-width: 18ch;
+  }
+
+  .team__lede {
+    max-width: 46ch;
+  }
+
+  .team__grid {
+    display: grid;
+    gap: 0;
+    border-top: var(--hair);
+    border-left: var(--hair);
+  }
+
+  .member {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: clamp(1.25rem, 2.4vw, 2rem);
+    background: var(--surface-0);
+    transition: background-color 380ms var(--ease-out);
+    min-height: clamp(11rem, 18vw, 14rem);
+  }
+
+  .member::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 480ms var(--ease-out);
+  }
+
+  .member:hover {
+    background: var(--cream-2);
+  }
+
+  .member:hover::after {
+    transform: scaleX(1);
+  }
+
+  .member__top {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .member__avatar {
+    position: relative;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    padding: 5px;
+    border: 1px solid var(--ink-12);
+    border-radius: 12px;
+    background: var(--cream-2);
+    transition:
+      border-color 320ms var(--ease-out),
+      transform 420ms var(--ease-out);
+  }
+
+  .member__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    /* 是真人/本人的头像，就别压灰度了，直接用原色 */
+    border-radius: 8px;
+    transition: transform 420ms var(--ease-out);
+  }
+
+  .member:hover .member__avatar img {
+    transform: scale(1.04);
+  }
+
+  .member:hover .member__avatar {
+    border-color: var(--ink-20);
+    transform: translateY(-2px);
+  }
+
+  .member__id {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .member__no {
+    color: var(--ink-38);
+    font-size: 0.5rem;
+  }
+
+  .member__role {
+    color: var(--ink-56);
+    font-size: 0.5rem;
+  }
+
+  .member__name {
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .member__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: var(--font-mono);
+    font-size: clamp(0.875rem, 1.2vw, 1.0625rem);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink-20);
+    padding-bottom: 0.15em;
+    align-self: flex-start;
+    transition:
+      color 220ms var(--ease-out),
+      border-color 220ms var(--ease-out);
+  }
+
+  .member__link svg {
+    transition: transform 260ms var(--ease-out);
+  }
+
+  .member__link:hover {
+    color: var(--orange);
+    border-color: var(--orange);
+  }
+
+  .member__link:hover svg {
+    transform: translate(2px, -2px);
+  }
+
+  .member__duty {
+    margin-top: auto;
+    font-size: var(--fs-small);
+    color: var(--ink-56);
+    line-height: 1.75;
+    max-width: 30ch;
+  }
+
+  .team__note {
+    margin-top: 1.25rem;
+    color: var(--ink-38);
+    text-transform: none;
+    letter-spacing: 0.05em;
+    font-size: 0.625rem;
+  }
+
+  @media (min-width: 760px) {
+    .team__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .team__intro {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      align-items: end;
+      gap: 2rem;
+    }
+  }
+</style>

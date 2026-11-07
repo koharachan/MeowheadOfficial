@@ -1,0 +1,131 @@
+---
+import '../styles/global.css';
+import type { Lang } from '../i18n';
+import { getDict, LANGS, basePath, pathFor } from '../i18n';
+import Loader from '../components/Loader.astro';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** 用于 hreflang 与语言切换：另一语言下的同一页面路径 */
+  altPath?: string;
+  /** 首屏是否隐藏加载层（子页面仍需要） */
+  bodyClass?: string;
+}
+
+const { lang, title, description, altPath, bodyClass = '' } = Astro.props;
+const t = getDict(lang);
+
+const site = Astro.site ?? new URL('https://maomaotou.tech');
+const canonical = new URL(Astro.url.pathname, site).href;
+const isEn = lang === 'en';
+
+/* 三种语言一一对应：由当前路径推出 zh / yue / en 的同一页 */
+const base = basePath(Astro.url.pathname);
+const altHrefs = Object.fromEntries(LANGS.map((l) => [l, new URL(pathFor(l, base), site).href])) as Record<Lang, string>;
+const hreflangOf: Record<Lang, string> = { zh: 'zh-CN', yue: 'zh-HK', en: 'en' };
+const altLang = lang === 'en' ? 'zh-CN' : 'en';
+const resolvedAlt = altPath ?? pathFor(lang === 'zh' ? 'en' : 'zh', base);
+const altHref = new URL(resolvedAlt, site).href;
+
+const pageTitle = title ?? t.meta.title;
+const pageDesc = description ?? t.meta.description;
+const ogImage = new URL(isEn ? '/og/og-en.jpg' : '/og/og-zh.jpg', site).href;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: t.brand.nameFull,
+  alternateName: t.brand.roman,
+  url: site.href,
+  logo: new URL('/brand/mark_primary.svg', site).href,
+  email: 'hello@maomaotou.tech',
+  foundingDate: '2026-11-04',
+  taxID: '91440200MAKT9DRH5P',
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'CN',
+    addressRegion: '广东省',
+    addressLocality: '韶关市武江区',
+    streetAddress: '百旺西路 8 号 5 号厂房 B 区 F469 房',
+  },
+};
+---
+
+<!doctype html>
+<html lang={t.htmlLang} class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDesc} />
+    <meta name="keywords" content={t.meta.keywords} />
+    <link rel="canonical" href={canonical} />
+    {
+      LANGS.map((l) => (
+        <link rel="alternate" hreflang={hreflangOf[l]} href={altHrefs[l]} />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={new URL('/', site).href} />
+
+    <meta name="theme-color" content="#FFF9F1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={t.brand.nameFull} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={t.ogLocale} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={t.meta.ogAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDesc} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <link rel="stylesheet" href="/fonts/fonts.css" />
+    <link rel="preload" href="/fonts/noto-sans-sc-critical.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline>
+      document.documentElement.classList.remove('no-js');
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+
+  <body class={bodyClass} data-lang={lang}>
+    <a class="skip" href="#main">{t.ux.skip}</a>
+    <Loader t={t} />
+    <slot />
+    <script>
+      import '../scripts/motion';
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    z-index: 200;
+    transform: translate(-50%, -140%);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    transition: transform 160ms var(--ease-out);
+  }
+  .skip:focus-visible {
+    transform: translate(-50%, 0);
+  }
+</style>

@@ -1,0 +1,254 @@
+---
+import type { Dict } from '../i18n';
+import { LANGS, basePath, pathFor } from '../i18n';
+
+interface Props {
+  t: Dict;
+  isHome?: boolean;
+}
+const { t, isHome = true } = Astro.props;
+const f = t.footer;
+const isEn = t.lang === 'en';
+const base = isHome ? '' : t.path.home;
+const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
+---
+
+<footer class="foot" id="footer">
+  <div class="foot__field" aria-hidden="true" data-scrub data-scrub-y="-48">
+    <span class="foot__field-no">M</span>
+  </div>
+
+  <div class="shell">
+    <div class="foot__top">
+      <div class="foot__brand">
+        <img src="/brand/mark_reverse.svg" alt={t.brand.logoAlt} width="44" height="44" loading="lazy" decoding="async" data-scrub data-scrub-y="22" />
+        <div>
+          <p class="foot__name">{t.brand.nameFull}</p>
+          <p class="foot__roman mono-sm">{t.brand.roman}</p>
+        </div>
+      </div>
+
+      <p class="foot__tagline">{f.tagline}</p>
+    </div>
+
+    <div class="foot__mid">
+      {
+        f.columns.map((col) => (
+          <nav class="foot__col" aria-label={col.title}>
+            <p class="mono foot__col-title">{col.title}</p>
+            <ul>
+              {col.links.map((l) => (
+                <li>
+                  <a href={href(l.href)}>{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+
+      <div class="foot__col foot__col--legal">
+        <p class="mono foot__col-title">{isEn ? 'Filing' : '备案'}</p>
+        <ul>
+          <li>
+            <a href={f.icpHref} target="_blank" rel="noopener noreferrer">{f.icp}</a>
+          </li>
+          <li>
+            <a class="foot__police" href={f.policeHref} target="_blank" rel="noopener noreferrer">
+              <img src="/brand/beian.png" alt="" width="20" height="20" loading="lazy" decoding="async" />
+              <span>{f.police}</span>
+            </a>
+          </li>
+          <li class="foot__note">{f.note}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot__bottom">
+      <span class="mono-sm">{f.copyright}</span>
+      <div class="foot__langs">
+        {
+          LANGS.map((l) => (
+            <a
+              class:list={['foot__lang', { 'is-active': l === t.lang }]}
+              href={pathFor(l, basePath(Astro.url.pathname))}
+              hreflang={l === 'zh' ? 'zh-CN' : l === 'yue' ? 'zh-HK' : 'en'}
+            >
+              {t.langs.find((x) => x.code === l)?.label ?? l}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    position: relative;
+    background: #141210;
+    color: var(--cream);
+    padding-block: clamp(3rem, 6vw, 5rem) clamp(2rem, 4vw, 3rem);
+    overflow: clip;
+  }
+
+  .foot__police {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .foot__police img {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    opacity: 0.9;
+  }
+
+  .foot__field {
+    position: absolute;
+    inset: -10% 0;
+    pointer-events: none;
+  }
+
+  .foot__field-no {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-cjk);
+    font-size: clamp(10rem, 26vw, 22rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.06em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 249, 241, 0.07);
+    user-select: none;
+  }
+
+  .foot .shell {
+    position: relative;
+    z-index: 1;
+  }
+
+  .foot__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid rgba(255, 249, 241, 0.16);
+    flex-wrap: wrap;
+  }
+
+  .foot__brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .foot__brand img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .foot__name {
+    font-size: clamp(1rem, 1.4vw, 1.125rem);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+  }
+
+  .foot__roman {
+    color: rgba(255, 249, 241, 0.4);
+    margin-top: 0.35rem;
+    font-size: 0.5rem;
+  }
+
+  .foot__tagline {
+    color: rgba(255, 249, 241, 0.55);
+    font-size: var(--fs-small);
+    max-width: 24ch;
+    line-height: 1.7;
+  }
+
+  .foot__mid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-block: clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid rgba(255, 249, 241, 0.16);
+  }
+
+  .foot__col-title {
+    color: rgba(255, 249, 241, 0.35);
+    margin-bottom: 1rem;
+    font-size: 0.5rem;
+  }
+
+  .foot__col ul {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .foot__col a {
+    font-size: var(--fs-small);
+    color: rgba(255, 249, 241, 0.78);
+    transition: color 200ms var(--ease-out);
+  }
+
+  .foot__col a:hover {
+    color: var(--orange);
+  }
+
+  .foot__note {
+    font-size: 0.75rem;
+    color: rgba(255, 249, 241, 0.38);
+    line-height: 1.7;
+    max-width: 30ch;
+  }
+
+  .foot__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    color: rgba(255, 249, 241, 0.4);
+    flex-wrap: wrap;
+  }
+
+  .foot__langs {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .foot__lang {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    color: rgba(255, 249, 241, 0.62);
+    border-bottom: 1px solid transparent;
+    padding-bottom: 0.1em;
+    transition:
+      color 200ms var(--ease-out),
+      border-color 200ms var(--ease-out);
+  }
+
+  .foot__lang.is-active {
+    color: var(--cream);
+    border-color: rgba(255, 249, 241, 0.55);
+  }
+
+  .foot__lang:hover {
+    color: var(--orange);
+    border-color: var(--orange);
+  }
+
+  @media (min-width: 760px) {
+    .foot__mid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

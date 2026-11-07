@@ -1,0 +1,309 @@
+---
+import type { Dict } from '../../i18n';
+import ContactForm from '../forms/ContactForm.tsx';
+import SectionField from '../ui/SectionField.astro';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const c = t.contact;
+const isEn = t.lang === 'en';
+---
+
+<section class="contact" id="contact">
+  <SectionField no={c.no} align="left" />
+  <div class="shell">
+    <div class="contact__grid">
+      <div class="contact__copy">
+        <div class="contact__meta" data-anim="fade">
+          <span class="mono contact__no">{c.no}</span>
+          <span class="contact__rule" aria-hidden="true"></span>
+          <span class="mono">{c.label}</span>
+        </div>
+
+        <h2 class="h2 contact__title" data-stream data-anim="fade" data-delay="0.05">{c.title}</h2>
+        <p class="lead contact__lede" data-anim="fade" data-delay="0.1">{c.lede}</p>
+
+        <dl class="contact__facts" data-anim="stagger">
+          {
+            c.facts.map((f) => {
+              const raw = f.v.split('（')[0].trim();
+              const copyable = raw.includes('@') || /^[0-9A-Z]{18}$/.test(raw);
+              return (
+                <div class="fact">
+                  <dt class="mono">{f.k}</dt>
+                  <dd>
+                    {f.v}
+                    {copyable && (
+                      <button class="copy-btn" type="button" data-copy={raw} aria-label={'复制 ' + raw}>
+                        <span class="copy-btn__idle" aria-hidden="true">复制</span>
+                        <span class="copy-btn__done" aria-hidden="true">已复制</span>
+                      </button>
+                    )}
+                  </dd>
+                </div>
+              );
+            })
+          }
+        </dl>
+      </div>
+
+      <div class="contact__form" data-anim="fade" data-delay="0.08" data-scrub data-scrub-y="-34">
+        <ContactForm
+          client:visible
+          copy={c.form}
+          happyImage="/img/mascot/hiromi-happy.webp"
+          happyAlt={t.mascot.alt}
+          companionImage="/img/mascot/tible-happy.webp"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    position: relative;
+    padding-block: clamp(4.5rem, 10vw, 9rem);
+    background: var(--cream-2);
+    border-top: var(--hair);
+    overflow: clip;
+  }
+
+  .contact__grid {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 5rem);
+    align-items: start;
+  }
+
+  .contact__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: var(--ink-56);
+    margin-bottom: 1.25rem;
+  }
+
+  .contact__no {
+    color: var(--orange);
+  }
+
+  .contact__rule {
+    width: clamp(28px, 5vw, 64px);
+    height: 1px;
+    background: var(--ink-20);
+  }
+
+  .contact__title {
+    max-width: 18ch;
+    margin-bottom: 1.25rem;
+  }
+
+  .contact__lede {
+    max-width: 44ch;
+    margin-bottom: 2rem;
+  }
+
+  .contact__facts {
+    display: grid;
+    gap: 1.15rem;
+    border-top: var(--hair);
+    padding-top: 1.5rem;
+  }
+
+  .fact {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .fact dt {
+    color: var(--ink-38);
+    font-size: 0.5rem;
+  }
+
+  .fact dd {
+    font-size: var(--fs-small);
+    line-height: 1.7;
+    color: var(--ink-70);
+  }
+
+  @media (min-width: 960px) {
+    .contact__grid {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    }
+  }
+</style>
+
+<style is:global>
+  .form {
+    display: grid;
+    gap: 1.5rem;
+    background: var(--cream);
+    border: 1px solid var(--ink-12);
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+  }
+
+  .form__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+  }
+
+  .field__label {
+    color: var(--ink-38);
+    font-size: 0.5rem;
+  }
+
+  /* 无边框输入框：静止时 6% 的环，聚焦时内环收紧 + 外环橙色晕开，形成咬合 */
+  .field input,
+  .field textarea,
+  .field select {
+    width: 100%;
+    background: var(--surface-0);
+    border: 0;
+    padding: 0.7rem 0.85rem;
+    font-size: var(--fs-small);
+    color: var(--ink);
+    border-radius: 10px;
+    box-shadow: var(--ring-rest);
+    font-variant-numeric: tabular-nums;
+    transition:
+      box-shadow 220ms var(--ease-out),
+      background-color 220ms var(--ease-out);
+  }
+
+  .field select {
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .field__select {
+    position: relative;
+  }
+
+  .field__select::after {
+    content: '';
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-right: 1px solid var(--ink-56);
+    border-bottom: 1px solid var(--ink-56);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--ink-38);
+  }
+
+  .field input:focus,
+  .field textarea:focus,
+  .field select:focus {
+    outline: none;
+    background: var(--surface-0);
+    box-shadow: var(--ring-focus);
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 4.5rem;
+    line-height: 1.6;
+  }
+
+  .form__live {
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: var(--ink-38);
+    min-height: 1.2em;
+  }
+
+  .form__live[data-status='error'] {
+    color: var(--orange);
+  }
+
+  .form__submit {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0.95em 1.6em;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--cream);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color 260ms var(--ease-out),
+      border-color 260ms var(--ease-out);
+  }
+
+  .form__submit:hover {
+    background: var(--orange);
+    border-color: var(--orange);
+  }
+
+  .form-done {
+    display: grid;
+    gap: 1rem;
+    background: var(--cream);
+    border: 1px solid var(--ink-12);
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    justify-items: start;
+  }
+
+  .form-done__figures {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+
+  .form-done__hero {
+    width: clamp(110px, 22vw, 170px);
+    height: auto;
+  }
+
+  .form-done__tible {
+    width: clamp(44px, 8vw, 64px);
+    height: auto;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--ink-20);
+    padding: 0 0 0.15em;
+    font-size: var(--fs-small);
+    cursor: pointer;
+  }
+
+  .form-reset:hover {
+    color: var(--orange);
+    border-color: var(--orange);
+  }
+
+  @media (min-width: 560px) {
+    .form__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .field--wide {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

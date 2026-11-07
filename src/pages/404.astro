@@ -1,0 +1,211 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/ui/Button.astro';
+import TypedPoem from '../components/sys/TypedPoem.tsx';
+import { getDict } from '../i18n';
+
+const zh = getDict('zh');
+const en = getDict('en');
+const yue = getDict('yue');
+const nfZh = zh.notFound;
+const nfEn = en.notFound;
+const nfYue = yue.notFound;
+
+/* 404 诗 · B 版（冷静自嘲）。要换 A / C 版只改这两个数组即可。 */
+const poemZh = [
+  '这个地址查无此项。',
+  '是我这边少写了一段。',
+  '再点一次，说不定就有了。',
+  '她举着地图，在等你。',
+];
+
+const poemEn = [
+  "This address isn't on the list.",
+  'I forgot to build this one.',
+  'Try again, it might work.',
+  "She's standing there with the map.",
+];
+
+const poemYue = ['呢個地址查無此項。', '係我這邊漏寫咗一段。', '再㩒一次，話唔定就有喇。', '佢舉住地圖，喺度等你。'];
+---
+
+<Base lang="zh" title={`404 · ${zh.brand.name}`}>
+  <Nav t={zh} isHome={false} />
+
+  <main id="main" class="nf">
+    <section class="nf__hero">
+      <div class="shell nf__grid">
+        <div class="nf__copy">
+          <p class="mono nf__code">404</p>
+
+          <h1 class="h1 nf__title" data-lang="zh">{nfZh.title}</h1>
+          <h1 class="h1 nf__title" data-lang="en">{nfEn.title}</h1>
+          <h1 class="h1 nf__title" data-lang="yue">{nfYue.title}</h1>
+
+          <p class="body-text nf__body" data-lang="zh">{nfZh.body}</p>
+          <p class="body-text nf__body" data-lang="en">{nfEn.body}</p>
+          <p class="body-text nf__body" data-lang="yue">{nfYue.body}</p>
+
+          <div class="nf__actions" data-lang="zh">
+            <Button href={nfZh.home.href} label={nfZh.home.label} variant="solid" />
+            <Button href={nfZh.mascot.href} label={nfZh.mascot.label} variant="outline" />
+          </div>
+          <div class="nf__actions" data-lang="en">
+            <Button href={nfEn.home.href} label={nfEn.home.label} variant="solid" />
+            <Button href={nfEn.mascot.href} label={nfEn.mascot.label} variant="outline" />
+          </div>
+          <div class="nf__actions" data-lang="yue">
+            <Button href={nfYue.home.href} label={nfYue.home.label} variant="solid" />
+            <Button href={nfYue.mascot.href} label={nfYue.mascot.label} variant="outline" />
+          </div>
+        </div>
+
+        <figure class="nf__figure">
+          <img src="/img/mascot/hiromi-oops.webp" alt={nfZh.alt} width={560} height={560} fetchpriority="high" decoding="async" />
+        </figure>
+      </div>
+    </section>
+
+    <section class="nf__poem" id="poem">
+      <div class="shell">
+        <p class="mono nf__poem-label" aria-hidden="true">404 / POEM</p>
+
+        <TypedPoem
+          client:idle
+          linesZh={poemZh}
+          linesEn={poemEn}
+          linesYue={poemYue}
+          ariaLabel="404 诗：这个地址查无此项。是我这边少写了一段。再点一次，说不定就有了。她举着地图，在等你。"
+        />
+
+        <p class="nf__poem-hint mono-sm">
+          <span aria-hidden="true">TOKENIZED · 点击看全</span>
+          <a class="nf__egg" href="/418/">另外，这里有个茶壶 →</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer t={zh} isHome={false} />
+</Base>
+
+<script is:inline>
+  // 404 是单页，按路径前缀切中英（默认中文，无 JS 也读得通）
+  (function () {
+    var p = location.pathname;
+    var en = p.indexOf('/en/') === 0 || p === '/en';
+    var yue = p.indexOf('/yue/') === 0 || p === '/yue';
+    document.documentElement.dataset.locale = en ? 'en' : yue ? 'yue' : 'zh';
+  })();
+</script>
+
+<style>
+  [data-lang='en'] {
+    display: none;
+  }
+
+  [data-locale='en'] [data-lang='en'] {
+    display: revert;
+  }
+
+  [data-locale='en'] [data-lang='zh'],
+  [data-locale='en'] [data-lang='yue'],
+  [data-locale='yue'] [data-lang='zh'],
+  [data-locale='yue'] [data-lang='en'] {
+    display: none;
+  }
+
+  [data-locale='yue'] [data-lang='yue'] {
+    display: revert;
+  }
+
+  .nf__hero {
+    padding-top: clamp(110px, 16vh, 180px);
+    padding-bottom: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .nf__grid {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+
+  .nf__code {
+    color: var(--orange);
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .nf__title {
+    max-width: 14ch;
+  }
+
+  .nf__body {
+    margin-top: 1.25rem;
+    max-width: 42ch;
+  }
+
+  .nf__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 1.75rem;
+  }
+
+  .nf__figure {
+    margin: 0;
+    justify-self: center;
+    width: min(66vw, 380px);
+  }
+
+  .nf__figure img {
+    width: 100%;
+    height: auto;
+  }
+
+  .nf__poem {
+    padding-block: clamp(3rem, 7vw, 6rem);
+    background: var(--cream-2);
+    border-top: var(--hair);
+  }
+
+  .nf__poem-label {
+    color: var(--ink-38);
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .nf__poem-hint {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.3rem;
+    margin-top: clamp(1.5rem, 3vw, 2rem);
+    color: var(--ink-38);
+    font-size: 0.5625rem;
+    letter-spacing: 0.16em;
+  }
+
+  .nf__egg {
+    color: var(--ink-56);
+    text-transform: none;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--ink-20);
+    padding-bottom: 0.1em;
+    transition:
+      color 220ms var(--ease-out),
+      border-color 220ms var(--ease-out);
+  }
+
+  .nf__egg:hover {
+    color: var(--orange);
+    border-color: var(--orange);
+  }
+
+  @media (min-width: 900px) {
+    .nf__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+    }
+  }
+</style>
+

@@ -1,0 +1,590 @@
+import type { Dict } from './types';
+
+export const en: Dict = {
+  lang: 'en',
+  htmlLang: 'en',
+  ogLocale: 'en_US',
+  path: { home: '/en/', mascot: '/en/mascot/', blog: '/en/blog/', downloads: '/en/downloads/', legacy: '/en/ie/' },
+
+  downloads: {
+    label: 'RESOURCES',
+    title: 'Take what you need.',
+    lede: 'Logo, mascot, 3D model — as-is. Recolours, derivatives and commercial licensing: ask first.',
+    note: 'Hosted here. Direct download, no account.',
+    action: 'Download',
+    items: [
+      {
+        name: 'Logo pack',
+        href: '/downloads/maomaotou-logo-pack.zip',
+        format: 'ZIP · SVG / PNG',
+        size: '62 KB',
+        note: 'Five variants, horizontal lockup, app icon, 16–128px bitmaps, usage notes',
+      },
+      {
+        name: 'Mascot pack',
+        href: '/downloads/maomaotou-mascot-pack.zip',
+        format: 'ZIP · WebP',
+        size: '389 KB',
+        note: 'HIROMI in 7 states + tible in 4 states + head close-up, transparent',
+      },
+      {
+        name: '3D logo',
+        href: '/models/logo_3d.glb',
+        format: 'GLB · meshopt',
+        size: '131 KB',
+        note: '35,336 triangles, needs a meshopt decoder; uncompressed fallback in the same folder',
+      },
+      {
+        name: 'Brand board',
+        href: '/brand/proposal.png',
+        format: 'PNG · 2040×1960',
+        size: '227 KB',
+        note: 'One page with the whole system: mark, palette, variants, minimum sizes',
+      },
+      {
+        name: 'Site icons',
+        href: '/favicon.svg',
+        format: 'SVG / ICO / PNG',
+        size: '~60 KB',
+        note: 'favicon.svg, favicon.ico, apple-touch-icon, 192/512, maskable',
+      },
+    ],
+    licenseTitle: 'License',
+    license: [
+      'Everything on this page is MIT licensed: copy, modify, merge, publish, sell, sublicense.',
+      'The one condition: keep the copyright and permission notice (LICENSE in the repo root).',
+      'Provided as-is, without warranty of any kind.',
+      'Trademark is not part of the grant: build with it, but do not pass yourself off as us.',
+    ],
+  },
+
+  blog: {
+    label: 'BLOG',
+    title: 'Things we wrote down.',
+    lede: 'Engineering notes: the trade-offs we made, the traps we hit, and why we chose what we chose. No clients, no awards, no trend pieces.',
+    readUnit: 'min read',
+    toc: 'CONTENTS',
+    more: 'More posts',
+    top: 'Back to top',
+    license: 'Licensed CC BY 4.0 — reuse, remix and sell, with attribution.',
+    back: 'All posts',
+    all: 'Blog',
+    home: 'Back home',
+    note: 'Engineering notes only. No client information or undisclosed data.',
+  },
+
+  meta: {
+    title: 'MAOMAOTOU NETWORK TECHNOLOGY · From satellites to a single line of code',
+    description:
+      'MAOMAOTOU NETWORK TECHNOLOGY builds satellite communication terminals, software and system integration, applied AI and information security — delivered by one company, not three vendors.',
+    keywords:
+      'MAOMAOTOU, satellite communication terminal, software development, system integration, artificial intelligence, information security, Shaoguan Guangdong',
+    ogAlt: 'MAOMAOTOU NETWORK TECHNOLOGY — from satellites to a single line of code',
+  },
+
+  brand: {
+    name: 'MAOMAOTOU',
+    nameFull: 'MAOMAOTOU NETWORK TECHNOLOGY',
+    roman: 'MAOMAOTOU NETWORK TECHNOLOGY',
+    logoAlt: 'MAOMAOTOU logo: a black cat head with closed smiling eyes and a small orange triangular nose',
+    claim: 'all in one',
+  },
+
+  nav: {
+    links: [
+      { label: 'Capability', href: '#capability' },
+      { label: 'Method', href: '#method' },
+      { label: 'Mascot', href: '#mascot' },
+      { label: 'Why us', href: '#why' },
+      { label: 'Process', href: '#process' },
+      { label: 'Team', href: '#team' },
+      { label: 'Location', href: '#location' },
+      { label: 'Contact', href: '#contact' },
+    ],
+    cta: { label: 'Start a conversation', href: '#contact' },
+    menu: 'Menu',
+    close: 'Close',
+  },
+
+  langs: [
+    { code: 'zh', label: '中', name: 'Chinese' },
+    { code: 'yue', label: '粵', name: 'Cantonese' },
+    { code: 'en', label: 'EN', name: 'English' },
+  ],
+  langSwitch: { label: '中文', short: '中', href: '/' },
+
+  ux: {
+    skip: 'Skip to content',
+    loading: 'Loading',
+    loadingDone: 'Ready',
+    scroll: 'Scroll',
+    close: 'Close',
+    sectionNav: 'Section index',
+    peek: { bubble: 'Someone is waiting further down.', cta: 'Meet HIROMI' },
+  },
+
+  chapters: [
+    { id: 'hero', no: '01', label: 'Opening', short: 'Intro' },
+    { id: 'claim', no: '02', label: 'Claim', short: 'Claim' },
+    { id: 'capability', no: '03', label: 'Capability', short: 'Do' },
+    { id: 'method', no: '04', label: 'Method', short: 'Method' },
+    { id: 'mascot', no: '05', label: 'Mascot', short: 'Mascot' },
+    { id: 'why', no: '06', label: 'Why us', short: 'Why' },
+    { id: 'process', no: '07', label: 'Process', short: 'Flow' },
+    { id: 'team', no: '08', label: 'Team', short: 'Team' },
+    { id: 'location', no: '09', label: 'Location', short: 'Place' },
+    { id: 'contact', no: '10', label: 'Contact', short: 'Say hi' },
+  ],
+  splash: { boot: 'The doors are opening. Almost through.' },
+  hero: {
+    kicker: 'MAOMAOTOU NETWORK TECHNOLOGY · GUANGDONG',
+    lines: ['From satellites', 'to a single line.'],
+    lede:
+      'We build the terminal and we write the system that runs on it. Between hardware, software and security there is no third vendor.',
+    primary: { label: 'What we do', href: '#capability' },
+    secondary: { label: 'Talk to us', href: '#contact' },
+    specs: [
+      { k: 'Founded', v: '2026.11.04' },
+      { k: 'Capital', v: 'CNY 10,000,000' },
+      { k: 'Registered', v: 'Shaoguan, Guangdong' },
+    ],
+    caption: 'The mark on the first screen is a live 3D render that turns as you scroll.',
+    posterAlt: 'Static render of the MAOMAOTOU 3D mark',
+    sceneNote: 'LIVE WEBGL',
+    sceneNoteFallback: 'STATIC FALLBACK',
+  },
+
+  claim: {
+    no: '02',
+    label: 'CLAIM / ALL IN ONE',
+    lines: ['Not "hardware plus software".', 'One company.'],
+    body: [
+      '"All in one" is the delivery model: one contract, one team, one interface. No vendor seam between hardware, the system and the security.',
+      'The M above the mark has two peaks with a seam between them; together they make one head. Same job for us: turn separate parts into one thing.',
+    ],
+    notes: [
+      { k: 'M', v: 'two peaks are the ears, the valley is the seam' },
+      { k: 'all in one', v: 'two peaks forming one head' },
+    ],
+  },
+
+  capability: {
+    no: '03',
+    label: 'CAPABILITY',
+    title: 'Four lines, all inside our licence.',
+    lede:
+      'We only claim what is written on our business licence. No certificate, no promise. No past project, no example.',
+    items: [
+      {
+        code: 'S-01',
+        title: 'Satellite terminals',
+        summary: 'From the terminal unit to the data coming down from orbit.',
+        bullets: [
+          'Terminal design and small-batch manufacturing',
+          'Navigation, timing and positioning module integration',
+          'Remote-sensing data reception and business system integration',
+        ],
+      },
+      {
+        code: 'S-02',
+        title: 'Software & integration',
+        summary: 'Turning scattered systems into one production line.',
+        bullets: [
+          'Custom business systems, back office and data platforms',
+          'Legacy integration, data migration and API governance',
+          'Containerised deployment and observability',
+        ],
+      },
+      {
+        code: 'S-03',
+        title: 'Applied AI',
+        summary: 'Models inside the workflow, not inside the slide deck.',
+        bullets: [
+          'Model selection, on-premise deployment and fine-tuning',
+          'Retrieval-augmented knowledge bases and internal Q&A',
+          'Inference cost and latency optimisation',
+        ],
+      },
+      {
+        code: 'S-04',
+        title: 'Information security',
+        summary: 'Locking the door while writing the first line.',
+        bullets: [
+          'Secure development workflow and code auditing',
+          'Perimeter defence, log collection and auditing',
+          'Data classification, permissions and access control',
+        ],
+      },
+    ],
+    footnote: 'These capabilities map to our registered business scope. No certification or permit is implied.',
+  },
+
+  method: {
+    no: '04',
+    label: 'METHOD / THREE RINGS',
+    title: 'Make, build, keep — three rings, one fit.',
+    lede: 'Anyone can do one of them. The hard part is that the seams stay tight.',
+    rings: [
+      { code: 'RING 01', title: 'Make', body: 'It gets built. Enclosure, structure, pilot runs and factory testing are in our hands.' },
+      { code: 'RING 02', title: 'Build', body: 'It runs. The system on the terminal and the services behind it are written by the same people.' },
+      { code: 'RING 03', title: 'Keep', body: 'It keeps working. Launch is the start — training, operations and iteration stay with us.' },
+    ],
+    note: 'The overlap of the three rings is the actual product.',
+  },
+
+  mascot: {
+    no: '05',
+    label: 'MASCOT / HIROMI',
+    title: 'She is the human part of the system.',
+    body: [
+      'HIROMI is our mascot. She only shows up where you actually look: page loads, a submitted form, a 404, and the head that leans in at the end of the page.',
+      'She follows your cursor and changes expression when you poke her. If she is in the way, close her with the small cross.',
+    ],
+    cta: { label: 'Meet HIROMI', href: '/en/mascot/' },
+    alt: 'Ogata Hiromi, the catgirl mascot: black cat ears, cream sweater, small orange triangular nose, waving',
+    companion: {
+      name: 'tible',
+      roman: 'TIBLE',
+      label: 'The small one',
+      body: 'tible is the black cat head itself. It has no body and appears only in very small places: loading indicators, a badge next to a button, and the page you were not supposed to reach.',
+      alt: 'tible, the small mascot: a closed-eye smiling black cat head with an orange triangular nose',
+      image: '/img/mascot/tible-idle.webp',
+    },
+    states: [
+      { id: 'idle', label: 'Idle', image: '/img/mascot/hiromi-idle.webp', note: 'Standing. Doing nothing.' },
+      { id: 'wave', label: 'Hello', image: '/img/mascot/hiromi-wave.webp', note: 'First meeting.' },
+      { id: 'think', label: 'Thinking', image: '/img/mascot/hiromi-think.webp', note: 'Third minute without logs.' },
+      { id: 'happy', label: 'Happy', image: '/img/mascot/hiromi-happy.webp', note: 'The build passed.' },
+      { id: 'sleep', label: 'Sleepy', image: '/img/mascot/hiromi-sleep.webp', note: '2 a.m. in the server room.' },
+      { id: 'oops', label: 'Oops', image: '/img/mascot/hiromi-oops.webp', note: 'There is no page here.' },
+    ],
+  },
+
+  why: {
+    no: '06',
+    label: 'WHY US',
+    title: 'Three points. No inflation.',
+    items: [
+      {
+        no: 'A',
+        title: 'One company, one line of responsibility.',
+        body: 'Hardware, system and security ship from one side. If something breaks it is our problem, not a handoff.',
+      },
+      {
+        no: 'B',
+        title: 'We say what we do not do.',
+        body: 'We turn down work outside our scope and never sign numbers we cannot hit. Better to say "not this one" in the first meeting.',
+      },
+      {
+        no: 'C',
+        title: 'Every stage ships something that runs.',
+        body: 'No beautiful deck as a mid-project milestone. The proposal stage ships a running skeleton; the build stage ships a verifiable version every two weeks.',
+      },
+    ],
+  },
+
+  process: {
+    no: '07',
+    label: 'PROCESS',
+    title: 'Five steps, each with a deliverable.',
+    lede: 'What each stage costs, what it produces, and where you can stop.',
+    deliverableLabel: 'Deliverable',
+    steps: [
+      { no: '01', title: 'Align', body: 'Goals, boundaries and budget — including an explicit list of what we will not do.', deliverable: 'Scope note + not-doing list' },
+      { no: '02', title: 'Design', body: 'Stack, milestones and acceptance criteria, written down and signable.', deliverable: 'Technical plan + running skeleton' },
+      { no: '03', title: 'Build', body: 'Two-week iterations, each ending with something you can actually open.', deliverable: 'Working build + changelog' },
+      { no: '04', title: 'Verify', body: 'Performance, security and accessibility checked item by item, not by feel.', deliverable: 'Acceptance checklist + test report' },
+      { no: '05', title: 'Hand over', body: 'Source, documentation and runbook transferred in full. No black box.', deliverable: 'Source + docs + runbook' },
+    ],
+  },
+
+  team: {
+    no: '08',
+    label: 'TEAM',
+    title: 'Who to call, and for what.',
+    lede: 'The company is small. Signing, delivery, the technical call — one person each.',
+    members: [
+      {
+        no: '01',
+        role: 'Legal representative',
+        name: '',
+        handle: 'xiaoyanboke.cn',
+        href: 'https://xiaoyanboke.cn',
+        avatar: '/team/xiaoyan.png',
+        duty: 'Signing authority, corporate filings and compliance.',
+      },
+      {
+        no: '02',
+        role: 'Shareholder / CEO',
+        name: '',
+        handle: 'blog.meowhead.cn',
+        href: 'https://blog.meowhead.cn',
+        avatar: '/team/meowhead.png',
+        duty: 'Operations and delivery. Accountable for outcomes.',
+      },
+      {
+        no: '03',
+        role: 'Algorithm advisor',
+        name: '',
+        handle: 'luoaowoo.cn',
+        href: 'https://luoaowoo.cn',
+        avatar: '/team/luo.png',
+        duty: 'Outside review of model choice and algorithm design.',
+      },
+    ],
+    note: 'Public roles only; undisclosed collaborators are not listed.',
+  },
+  location: {
+    no: '09',
+    label: 'LOCATION',
+    title: 'From orbit, this is where we are.',
+    lede: 'No. 8 Baiwang West Road, Wujiang District, Shaoguan. Scroll down and fall from orbit to a door number.',
+    hint: 'Live satellite imagery · Tianditu',
+    attribution: 'Map approval GS（2026）4921',
+    chips: [
+      { k: 'Province', v: 'Guangdong' },
+      { k: 'City', v: 'Shaoguan' },
+      { k: 'District', v: 'Wujiang' },
+      { k: 'Postcode', v: '512026' },
+    ],
+    caption: 'Room F469, Zone B, Building 5, No. 8 Baiwang West Road, Wujiang District, Shaoguan, Guangdong (office use only)',
+    fail: 'The map could not load. Please use the address above.',
+    aria: 'Map of No. 8 Baiwang West Road, Wujiang District, Shaoguan',
+    coordinates: '113.5575 E / 24.7480 N',
+  },
+  contact: {
+    no: '10',
+    label: 'CONTACT',
+    title: 'Tell us what you need built. We reply faster than you expect.',
+    lede:
+      'No proposal needed for the first call. One sentence about the situation is enough — we will tell you whether it is doable, roughly how long, and roughly how much.',
+    facts: [
+      { k: 'Office', v: 'Room F469, Zone B, Building 5, No. 8 Baiwang West Road, Wujiang District, Shaoguan, Guangdong — office use only' },
+      { k: 'Unified social credit code', v: '91440200MAKT9DRH5P' },
+      { k: 'Email', v: 'hello@maomaotou.tech (placeholder address)' },
+      { k: 'Registered capital', v: 'CNY 10,000,000' },
+    ],
+    map: {
+      label: 'LOCATION',
+      caption: 'Room F469, Zone B, Building 5, No. 8 Baiwang West Road, Wujiang District, Shaoguan, Guangdong (office use only)',
+      fail: 'The map could not load. Use the address above, or search for "No. 8 Baiwang West Road, Wujiang District, Shaoguan".',
+      aria: 'Map showing the company office location, powered by Tianditu',
+      coordinates: '113.5575 E / 24.7480 N',
+    },
+    form: {
+      legend: 'Project enquiry',
+      name: 'Your name',
+      org: 'Company / team',
+      email: 'Email',
+      topic: 'What is it about',
+      topics: ['Satellite terminals', 'Software & integration', 'Applied AI', 'Information security', 'Something else'],
+      message: 'One sentence about the need',
+      submit: 'Send',
+      note: 'This is a demo form. Nothing is actually sent.',
+      successTitle: 'Got it.',
+      resetLabel: 'Send another',
+      successBody: 'This is a demo form and nothing was sent. In production this spot would hold our reply-time promise.',
+      error: 'Please fill in at least your name, email and a description.',
+      placeholder: {
+        name: 'e.g. Mr. Chen',
+        org: 'Optional',
+        email: 'name@company.com',
+        message: 'e.g. We need a satellite backhaul plus an on-site dashboard inside the plant, live in three months.',
+      },
+    },
+  },
+
+  footer: {
+    tagline: 'Hardware, software and security from one company.',
+    icp: 'Guangdong ICP filing (in progress)',
+    icpHref: 'https://beian.miit.gov.cn/',
+    police: 'Public security filing (in progress)',
+    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',
+    copyright: '© 2026 MAOMAOTOU NETWORK TECHNOLOGY (GUANGDONG) CO., LTD.',
+    note: 'No invented clients, awards, revenue or partners on this site.',
+    columns: [
+      {
+        title: 'Index',
+        links: [
+          { label: 'Capability', href: '#capability' },
+          { label: 'Method', href: '#method' },
+          { label: 'Process', href: '#process' },
+          { label: 'Contact', href: '#contact' },
+        ],
+      },
+      {
+        title: 'More',
+        links: [
+          { label: 'Mascot HIROMI', href: '/en/mascot/' },
+          { label: 'Blog', href: '/en/blog/' },
+          { label: 'Downloads', href: '/en/downloads/' },
+          { label: 'Millennium edition', href: '/en/ie/' },
+          { label: '中文', href: '/' },
+        ],
+      },
+    ],
+  },
+
+  teapot: {
+    label: '418 / I AM A TEAPOT',
+    title: "I'm a teapot.",
+    lines: ['I can pour tea.', 'I cannot pour coffee.', "That's not a joke. It's RFC 2324.", 'You may also pour nothing.'],
+    stamp: 'COFFEE REFUSED',
+    hint: 'Poke the pot.',
+    pour: 'Poured.',
+    home: { label: 'Back home', href: '/en/' },
+    mascot: { label: 'Meet HIROMI', href: '/en/mascot/' },
+  },
+  forbidden: {
+    label: '403 / FORBIDDEN',
+    titleCn: 'This door only opens in some regions.',
+    titleGlobal: 'This page needs a pass.',
+    bodyCn: 'This is an admin path. We do not expose it publicly.',
+    bodyGlobal: 'This is an admin path. It is open only to people holding credentials.',
+    home: { label: 'Back home', href: '/en/' },
+    mascot: { label: 'Meet HIROMI', href: '/en/mascot/' },
+    note: 'If you believe you should have access, write to hello@maomaotou.tech.',
+    regionNote: 'Note: this copy changes depending on the region your connection comes from.',
+  },
+  notFound: {
+    code: '404',
+    title: 'There is no page here.',
+    body: 'What you are looking for is not at this address. HIROMI is holding a hand-drawn map that points home.',
+    home: { label: 'Back home', href: '/en/' },
+    mascot: { label: 'Meet HIROMI', href: '/en/mascot/' },
+    alt: 'HIROMI holding a hand-drawn map with a confused expression',
+  },
+
+  mascotPage: {
+    chapters: [
+      { id: 'top', no: '01', label: 'Arrival', short: 'Intro' },
+      { id: 'file', no: '02', label: 'File', short: 'File' },
+      { id: 'personality', no: '03', label: 'Personality', short: 'Temper' },
+      { id: 'expressions', no: '04', label: 'Expressions', short: 'Faces' },
+      { id: 'usage', no: '05', label: 'Usage', short: 'Where' },
+      { id: 'tible', no: '06', label: 'tible', short: 'tible' },
+      { id: 'design', no: '07', label: 'Design', short: 'Notes' },
+      { id: 'play', no: '08', label: 'Play', short: 'Play' },
+    ],
+    meta: {
+      title: 'OGATA HIROMI · the mascot of MAOMAOTOU NETWORK TECHNOLOGY',
+      description:
+        'HIROMI is the mascot of MAOMAOTOU NETWORK TECHNOLOGY: a character file with six expressions, the rules for where she appears, and the design notes behind her.',
+    },
+    hero: {
+      kicker: 'CHARACTER FILE / 01',
+      name: 'OGATA HIROMI',
+      roman: '绪方 寻美 · OGATA HIROMI',
+      tagline: 'The part of the system that breathes.',
+      intro: [
+        'She is not decoration. She shows up at load, at failure, at success and in the quiet corners, carrying what copy should not have to.',
+        'Cat ears, black hair, cream sweater, and the same orange on her nose as the mark. One job: make the screen feel inhabited.',
+      ],
+      portraitAlt: 'Full-body illustration of HIROMI: cat ears, black hair, cream sweater, black shorts, cream socks and tail',
+      back: 'Back home',
+    },
+    file: {
+      label: 'FILE',
+      title: 'Basic parameters.',
+      rows: [
+        { k: 'Designation', v: 'HIROMI-01' },
+        { k: 'Role', v: 'Mascot, and chief of error reports' },
+        { k: 'Height', v: '2.5 heads' },
+        { k: 'Weight', v: 'One cat head' },
+        { k: 'Origin', v: 'Shaoguan, Guangdong' },
+        { k: 'Shipped', v: '2026.11' },
+      ],
+    },
+    personality: {
+      label: 'PERSONALITY',
+      title: 'Three rules.',
+      items: [
+        { no: '01', title: 'Falls asleep easily.', body: 'The server room is too quiet. She naps between racks. Do not blame her when a load takes a while.' },
+        { no: '02', title: 'Cannot stand a bare error.', body: 'A bug without logs does not count. That is why our services log structured events by default.' },
+        { no: '03', title: 'Never speaks, always looks.', body: 'She says everything with her ears and eyes, so you always know where you stand.' },
+      ],
+    },
+    expressions: {
+      label: 'EXPRESSIONS',
+      title: 'Six states are enough.',
+      lede: 'Her expressions decide where she can appear. One more expression is one more place she can be useful.',
+      items: [
+        { id: 'idle', name: 'Idle', note: 'Default. Standing, tail drifting.' },
+        { id: 'wave', name: 'Hello', note: 'First visit, form welcome, page entry.' },
+        { id: 'think', name: 'Thinking', note: 'Loading, processing, waiting for a response.' },
+        { id: 'happy', name: 'Happy', note: 'Submitted, build passed, done.' },
+        { id: 'sleep', name: 'Sleepy', note: 'Empty state, idle for a long time, 2 a.m.' },
+        { id: 'oops', name: 'Oops', note: '404, failed validation, upstream error.' },
+      ],
+    },
+    usage: {
+      label: 'USAGE',
+      title: 'She only shows up where you will actually look.',
+      lede: 'No mascot wall. Every appearance has to carry a function, or she does not appear.',
+      items: [
+        { code: 'LOADING', title: 'First load', body: 'Buying us 1.2 seconds of patience while the 3D model and fonts download.' },
+        { code: '404', title: 'Wrong turn', body: 'When a page is missing she holds up a hand-drawn map pointing home.' },
+        { code: 'SUCCESS', title: 'Submitted', body: 'A gesture you notice more than any toast.' },
+        { code: 'PEEK', title: 'The peek', body: 'At the end of the page she leans in from the right to say there is more.' },
+      ],
+    },
+    stanza: {
+      label: 'FIRST PERSON',
+      lines: [
+        'I keep this square.',
+        '404, loading, submitted, all here.',
+        "I don't talk. I look at you.",
+        'A bug without logs gets a longer look.',
+        "When I'm sleepy I lower my head. I don't leave.",
+        'The orange on my nose is borrowed from the mark.',
+      ],
+    },
+    design: {
+      label: 'DESIGN NOTES',
+      title: 'Why a catgirl.',
+      paragraphs: [
+        'The mark is a black cat head: two peaks on top, a soft round bottom, one small orange triangular nose. A mascot should not speak a different language, so we let the cat head grow into a person.',
+        'Her lines are softer than the mark. The mark has to survive at 16px; HIROMI only has to make a screen feel inhabited. Rounder curves, messier hair.',
+        'Three colours, no more. The blush is orange at low opacity — no fourth colour.',
+      ],
+      notes: [
+        { k: 'Line', v: '2.5px silhouette, 1.5px interior detail' },
+        { k: 'Palette', v: '#141210 / #FFF9F1 / #FF5A1A' },
+        { k: 'Render', v: 'Flat illustration, no 3D' },
+      ],
+    },
+    companion: {
+      label: 'COMPANION / TIBLE',
+      title: 'tible is the head.',
+      body: [
+        'If HIROMI is the person, tible is the mark — literally the black cat head from the logo, with the body removed and only an expression left.',
+        'tible never renders larger than 48px. It only appears in tiny places: loading indicators, button badges, and the hand-drawn map on the 404 page. Because it is small, it never has to speak.',
+      ],
+      traits: [
+        { k: 'Size', v: '16 — 48px' },
+        { k: 'Colour', v: 'ink + orange nose' },
+        { k: 'Appears', v: 'loading / badge / 404' },
+      ],
+      alt: 'Three expressions of tible: neutral, happy, sleepy',
+    },
+    play: {
+      label: 'PLAY',
+      title: 'Try poking her.',
+      hint: 'One poke changes her expression. Another one gets you a line.',
+      lines: [
+        "I'm here. Give me a second.",
+        'The floor in here is warmer than my desk. I lie down on purpose.',
+        "That's not a bug. You typed it wrong.",
+        "Quit poking. I'm halfway through the logs.",
+        'One more poke and you go in the log too.',
+        'Twenty minutes. The errors can see themselves out.',
+      ],
+      reset: 'Reset',
+    },
+    cta: {
+      title: 'She is waiting on the home page too.',
+      body: 'Section five is hers. Scroll there and she changes expression three times.',
+      button: { label: 'Back to the home page', href: '/en/' },
+    },
+  },
+};

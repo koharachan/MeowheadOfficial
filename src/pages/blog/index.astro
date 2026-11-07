@@ -1,0 +1,133 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import PostList from '../../components/blog/PostList.astro';
+import SectionField from '../../components/ui/SectionField.astro';
+import { getDict } from '../../i18n';
+import { posts } from '../../data/posts';
+
+const t = getDict('zh');
+---
+
+<Base
+  lang="zh"
+  title={`日志 · ${t.brand.name}`}
+  description={t.blog.lede}
+  altPath="/en/blog/"
+>
+  <Nav t={t} isHome={false} />
+
+  <main id="main" class="blog">
+    <SectionField no="B" align="right" />
+
+    <div class="shell">
+      <header class="blog__head">
+        <div class="blog__meta" data-anim="fade">
+          <span class="mono blog__no">LOG</span>
+          <span class="blog__rule" aria-hidden="true"></span>
+          <span class="mono">{t.blog.label}</span>
+        </div>
+
+        <h1 class="blog__title h2" data-anim="fade" data-delay="0.05">{t.blog.title}</h1>
+        <p class="lead blog__lede" data-anim="fade" data-delay="0.1">{t.blog.lede}</p>
+      </header>
+
+      <PostList t={t} posts={posts} />
+
+      <p class="blog__note mono-sm" data-anim="fade">{t.blog.note}</p>
+
+      <p class="blog__lic mono-sm" data-anim="fade">
+        <a class="blog__lic-badge" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="license noopener">CC BY 4.0</a>
+        {t.blog.license}
+      </p>
+    </div>
+  </main>
+
+  <Footer t={t} isHome={false} />
+</Base>
+
+<style>
+  .blog {
+    position: relative;
+    padding-top: clamp(110px, 16vh, 180px);
+    padding-bottom: clamp(4rem, 9vw, 7rem);
+    overflow: clip;
+    min-height: 100svh;
+  }
+
+  .blog > .shell > * {
+    max-width: 1180px;
+    margin-inline: auto;
+  }
+
+  .blog__head {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .blog__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: var(--ink-56);
+  }
+
+  .blog__no {
+    color: var(--orange);
+  }
+
+  .blog__rule {
+    width: clamp(28px, 5vw, 64px);
+    height: 1px;
+    background: var(--ink-20);
+  }
+
+  .blog__title {
+    max-width: 20ch;
+  }
+
+  .blog__lede {
+    max-width: 52ch;
+  }
+
+  .blog__lic {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1rem;
+    color: var(--ink-56);
+    text-transform: none;
+    letter-spacing: 0.03em;
+    font-size: 0.625rem;
+  }
+
+  .blog__lic-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25em 0.55em;
+    border: 1px solid var(--orange);
+    border-radius: 3px;
+    color: var(--orange);
+    font-size: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    transition: background-color 220ms var(--ease-out), color 220ms var(--ease-out);
+  }
+
+  .blog__lic-badge:hover {
+    background: var(--orange);
+    color: var(--cream);
+  }
+
+  .blog__note {
+    margin-top: 1.75rem;
+    color: var(--ink-38);
+    text-transform: none;
+    letter-spacing: 0.05em;
+    font-size: 0.625rem;
+  }
+</style>

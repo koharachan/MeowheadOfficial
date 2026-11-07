@@ -1,0 +1,320 @@
+{
+  "generated_at": "2026-11-07T01:10:55+0800",
+  "generator": "site/scripts/build-mascot-assets.py",
+  "note": "吉祥物立绘：透明底 PNG -> WebP(q88, 保留透明) + PNG 回退。已按 alpha bbox trim 并补统一 padding。",
+  "characters": {
+    "hiromi": "绪方 寻美 / OGATA HIROMI（主吉祥物）",
+    "tible": "TIBLE（小吉祥物，黑色猫头）"
+  },
+  "padding_ratio": 0.06,
+  "sources": [],
+  "warnings": [],
+  "files": [
+    {
+      "file": "hiromi-happy.png",
+      "path": "/img/mascot/hiromi-happy.png",
+      "format": "png",
+      "width": 695,
+      "height": 720,
+      "bytes": 310527,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-happy.webp",
+      "path": "/img/mascot/hiromi-happy.webp",
+      "format": "webp",
+      "width": 695,
+      "height": 720,
+      "bytes": 47142,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-happy@512.webp",
+      "path": "/img/mascot/hiromi-happy@512.webp",
+      "format": "webp",
+      "width": 494,
+      "height": 512,
+      "bytes": 30666,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-idle.png",
+      "path": "/img/mascot/hiromi-idle.png",
+      "format": "png",
+      "width": 572,
+      "height": 720,
+      "bytes": 282108,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-idle.webp",
+      "path": "/img/mascot/hiromi-idle.webp",
+      "format": "webp",
+      "width": 572,
+      "height": 720,
+      "bytes": 48882,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-idle@512.webp",
+      "path": "/img/mascot/hiromi-idle@512.webp",
+      "format": "webp",
+      "width": 407,
+      "height": 512,
+      "bytes": 31600,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-oops.png",
+      "path": "/img/mascot/hiromi-oops.png",
+      "format": "png",
+      "width": 603,
+      "height": 720,
+      "bytes": 290743,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-oops.webp",
+      "path": "/img/mascot/hiromi-oops.webp",
+      "format": "webp",
+      "width": 603,
+      "height": 720,
+      "bytes": 44868,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-oops@512.webp",
+      "path": "/img/mascot/hiromi-oops@512.webp",
+      "format": "webp",
+      "width": 429,
+      "height": 512,
+      "bytes": 29082,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-peek.png",
+      "path": "/img/mascot/hiromi-peek.png",
+      "format": "png",
+      "width": 720,
+      "height": 704,
+      "bytes": 252655,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-peek.webp",
+      "path": "/img/mascot/hiromi-peek.webp",
+      "format": "webp",
+      "width": 720,
+      "height": 704,
+      "bytes": 34764,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-peek@512.webp",
+      "path": "/img/mascot/hiromi-peek@512.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 501,
+      "bytes": 23208,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-sleep.png",
+      "path": "/img/mascot/hiromi-sleep.png",
+      "format": "png",
+      "width": 695,
+      "height": 720,
+      "bytes": 330369,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-sleep.webp",
+      "path": "/img/mascot/hiromi-sleep.webp",
+      "format": "webp",
+      "width": 695,
+      "height": 720,
+      "bytes": 47306,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-sleep@512.webp",
+      "path": "/img/mascot/hiromi-sleep@512.webp",
+      "format": "webp",
+      "width": 494,
+      "height": 512,
+      "bytes": 31018,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-think.png",
+      "path": "/img/mascot/hiromi-think.png",
+      "format": "png",
+      "width": 502,
+      "height": 720,
+      "bytes": 279953,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-think.webp",
+      "path": "/img/mascot/hiromi-think.webp",
+      "format": "webp",
+      "width": 502,
+      "height": 720,
+      "bytes": 44894,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-think@512.webp",
+      "path": "/img/mascot/hiromi-think@512.webp",
+      "format": "webp",
+      "width": 357,
+      "height": 512,
+      "bytes": 28720,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-wave.png",
+      "path": "/img/mascot/hiromi-wave.png",
+      "format": "png",
+      "width": 703,
+      "height": 720,
+      "bytes": 294598,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-wave.webp",
+      "path": "/img/mascot/hiromi-wave.webp",
+      "format": "webp",
+      "width": 703,
+      "height": 720,
+      "bytes": 51316,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "hiromi-wave@512.webp",
+      "path": "/img/mascot/hiromi-wave@512.webp",
+      "format": "webp",
+      "width": 500,
+      "height": 512,
+      "bytes": 33536,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-alert.png",
+      "path": "/img/mascot/tible-alert.png",
+      "format": "png",
+      "width": 320,
+      "height": 290,
+      "bytes": 53905,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-alert.webp",
+      "path": "/img/mascot/tible-alert.webp",
+      "format": "webp",
+      "width": 320,
+      "height": 290,
+      "bytes": 10962,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-alert@160.webp",
+      "path": "/img/mascot/tible-alert@160.webp",
+      "format": "webp",
+      "width": 160,
+      "height": 145,
+      "bytes": 5240,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-happy.png",
+      "path": "/img/mascot/tible-happy.png",
+      "format": "png",
+      "width": 320,
+      "height": 298,
+      "bytes": 49822,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-happy.webp",
+      "path": "/img/mascot/tible-happy.webp",
+      "format": "webp",
+      "width": 320,
+      "height": 298,
+      "bytes": 10338,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-happy@160.webp",
+      "path": "/img/mascot/tible-happy@160.webp",
+      "format": "webp",
+      "width": 160,
+      "height": 149,
+      "bytes": 4982,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-idle.png",
+      "path": "/img/mascot/tible-idle.png",
+      "format": "png",
+      "width": 320,
+      "height": 268,
+      "bytes": 63738,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-idle.webp",
+      "path": "/img/mascot/tible-idle.webp",
+      "format": "webp",
+      "width": 320,
+      "height": 268,
+      "bytes": 9182,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-idle@160.webp",
+      "path": "/img/mascot/tible-idle@160.webp",
+      "format": "webp",
+      "width": 160,
+      "height": 134,
+      "bytes": 4520,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-marker-badge.png",
+      "path": "/img/map/tible-marker-badge.png",
+      "format": "png",
+      "width": 256,
+      "height": 256,
+      "bytes": 28716,
+      "usage": "天地图地图阶段的 tible 标记（奶白圆盘 + 猫头，暗色卫星底可见）"
+    },
+    {
+      "file": "tible-sleep.png",
+      "path": "/img/mascot/tible-sleep.png",
+      "format": "png",
+      "width": 299,
+      "height": 320,
+      "bytes": 40029,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-sleep.webp",
+      "path": "/img/mascot/tible-sleep.webp",
+      "format": "webp",
+      "width": 299,
+      "height": 320,
+      "bytes": 8058,
+      "usage": "复用（源文件未变）"
+    },
+    {
+      "file": "tible-sleep@160.webp",
+      "path": "/img/mascot/tible-sleep@160.webp",
+      "format": "webp",
+      "width": 150,
+      "height": 160,
+      "bytes": 3864,
+      "usage": "复用（源文件未变）"
+    }
+  ]
+}

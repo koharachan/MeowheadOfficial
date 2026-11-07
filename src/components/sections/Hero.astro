@@ -1,0 +1,318 @@
+---
+import type { Dict } from '../../i18n';
+import Button from '../ui/Button.astro';
+import HeroMark from '../three/HeroMark.tsx';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const h = t.hero;
+---
+
+<section class="hero" id="hero" data-parallax-scope>
+  <div class="hero__rules" aria-hidden="true" data-scrub data-scrub-y="52">
+    <span></span><span></span><span></span>
+  </div>
+
+  <div class="hero__grid shell">
+    <div class="hero__copy">
+      <p class="hero__kicker mono" data-anim="fade">
+        <span class="dot" aria-hidden="true"></span>
+        {h.kicker}
+      </p>
+
+      <h1 class="hero__title display">
+        {h.lines.map((line) => <span class="line-mask"><span>{line}</span></span>)}
+      </h1>
+
+      <p class="hero__lede lead" data-anim="fade" data-delay="0.05">{h.lede}</p>
+
+      <div class="hero__cta" data-anim="fade" data-delay="0.12">
+        <Button href={h.primary.href} label={h.primary.label} variant="solid" />
+        <Button href={h.secondary.href} label={h.secondary.label} variant="outline" />
+      </div>
+    </div>
+
+    <figure class="hero__visual" data-parallax="-40">
+      <HeroMark
+        client:idle
+        poster="/img/logo-3d-1200.webp"
+        posterAlt={h.posterAlt}
+        noteLive={h.sceneNote}
+        noteStatic={h.sceneNoteFallback}
+      />
+      <figcaption class="sr-only">{h.caption}</figcaption>
+    </figure>
+  </div>
+
+  <div class="hero__foot shell">
+    <ul class="hero__specs">
+      {
+        h.specs.map((s) => (
+          <li>
+            <span class="mono key">{s.k}</span>
+            <span class="val tabular">{s.v}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="hero__caption mono-sm">{h.caption}</p>
+
+    <a class="hero__scroll" href="#claim">
+      <span class="mono-sm">{t.ux.scroll}</span>
+      <span class="hero__scroll-line" aria-hidden="true"><i></i></span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding-top: clamp(84px, 11vh, 120px);
+    padding-bottom: clamp(1.5rem, 3vh, 2.5rem);
+    overflow: clip;
+  }
+
+  /* 工程图纸感的竖向细线 */
+  .hero__rules {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding-inline: var(--gutter);
+    pointer-events: none;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    left: 0;
+    right: 0;
+  }
+
+  .hero__rules span {
+    border-right: 1px solid var(--ink-08);
+    opacity: 0.85;
+  }
+
+  .hero__rules span:last-child {
+    border-right: 0;
+  }
+
+  .hero__grid {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: center;
+    column-gap: clamp(1rem, 2vw, 2rem);
+    row-gap: 2rem;
+  }
+
+  .hero__copy {
+    grid-column: 1 / span 6;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.1rem, 2vw, 1.6rem);
+    padding-bottom: 1rem;
+  }
+
+  .hero__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--ink-56);
+    font-size: 0.625rem;
+    letter-spacing: 0.2em;
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--orange);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .hero__title {
+    font-size: var(--fs-display);
+    margin-top: -0.12em;
+  }
+
+  .hero__title .line-mask:nth-child(2) > span {
+    color: var(--ink);
+  }
+
+  .hero__lede {
+    max-width: 34ch;
+    margin-top: 0.2rem;
+  }
+
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 0.6rem;
+  }
+
+  .hero__visual {
+    grid-column: 7 / -1;
+    position: relative;
+    align-self: center;
+    justify-self: center;
+    height: min(64vh, 620px);
+    aspect-ratio: 1 / 1;
+    width: auto;
+    margin-right: calc(var(--gutter) * -1.1);
+    z-index: 1;
+  }
+
+  .hero__foot {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ink-12);
+  }
+
+  .hero__specs {
+    display: flex;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    flex-wrap: wrap;
+  }
+
+  .hero__specs li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .hero__specs .key {
+    color: var(--ink-38);
+    font-size: 0.5rem;
+  }
+
+  .hero__specs .val {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .hero__caption {
+    color: var(--ink-38);
+    max-width: 32ch;
+    text-transform: none;
+    letter-spacing: 0.06em;
+    font-size: 0.625rem;
+    line-height: 1.6;
+    text-align: center;
+    flex: 1;
+  }
+
+  .hero__scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--ink-56);
+    flex-shrink: 0;
+  }
+
+  .hero__scroll-line {
+    display: block;
+    width: 1px;
+    height: 34px;
+    background: var(--ink-20);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero__scroll-line i {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 40%;
+    background: var(--orange);
+    animation: scrollCue 2.4s var(--ease-inout) infinite;
+  }
+
+  @keyframes scrollCue {
+    0% {
+      transform: translateY(-110%);
+    }
+    55%,
+    100% {
+      transform: translateY(260%);
+    }
+  }
+
+  /* ---------------- responsive ---------------- */
+  @media (max-width: 1100px) {
+    .hero__copy {
+      grid-column: 1 / span 6;
+    }
+    .hero__visual {
+      grid-column: 7 / -1;
+      height: min(58vh, 520px);
+      width: auto;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .hero {
+      min-height: auto;
+      padding-top: 96px;
+      padding-bottom: 2rem;
+    }
+
+    .hero__grid {
+      grid-template-columns: 1fr;
+      row-gap: 0.5rem;
+    }
+
+    .hero__copy {
+      grid-column: 1;
+      order: 1;
+    }
+
+    .hero__visual {
+      grid-column: 1;
+      order: 2;
+      height: auto;
+      width: min(86vw, 460px);
+      aspect-ratio: 1 / 1;
+      margin-right: 0;
+      margin-top: -1rem;
+    }
+
+    .hero__foot {
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .hero__caption {
+      order: 3;
+      text-align: left;
+      flex-basis: 100%;
+      max-width: none;
+    }
+
+    .hero__scroll {
+      align-self: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__scroll-line i {
+      animation: none;
+      transform: translateY(120%);
+    }
+  }
+</style>

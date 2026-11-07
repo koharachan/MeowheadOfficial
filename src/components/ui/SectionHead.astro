@@ -1,0 +1,84 @@
+---
+interface Props {
+  no: string;
+  label: string;
+  title: string;
+  lede?: string;
+  invert?: boolean;
+  align?: 'split' | 'stack';
+}
+
+const { no, label, title, lede, invert = false, align = 'split' } = Astro.props;
+---
+
+<header class:list={['sec-head', `sec-head--${align}`, { 'on-dark': invert }]}>
+  <div class="sec-head__meta" data-anim="fade">
+    <span class="mono sec-head__no">{no}</span>
+    <span class="sec-head__rule" aria-hidden="true"></span>
+    <span class="mono sec-head__label">{label}</span>
+  </div>
+
+  <h2 class="h2 sec-head__title" data-stream data-anim="fade" data-delay="0.05">{title}</h2>
+
+  {lede && <p class="lead sec-head__lede" data-anim="fade" data-delay="0.12">{lede}</p>}
+</header>
+
+<style>
+  .sec-head {
+    display: grid;
+    gap: clamp(1.25rem, 2.6vw, 2.25rem);
+    margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .sec-head__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: var(--ink-56);
+  }
+
+  .sec-head__no {
+    color: var(--orange);
+    font-weight: 500;
+  }
+
+  .sec-head__rule {
+    width: clamp(28px, 5vw, 64px);
+    height: 1px;
+    background: var(--ink-20);
+  }
+
+  .sec-head__label {
+    color: var(--ink-56);
+  }
+
+  .sec-head__title {
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  .sec-head__lede {
+    max-width: 44ch;
+  }
+
+  @media (min-width: 900px) {
+    .sec-head--split {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr);
+      align-items: end;
+    }
+
+    .sec-head--split .sec-head__meta {
+      grid-column: 1 / -1;
+    }
+
+    .sec-head--split .sec-head__title {
+      grid-column: 1;
+      max-width: 18ch;
+    }
+
+    .sec-head--split .sec-head__lede {
+      grid-column: 2;
+      padding-bottom: 0.35rem;
+    }
+  }
+</style>

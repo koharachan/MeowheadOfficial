@@ -1,0 +1,62 @@
+# 猫猫头官网 · nginx 参考配置（静态站点）
+#
+# 需求：/wp-admin /wpadmin /admin /login /reg 一律返回 403，并用自己的 403 页；
+#       /418 返回 418 茶壶页；其余交给静态文件。
+
+server {
+    listen 80;
+    server_name maomaotou.tech;
+    root /var/www/maomaotou/dist;
+
+    # 1) 管理后台探测路径 —— 直接 403，不占用带宽、不暴露框架
+    location ~* ^/(wp-admin|wpadmin|admin|login|reg|wp-login\.php|xmlrpc\.php) {
+        error_page 403 /403/index.html;
+        return 403;
+    }
+
+    # 2) 彩蛋页：真正的 418 状态码
+    location = /418 {
+        error_page 418 /418/index.html;
+        return 418;
+    }
+    location = /418/ {
+        try_files /418/index.html =404;
+    }
+
+    # 3) 常规静态
+    location / {
+        try_files $uri $uri/ $uri/index.html /404.html =404;
+    }
+
+    error_page 404 /404.html;
+
+    # 字体：强缓存（文件名稳定，内容随构建变化时请改缓存策略）
+    location ~* \.(woff2)$ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # 静态资源
+    location ~* \.(?:png|jpg|jpeg|webp|avif|svg|glb|ico)$ {
+        add_header Cache-Control "public, max-age=2592000";
+    }
+}
+
+# ---------------------------------------------------------------------------
+# 关于「中国 IP 才看到 403」这一层：
+# 前端已经会按「时区 / ?region= 参数 / data-region-hint」切换 403 页的文案。
+# 如果你要在真正的地理/IP 层拦截，需要 geoip 模块：
+#
+#   geoip_country /usr/share/GeoIP/GeoLite2-Country.dat;
+#
+#   server {
+#       location ~* ^/(wp-admin|wpadmin|admin|login|reg) {
+#           if ($geoip_country_code = CN) {
+#               error_page 403 /403/index.html;
+#               return 403;
+#           }
+#           return 404;   # 境外访客：直接当作不存在
+#       }
+#   }
+#
+# 若想服务端决定 403 页显示哪一套文案，在 /403/index.html 上注入
+# <html data-region="cn|global"> 即可，前端脚本会优先读它。

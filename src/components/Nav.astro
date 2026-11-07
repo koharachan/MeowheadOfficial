@@ -1,0 +1,429 @@
+---
+import type { Dict } from '../i18n';
+import { LANGS, basePath, pathFor } from '../i18n';
+import Button from './ui/Button.astro';
+
+interface Props {
+  t: Dict;
+  current?: string;
+  /** 不在首页时要给锚点补上首页路径，否则点了没反应 */
+  isHome?: boolean;
+}
+const { t, isHome = true } = Astro.props;
+/** 当前页面在三种语言下的路径 */
+const pageBase = basePath(Astro.url.pathname);
+const langHref = (l: (typeof LANGS)[number]) => pathFor(l, pageBase);
+const langLabel = (code: string) => t.langs.find((x) => x.code === code)?.label ?? code;
+const langName = (code: string) => t.langs.find((x) => x.code === code)?.name ?? code;
+const hreflangFor = (code: string) => (code === 'zh' ? 'zh-CN' : code === 'yue' ? 'zh-HK' : 'en');
+const base = isHome ? '' : t.path.home;
+const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
+/** 导航编号直接取章节表里的真实编号，避免和正文里的 03/04 对不上 */
+const noOf = (h: string) => t.chapters.find((c) => `#${c.id}` === h)?.no ?? '';
+---
+
+<div class="progress" data-progress aria-hidden="true"></div>
+
+<header class="nav" data-nav>
+  <div class="nav__inner shell">
+    <a class="brand" href={t.path.home} aria-label={t.brand.nameFull}>
+      <img class="brand__mark" src="/brand/mark_primary.svg" alt="" width="30" height="30" decoding="async" />
+      <span class="brand__text">
+        <span class="brand__zh">{t.brand.name}</span>
+        <span class="brand__roman mono-sm">{t.brand.roman}</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" aria-label={t.ux.sectionNav}>
+      <ul>
+        {
+          t.nav.links.map((link) => (
+            <li>
+              <a href={href(link.href)} class="nav__link">
+                <span class="nav__num mono-sm" aria-hidden="true">{noOf(link.href)}</span>
+                <span>{link.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="nav__actions">
+      <a class="nav__blog mono" href={t.path.downloads}>{t.downloads.action}</a>
+      <a class="nav__blog mono" href={t.path.blog}>{t.blog.all}</a>
+      <div class="langs" role="group" aria-label="語言 / Language">
+        {
+          LANGS.map((l) => (
+            <a
+              class:list={['lang', { 'is-active': l === t.lang }]}
+              href={langHref(l)}
+              hreflang={hreflangFor(l)}
+              lang={hreflangFor(l)}
+              aria-current={l === t.lang ? 'page' : undefined}
+              title={langName(l)}
+            >
+              {langLabel(l)}
+            </a>
+          ))
+        }
+      </div>
+      <Button href={href(t.nav.cta.href)} label={t.nav.cta.label} variant="solid" class="nav__cta" />
+
+      <button class="burger" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label={t.nav.menu}>
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu" id="mobile-menu" data-menu-panel>
+  <div class="menu__inner">
+    <div class="menu__head">
+      <span class="mono">{t.brand.claim}</span>
+      <button class="menu__close" type="button" data-menu-toggle aria-label={t.nav.close}>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M5 5l14 14M19 5L5 19" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+    <ul class="menu__list">
+      {
+        t.nav.links.map((link, i) => (
+          <li>
+            <a href={href(link.href)}>
+              <span class="mono-sm">{String(i + 1).padStart(2, '0')}</span>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="menu__foot">
+      <div class="menu__langs">
+        {
+          LANGS.map((l) => (
+            <a class:list={['menu__lang', { 'is-active': l === t.lang }]} href={langHref(l)} hreflang={hreflangFor(l)}>
+              {langLabel(l)}
+            </a>
+          ))
+        }
+      </div>
+      <Button href={href(t.nav.cta.href)} label={t.nav.cta.label} variant="outline" />
+    </div>
+  </div>
+</div>
+
+<style>
+  .progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    z-index: 120;
+    will-change: transform;
+  }
+
+  .nav {
+    position: fixed;
+    inset: 2px 0 auto 0;
+    z-index: 110;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    transition:
+      background-color 320ms var(--ease-out),
+      backdrop-filter 320ms var(--ease-out),
+      box-shadow 320ms var(--ease-out);
+  }
+
+  .nav.is-stuck {
+    background: color-mix(in srgb, var(--cream) 86%, transparent);
+    backdrop-filter: blur(14px) saturate(1.1);
+    box-shadow: 0 1px 0 var(--ink-12);
+  }
+
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    width: 100%;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+  }
+
+  .brand__mark {
+    width: 30px;
+    height: 30px;
+    transition: transform 500ms var(--ease-out);
+  }
+
+  .brand:hover .brand__mark {
+    transform: rotate(-6deg) scale(1.06);
+  }
+
+  .brand__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1;
+  }
+
+  .brand__zh {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+  }
+
+  .brand__roman {
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    color: var(--ink-56);
+  }
+
+  .nav__links ul {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2vw, 2rem);
+  }
+
+  .nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ink-70);
+    padding-block: 0.4rem;
+    transition: color 220ms var(--ease-out);
+  }
+
+  .nav__num {
+    font-size: 0.5rem;
+    color: var(--ink-38);
+    transition: color 220ms var(--ease-out);
+  }
+
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 300ms var(--ease-out);
+  }
+
+  .nav__link:hover {
+    color: var(--ink);
+  }
+
+  .nav__link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .nav__link:hover .nav__num {
+    color: var(--orange);
+  }
+
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .nav__blog {
+    font-size: 0.5625rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-56);
+    padding-block: 0.35rem;
+    border-bottom: 1px solid transparent;
+    transition:
+      color 200ms var(--ease-out),
+      border-color 200ms var(--ease-out);
+  }
+
+  .nav__blog:hover {
+    color: var(--ink);
+    border-color: var(--orange);
+  }
+
+  @media (max-width: 860px) {
+    .nav__blog {
+      display: none;
+    }
+  }
+
+  .langs {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--ink-12);
+    border-radius: 999px;
+  }
+
+  .lang {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-38);
+    padding: 0.35rem 0.5rem;
+    border-radius: 999px;
+    line-height: 1;
+    transition:
+      color 200ms var(--ease-out),
+      background-color 200ms var(--ease-out);
+  }
+
+  .lang.is-active {
+    color: var(--cream);
+    background: var(--ink);
+  }
+
+  .lang:not(.is-active):hover {
+    color: var(--ink);
+    background: var(--cream-2);
+  }
+
+  .burger {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--ink-12);
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-direction: column;
+  }
+
+  .burger span {
+    display: block;
+    width: 15px;
+    height: 1.5px;
+    background: var(--ink);
+    transition: transform 300ms var(--ease-out);
+  }
+
+  /* ---------------- mobile menu ---------------- */
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 130;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem var(--gutter) 2rem;
+    transform: translateY(-100%);
+    visibility: hidden;
+    transition:
+      transform 480ms var(--ease-out),
+      visibility 480ms;
+  }
+
+  .menu.is-open {
+    transform: translateY(0);
+    visibility: visible;
+  }
+
+  .menu__inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 2rem;
+  }
+
+  .menu__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--ink-38);
+  }
+
+  .menu__close {
+    background: transparent;
+    border: 1px solid var(--ink-12);
+    border-radius: 999px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .menu__list {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    margin-bottom: auto;
+    gap: 0.25rem;
+  }
+
+  .menu__list a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.7rem 0;
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    border-bottom: 1px solid var(--ink-08);
+  }
+
+  .menu__list .mono-sm {
+    color: var(--orange);
+    font-weight: 500;
+  }
+
+  .menu__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .menu__lang {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-56);
+  }
+
+  @media (max-width: 1080px) {
+    .nav__links {
+      display: none;
+    }
+    .burger {
+      display: inline-flex;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .nav {
+      height: 66px;
+    }
+    .brand__roman {
+      display: none;
+    }
+    .nav__inner {
+      gap: 0.75rem;
+    }
+  }
+</style>

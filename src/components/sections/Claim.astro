@@ -1,0 +1,184 @@
+---
+import type { Dict } from '../../i18n';
+import SectionField from '../ui/SectionField.astro';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const c = t.claim;
+---
+
+<section class="claim on-dark" id="claim">
+  <SectionField no={c.no} tone="dark" align="left" />
+  <div class="shell claim__inner">
+    <div class="claim__meta" data-anim="fade">
+      <span class="mono claim__no">{c.no}</span>
+      <span class="claim__rule" aria-hidden="true"></span>
+      <span class="mono">{c.label}</span>
+    </div>
+
+    <div class="claim__body">
+      <h2 class="claim__title display" data-anim="lines">
+        {c.lines.map((line) => <span class="line-mask"><span>{line}</span></span>)}
+      </h2>
+
+      <div class="claim__cols">
+        <div class="claim__text" data-anim="fade" data-delay="0.1">
+          {c.body.map((p, i) => <p class:list={['body-text', { lead: i === 0 }]}>{p}</p>)}
+        </div>
+
+        <dl class="claim__notes" data-anim="stagger">
+          {
+            c.notes.map((n) => (
+              <div class="note">
+                <dt class="mono">{n.k}</dt>
+                <dd>{n.v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+
+    <div class="claim__mark" aria-hidden="true" data-scrub data-scrub-y="90" data-scrub-rotate="7">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path d="M6 94 L6 18 L30 44 L50 50 L70 44 L94 18 L94 94" fill="none" stroke="currentColor" stroke-width="0.5" vector-effect="non-scaling-stroke" />
+      </svg>
+    </div>
+
+    <span class="cropmark cropmark--tl" aria-hidden="true"></span>
+    <span class="cropmark cropmark--br" aria-hidden="true"></span>
+  </div>
+</section>
+
+<style>
+  .claim {
+    position: relative;
+    background: #141210;
+    color: var(--cream);
+    padding-block: clamp(5rem, 12vw, 11rem);
+    overflow: clip;
+  }
+
+  .claim__inner {
+    position: relative;
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .claim__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: rgba(255, 249, 241, 0.5);
+    position: relative;
+    z-index: 2;
+  }
+
+  .claim__no {
+    color: var(--orange);
+  }
+
+  .claim__rule {
+    width: clamp(28px, 5vw, 64px);
+    height: 1px;
+    background: rgba(255, 249, 241, 0.24);
+  }
+
+  .claim__body {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    position: relative;
+    z-index: 2;
+  }
+
+  .claim__title {
+    font-size: var(--fs-display-s);
+    max-width: 16ch;
+  }
+
+  .claim__cols {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: start;
+  }
+
+  .claim__text {
+    display: grid;
+    gap: 1.1rem;
+    max-width: 52ch;
+  }
+
+  .claim__text .body-text {
+    color: rgba(255, 249, 241, 0.68);
+  }
+
+  .claim__text .lead {
+    color: rgba(255, 249, 241, 0.86);
+  }
+
+  .claim__notes {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+    border-top: 1px solid rgba(255, 249, 241, 0.16);
+    padding-top: 1.25rem;
+  }
+
+  .note dt {
+    color: var(--orange);
+    margin-bottom: 0.35rem;
+  }
+
+  .note dd {
+    font-size: var(--fs-small);
+    color: rgba(255, 249, 241, 0.6);
+    line-height: 1.6;
+  }
+
+  .claim__mark {
+    position: absolute;
+    right: -8%;
+    top: -6%;
+    width: min(46vw, 560px);
+    aspect-ratio: 1.1;
+    color: rgba(255, 249, 241, 0.06);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .claim__mark svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cropmark {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: solid rgba(255, 249, 241, 0.28);
+    border-width: 0;
+    pointer-events: none;
+  }
+
+  .cropmark--tl {
+    top: 0;
+    left: 0;
+    border-top-width: 1px;
+    border-left-width: 1px;
+  }
+
+  .cropmark--br {
+    bottom: 0;
+    right: 0;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
+  }
+
+  @media (min-width: 900px) {
+    .claim__cols {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.72fr);
+    }
+  }
+</style>

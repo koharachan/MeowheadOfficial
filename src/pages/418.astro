@@ -1,0 +1,375 @@
+---
+import '../styles/global.css';
+import { getDict } from '../i18n';
+
+const zh = getDict('zh');
+const en = getDict('en');
+const tz = zh.teapot;
+const te = en.teapot;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>418 · 茶壶 — 猫猫头网络科技</title>
+    <meta name="description" content="418 — I'm a teapot. RFC 2324." />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/fonts/fonts.css" />
+    <script is:inline>
+      (function () {
+        var isEn = (navigator.language || 'zh').toLowerCase().indexOf('zh') !== 0;
+        var q = new URLSearchParams(location.search).get('lang');
+        if (q === 'en') isEn = true;
+        if (q === 'zh') isEn = false;
+        document.documentElement.dataset.locale = isEn ? 'en' : 'zh';
+      })();
+    </script>
+  </head>
+
+  <body class="tea">
+    <main class="tea__grid">
+      <div class="tea__copy">
+        <p class="mono tea__label">{tz.label}</p>
+
+        <h1 class="tea__title" data-lang="zh">{tz.title}</h1>
+        <h1 class="tea__title" data-lang="en">{te.title}</h1>
+
+        <ol class="tea__lines" data-lang="zh">
+          {tz.lines.map((l) => <li>{l}</li>)}
+        </ol>
+        <ol class="tea__lines" data-lang="en">
+          {te.lines.map((l) => <li>{l}</li>)}
+        </ol>
+
+        <p class="tea__hint mono-sm" data-lang="zh">{tz.hint}</p>
+        <p class="tea__hint mono-sm" data-lang="en">{te.hint}</p>
+
+        <div class="tea__actions" data-lang="zh">
+          <a class="tea__btn tea__btn--solid" href={tz.home.href}>{tz.home.label}</a>
+          <a class="tea__btn" href={tz.mascot.href}>{tz.mascot.label}</a>
+        </div>
+        <div class="tea__actions" data-lang="en">
+          <a class="tea__btn tea__btn--solid" href={te.home.href}>{te.home.label}</a>
+          <a class="tea__btn" href={te.mascot.href}>{te.mascot.label}</a>
+        </div>
+      </div>
+
+      <div class="tea__stage">
+        <button class="pot" type="button" data-pot data-poured={tz.pour}>
+          <svg viewBox="0 0 320 260" role="img" aria-label="茶壶">
+            <!-- 蒸汽 -->
+            <g class="pot__steam" fill="none" stroke="var(--ink-20)" stroke-width="5" stroke-linecap="round">
+              <path class="s1" d="M52 86c-10-10 6-16-2-28" />
+              <path class="s2" d="M72 72c-8-8 5-13-1-22" />
+            </g>
+
+            <!-- 壶嘴（贴在壶身左缘） -->
+            <path
+              d="M84 140C62 134 50 116 52 92l18-2c-1 18 4 30 20 36z"
+              fill="var(--cream)"
+              stroke="var(--ink)"
+              stroke-width="6"
+              stroke-linejoin="round"
+            />
+
+            <!-- 壶把（两个接点都在壶身上） -->
+            <path
+              d="M236 128c30 2 44 22 38 42-6 19-26 26-44 18"
+              fill="none"
+              stroke="var(--ink)"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+
+            <!-- 壶身 -->
+            <ellipse cx="160" cy="150" rx="78" ry="62" fill="var(--cream)" stroke="var(--ink)" stroke-width="6" />
+
+            <!-- 壶盖 + 壶钮 -->
+            <path d="M120 92q40-16 80 0" fill="none" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" />
+            <circle cx="160" cy="74" r="9" fill="var(--orange)" stroke="var(--ink)" stroke-width="5" />
+
+            <!-- 底 -->
+            <path d="M114 216h92" stroke="var(--ink)" stroke-width="6" stroke-linecap="round" />
+
+            <!-- 倒出来的一滴 -->
+            <ellipse class="pot__drop" cx="48" cy="96" rx="5" ry="7" fill="var(--orange)" />
+          </svg>
+
+          <span class="pot__stamp mono">{tz.stamp}</span>
+          <span class="pot__stamp pot__stamp--en mono">{te.stamp}</span>
+        </button>
+      </div>
+    </main>
+
+    <script is:inline>
+      (function () {
+        var pot = document.querySelector('[data-pot]');
+        if (!pot) return;
+        pot.addEventListener('click', function () {
+          if (pot.classList.contains('is-pouring')) return;
+          pot.classList.add('is-pouring');
+          window.setTimeout(function () {
+            pot.classList.remove('is-pouring');
+          }, 1600);
+        });
+      })();
+    </script>
+  </body>
+</html>
+
+<style>
+  [data-lang='en'],
+  .pot__stamp--en {
+    display: none !important;
+  }
+
+  html[data-locale='en'] [data-lang='en'] {
+    display: revert !important;
+  }
+
+  html[data-locale='en'] [data-lang='zh'] {
+    display: none !important;
+  }
+
+  html[data-locale='en'] .pot__stamp--en {
+    display: inline-block;
+  }
+
+  html[data-locale='en'] .pot__stamp:not(.pot__stamp--en) {
+    display: none;
+  }
+
+  .tea {
+    margin: 0;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: clamp(1.5rem, 5vw, 3.5rem) clamp(1.25rem, 5vw, 4rem);
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-sans);
+  }
+
+  .tea__grid {
+    width: min(1120px, 100%);
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: center;
+  }
+
+  .tea__copy {
+    display: grid;
+    gap: 0.9rem;
+    justify-items: start;
+  }
+
+  .tea__label {
+    color: var(--orange);
+    font-size: 0.5625rem;
+    letter-spacing: 0.2em;
+  }
+
+  .tea__title {
+    margin: 0;
+    font-family: var(--font-cjk);
+    font-size: clamp(2.25rem, 6.5vw, 4.25rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  .tea__lines {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.3rem;
+    border-left: 2px solid var(--orange);
+    padding-left: 1rem;
+    max-width: 34ch;
+  }
+
+  .tea__lines li {
+    font-size: clamp(0.9375rem, 1.4vw, 1.0625rem);
+    line-height: 1.7;
+    color: var(--ink-70);
+  }
+
+  .tea__lines li:nth-child(3) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .tea__hint {
+    color: var(--ink-38);
+    text-transform: none;
+    letter-spacing: 0.1em;
+    font-size: 0.5625rem;
+    margin-top: 0.35rem;
+  }
+
+  .tea__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+  }
+
+  .tea__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.8em 1.35em;
+    border-radius: 999px;
+    border: 1px solid var(--ink-20);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ink);
+    transition:
+      background-color 220ms var(--ease-out),
+      color 220ms var(--ease-out),
+      border-color 220ms var(--ease-out);
+  }
+
+  .tea__btn:hover {
+    border-color: var(--ink);
+  }
+
+  .tea__btn--solid {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--cream);
+  }
+
+  .tea__btn--solid:hover {
+    background: var(--orange);
+    border-color: var(--orange);
+  }
+
+  /* ---------------- 茶壶 ---------------- */
+  .tea__stage {
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+
+  .pot {
+    position: relative;
+    display: block;
+    width: min(72vw, 420px);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    transform-origin: 78% 88%;
+    transition: transform 900ms cubic-bezier(0.34, 1.2, 0.5, 1);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pot:focus-visible {
+    outline: 2px solid var(--orange);
+    outline-offset: 12px;
+    border-radius: 8px;
+  }
+
+  .pot svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .pot.is-pouring {
+    transform: rotate(-15deg);
+  }
+
+  .pot__steam path {
+    animation: steam 3.6s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  .pot__steam .s2 {
+    animation-delay: 1.1s;
+  }
+
+  @keyframes steam {
+    0% {
+      opacity: 0;
+      transform: translateY(6px) scale(0.9);
+    }
+    40% {
+      opacity: 1;
+      transform: translateY(-4px) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-18px) scale(1.15);
+    }
+  }
+
+  .pot__drop {
+    opacity: 0;
+  }
+
+  .pot.is-pouring .pot__drop {
+    animation: drop 1.1s ease-in 0.25s 1;
+  }
+
+  @keyframes drop {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0);
+      rx: 4;
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-6px, 96px);
+      rx: 2;
+    }
+  }
+
+  .pot__stamp {
+    position: absolute;
+    right: -6%;
+    bottom: 8%;
+    display: inline-block;
+    padding: 0.45em 0.7em;
+    border: 2px solid var(--orange);
+    border-radius: 4px;
+    color: var(--orange);
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    transform: rotate(-9deg);
+    opacity: 0.9;
+    pointer-events: none;
+    background: color-mix(in srgb, var(--cream) 70%, transparent);
+  }
+
+  @media (min-width: 880px) {
+    .tea__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .pot__stamp {
+      right: 0;
+      bottom: 2%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pot,
+    .pot__steam path,
+    .pot.is-pouring .pot__drop {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>

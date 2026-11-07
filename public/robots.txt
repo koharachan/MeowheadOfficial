@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# 管理后台路径一律 403，不要抓
+Disallow: /wp-admin
+Disallow: /wpadmin
+Disallow: /admin
+Disallow: /login
+Disallow: /reg
+Disallow: /wp-login.php
+Disallow: /xmlrpc.php
+
+Sitemap: https://maomaotou.tech/sitemap-index.xml

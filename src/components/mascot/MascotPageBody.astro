@@ -1,0 +1,714 @@
+---
+import type { Dict } from '../../i18n';
+import Button from '../ui/Button.astro';
+import MascotPlayground from './MascotPlayground.tsx';
+import NarrativeRail from '../nav/NarrativeRail.tsx';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const p = t.mascotPage;
+const states = t.mascot.states;
+---
+
+<NarrativeRail
+  client:idle
+  chapters={p.chapters}
+  ariaLabel={t.ux.sectionNav}
+  mascotAlt={t.mascot.companion.alt}
+  mascot={{
+    idle: '/img/mascot/tible-idle.webp',
+    happy: '/img/mascot/tible-happy.webp',
+    sleep: '/img/mascot/tible-sleep.webp',
+    alert: '/img/mascot/tible-alert.webp',
+  }}
+/>
+
+<main id="main" class="mp">
+  <!-- ---------------- hero ---------------- -->
+  <section class="mp-hero" id="top">
+    <div class="shell mp-hero__grid">
+      <div class="mp-hero__copy">
+        <p class="mono mp-hero__kicker"><span class="dot" aria-hidden="true"></span>{p.hero.kicker}</p>
+        <h1 class="mp-hero__name display" data-anim="fade">{p.hero.name}</h1>
+        <p class="mp-hero__roman mono">{p.hero.roman}</p>
+        <p class="mp-hero__tagline h2" data-anim="fade" data-delay="0.05">{p.hero.tagline}</p>
+        <div class="mp-hero__intro" data-anim="fade" data-delay="0.1">
+          {p.hero.intro.map((para) => <p class="body-text">{para}</p>)}
+        </div>
+        <div class="mp-hero__actions" data-anim="fade" data-delay="0.14">
+          <Button href={t.path.home} label={p.hero.back} variant="outline" />
+        </div>
+      </div>
+
+      <figure class="mp-hero__figure">
+        <img src="/img/mascot/hiromi-wave.webp" alt={p.hero.portraitAlt} width={720} height={720} fetchpriority="high" decoding="async" />
+        <figcaption class="mono-sm">HIROMI / 01</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ---------------- stanza：第一人称自述 ---------------- -->
+  <section class="mp-stanza" aria-label={p.stanza.label}>
+    <div class="shell mp-stanza__inner">
+      <span class="mono mp-stanza__label">{p.stanza.label}</span>
+      <div class="mp-stanza__lines">
+        {p.stanza.lines.map((line, i) => <p class:list={['mp-stanza__line', { 'is-first': i === 0 }]}>{line}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------- file ---------------- -->
+  <section class="mp-block" id="file">
+    <div class="shell mp-split">
+      <header class="mp-head">
+        <span class="mono mp-head__label">{p.file.label}</span>
+        <h2 class="h2">{p.file.title}</h2>
+      </header>
+
+      <dl class="mp-file" data-anim="stagger">
+        {
+          p.file.rows.map((row) => (
+            <div class="mp-file__row">
+              <dt class="mono">{row.k}</dt>
+              <dd>{row.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- ---------------- personality ---------------- -->
+  <section class="mp-block mp-block--tight" id="personality">
+    <div class="shell">
+      <header class="mp-head mp-head--wide" data-anim="fade">
+        <span class="mono mp-head__label">{p.personality.label}</span>
+        <h2 class="h2">{p.personality.title}</h2>
+      </header>
+
+      <ol class="mp-list" data-anim="stagger">
+        {
+          p.personality.items.map((item) => (
+            <li>
+              <span class="mono mp-list__no">{item.no}</span>
+              <h3 class="mp-list__title">{item.title}</h3>
+              <p class="mp-list__body">{item.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ---------------- expressions ---------------- -->
+  <section class="mp-block mp-block--shade" id="expressions">
+    <div class="shell">
+      <header class="mp-head mp-head--wide" data-anim="fade">
+        <span class="mono mp-head__label">{p.expressions.label}</span>
+        <h2 class="h2">{p.expressions.title}</h2>
+        <p class="lead mp-head__lede">{p.expressions.lede}</p>
+      </header>
+
+      <ul class="mp-exp" data-anim="stagger">
+        {
+          p.expressions.items.map((item) => (
+            <li class="mp-exp__item">
+              <div class="mp-exp__frame">
+                <img src={`/img/mascot/hiromi-${item.id}.webp`} alt={`${p.hero.name} · ${item.name}`} width={420} height={420} loading="lazy" decoding="async" />
+              </div>
+              <div class="mp-exp__meta">
+                <span class="mono mp-exp__code">{item.id.toUpperCase()}</span>
+                <h3 class="mp-exp__name">{item.name}</h3>
+                <p class="mp-exp__note">{item.note}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ---------------- usage ---------------- -->
+  <section class="mp-block" id="usage">
+    <div class="shell">
+      <header class="mp-head mp-head--wide" data-anim="fade">
+        <span class="mono mp-head__label">{p.usage.label}</span>
+        <h2 class="h2">{p.usage.title}</h2>
+        <p class="lead mp-head__lede">{p.usage.lede}</p>
+      </header>
+
+      <ul class="mp-usage" data-anim="stagger">
+        {
+          p.usage.items.map((item) => (
+            <li>
+              <span class="mono mp-usage__code">{item.code}</span>
+              <h3 class="mp-usage__title">{item.title}</h3>
+              <p class="mp-usage__body">{item.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ---------------- companion: tible ---------------- -->
+  <section class="mp-block mp-block--dark on-dark" id="tible">
+    <div class="shell mp-companion">
+      <div class="mp-companion__copy">
+        <span class="mono mp-head__label mp-head__label--orange">{p.companion.label}</span>
+        <h2 class="h2">{p.companion.title}</h2>
+        {p.companion.body.map((para) => <p class="body-text">{para}</p>)}
+
+        <dl class="mp-companion__traits">
+          {
+            p.companion.traits.map((tr) => (
+              <div>
+                <dt class="mono">{tr.k}</dt>
+                <dd>{tr.v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div class="mp-companion__figures" aria-hidden="true">
+        <img src="/img/mascot/tible-idle.webp" alt="" width={200} height={200} loading="lazy" decoding="async" />
+        <img src="/img/mascot/tible-happy.webp" alt="" width={200} height={200} loading="lazy" decoding="async" />
+        <img src="/img/mascot/tible-sleep.webp" alt="" width={200} height={200} loading="lazy" decoding="async" />
+        <img src="/img/mascot/tible-alert.webp" alt="" width={200} height={200} loading="lazy" decoding="async" />
+      </div>
+      <p class="sr-only">{p.companion.alt}</p>
+    </div>
+  </section>
+
+  <!-- ---------------- design notes ---------------- -->
+  <section class="mp-block" id="design">
+    <div class="shell mp-split">
+      <header class="mp-head">
+        <span class="mono mp-head__label">{p.design.label}</span>
+        <h2 class="h2">{p.design.title}</h2>
+      </header>
+
+      <div class="mp-design">
+        <div class="mp-design__text">
+          {p.design.paragraphs.map((para) => <p class="body-text">{para}</p>)}
+        </div>
+        <dl class="mp-design__notes">
+          {
+            p.design.notes.map((n) => (
+              <div>
+                <dt class="mono">{n.k}</dt>
+                <dd>{n.v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------- play ---------------- -->
+  <section class="mp-block mp-block--shade" id="play">
+    <div class="shell mp-play">
+      <div class="mp-play__copy">
+        <span class="mono mp-head__label">{p.play.label}</span>
+        <h2 class="h2">{p.play.title}</h2>
+        <p class="lead">{p.play.hint}</p>
+      </div>
+
+      <div class="mp-play__stage">
+        <MascotPlayground
+          client:visible
+          items={states.map((s) => ({ id: s.id, name: s.label, note: s.note, image: s.image }))}
+          lines={p.play.lines}
+          hint={p.play.hint}
+          reset={p.play.reset}
+          alt={t.mascot.alt}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------- cta ---------------- -->
+  <section class="mp-cta">
+    <div class="shell mp-cta__inner" data-anim="fade">
+      <div>
+        <h2 class="h2">{p.cta.title}</h2>
+        <p class="body-text">{p.cta.body}</p>
+      </div>
+      <Button href={p.cta.button.href} label={p.cta.button.label} variant="solid" />
+    </div>
+  </section>
+</main>
+
+<style>
+  .mp-hero {
+    padding-top: clamp(96px, 14vh, 150px);
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+    position: relative;
+    overflow: clip;
+    border-bottom: 1px solid var(--ink-12);
+  }
+
+  .mp-hero__grid {
+    display: grid;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
+  }
+
+  .mp-hero__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--ink-56);
+    margin-bottom: 1rem;
+    font-size: 0.5625rem;
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--orange);
+  }
+
+  .mp-hero__name {
+    font-size: clamp(3rem, 9vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+  }
+
+  .mp-hero__roman {
+    color: var(--ink-38);
+    margin-top: 0.75rem;
+    font-size: 0.625rem;
+  }
+
+  .mp-hero__tagline {
+    margin-top: clamp(1.25rem, 3vw, 2rem);
+    font-size: clamp(1.25rem, 2.4vw, 1.875rem);
+    max-width: 20ch;
+  }
+
+  .mp-hero__intro {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    max-width: 46ch;
+  }
+
+  .mp-hero__actions {
+    margin-top: 1.75rem;
+  }
+
+  .mp-hero__figure {
+    margin: 0;
+    position: relative;
+    justify-self: center;
+    width: min(78vw, 520px);
+  }
+
+  .mp-hero__figure img {
+    width: 100%;
+    height: auto;
+  }
+
+  .mp-hero__figure figcaption {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: var(--ink-38);
+    font-size: 0.5rem;
+  }
+
+  /* ---------------- stanza ---------------- */
+  .mp-stanza {
+    background: var(--cream-2);
+    border-bottom: 1px solid var(--ink-12);
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .mp-stanza__inner {
+    display: grid;
+    gap: clamp(1rem, 2.5vw, 2.5rem);
+    align-items: start;
+  }
+
+  .mp-stanza__label {
+    color: var(--ink-38);
+    font-size: 0.5625rem;
+    padding-top: 0.5rem;
+  }
+
+  .mp-stanza__lines {
+    display: grid;
+    gap: 0.35rem;
+    border-left: 2px solid var(--orange);
+    padding-left: clamp(1rem, 2.5vw, 1.75rem);
+  }
+
+  .mp-stanza__line {
+    font-size: clamp(1.0625rem, 1.7vw, 1.3125rem);
+    line-height: 1.75;
+    letter-spacing: -0.005em;
+    color: var(--ink-70);
+    font-weight: 500;
+  }
+
+  .mp-stanza__line.is-first {
+    color: var(--ink);
+    font-weight: 800;
+  }
+
+  @media (min-width: 900px) {
+    .mp-stanza__inner {
+      grid-template-columns: minmax(0, 0.28fr) minmax(0, 1fr);
+    }
+  }
+
+  /* ---------------- blocks ---------------- */
+  .mp-block {
+    padding-block: clamp(3.5rem, 8vw, 7rem);
+    border-bottom: 1px solid var(--ink-12);
+  }
+
+  .mp-block--tight {
+    padding-block: clamp(3rem, 6vw, 5rem);
+  }
+
+  .mp-block--shade {
+    background: var(--cream-2);
+  }
+
+  .mp-block--dark {
+    background: #141210;
+    color: var(--cream);
+    border-bottom: 0;
+  }
+
+  .mp-head {
+    display: grid;
+    gap: 0.9rem;
+    align-content: start;
+  }
+
+  .mp-head--wide {
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+    max-width: 60ch;
+  }
+
+  .mp-head__label {
+    color: var(--ink-38);
+    font-size: 0.5625rem;
+  }
+
+  .mp-head__label--orange {
+    color: var(--orange);
+  }
+
+  .mp-head__lede {
+    margin-top: 0.5rem;
+    max-width: 48ch;
+  }
+
+  .mp-split {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 4rem);
+  }
+
+  .mp-file {
+    display: grid;
+    border-top: 1px solid var(--ink-12);
+  }
+
+  .mp-file__row {
+    display: grid;
+    grid-template-columns: minmax(6rem, 0.4fr) 1fr;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--ink-12);
+    align-items: baseline;
+  }
+
+  .mp-file__row dt {
+    color: var(--ink-56);
+    font-size: 0.5625rem;
+  }
+
+  .mp-file__row dd {
+    font-size: var(--fs-small);
+  }
+
+  .mp-list {
+    display: grid;
+    gap: 1.25rem;
+    border-top: 1px solid var(--ink-12);
+    padding-top: 1.25rem;
+  }
+
+  .mp-list li {
+    display: grid;
+    gap: 0.4rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--ink-08);
+  }
+
+  .mp-list__no {
+    color: var(--orange);
+    font-size: 0.5625rem;
+  }
+
+  .mp-list__title {
+    font-size: clamp(1.125rem, 1.7vw, 1.375rem);
+    font-weight: 800;
+  }
+
+  .mp-list__body {
+    font-size: var(--fs-small);
+    color: var(--ink-56);
+    line-height: 1.8;
+    max-width: 46ch;
+  }
+
+  /* expressions */
+  .mp-exp {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .mp-exp__frame {
+    border: 1px solid var(--ink-12);
+    background: var(--cream);
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    aspect-ratio: 1;
+    transition: border-color 300ms var(--ease-out);
+  }
+
+  .mp-exp__item:hover .mp-exp__frame {
+    border-color: var(--ink-38);
+  }
+
+  .mp-exp__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 520ms var(--ease-out);
+  }
+
+  .mp-exp__item:hover .mp-exp__frame img {
+    transform: translateY(-4px) scale(1.02);
+  }
+
+  .mp-exp__meta {
+    display: grid;
+    gap: 0.25rem;
+    margin-top: 0.85rem;
+  }
+
+  .mp-exp__code {
+    color: var(--orange);
+    font-size: 0.5rem;
+  }
+
+  .mp-exp__name {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .mp-exp__note {
+    font-size: 0.8125rem;
+    color: var(--ink-56);
+    line-height: 1.7;
+  }
+
+  /* usage */
+  .mp-usage {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--ink-12);
+  }
+
+  .mp-usage li {
+    display: grid;
+    gap: 0.4rem;
+    padding-block: 1.25rem;
+    border-bottom: 1px solid var(--ink-12);
+  }
+
+  .mp-usage__code {
+    color: var(--orange);
+    font-size: 0.5rem;
+  }
+
+  .mp-usage__title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+
+  .mp-usage__body {
+    font-size: var(--fs-small);
+    color: var(--ink-56);
+    line-height: 1.8;
+    max-width: 52ch;
+  }
+
+  /* companion */
+  .mp-companion {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .mp-companion__copy {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+
+  .mp-companion__copy .body-text {
+    color: rgba(255, 249, 241, 0.66);
+    max-width: 46ch;
+  }
+
+  .mp-companion__traits {
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 249, 241, 0.16);
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  }
+
+  .mp-companion__traits dt {
+    color: var(--orange);
+    font-size: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .mp-companion__traits dd {
+    font-size: 0.8125rem;
+    color: rgba(255, 249, 241, 0.8);
+  }
+
+  .mp-companion__figures {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .mp-companion__figures img {
+    width: 100%;
+    height: auto;
+    background: rgba(255, 249, 241, 0.04);
+    border: 1px solid rgba(255, 249, 241, 0.1);
+    padding: 0.75rem;
+  }
+
+  /* design */
+  .mp-design {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .mp-design__text {
+    display: grid;
+    gap: 1rem;
+    max-width: 54ch;
+  }
+
+  .mp-design__notes {
+    display: grid;
+    gap: 0.9rem;
+    border-top: 1px solid var(--ink-12);
+    padding-top: 1.25rem;
+    align-content: start;
+  }
+
+  .mp-design__notes dt {
+    color: var(--ink-56);
+    font-size: 0.5625rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .mp-design__notes dd {
+    font-size: 0.8125rem;
+    color: var(--ink-70);
+  }
+
+  /* play */
+  .mp-play {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+  }
+
+  .mp-play__copy {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+  }
+
+  /* cta */
+  .mp-cta {
+    padding-block: clamp(3rem, 7vw, 6rem);
+  }
+
+  .mp-cta__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border-top: 1px solid var(--ink-12);
+    padding-top: clamp(2rem, 4vw, 3rem);
+  }
+
+  .mp-cta__inner .body-text {
+    margin-top: 0.75rem;
+    max-width: 44ch;
+  }
+
+  /* responsive */
+  @media (min-width: 760px) {
+    .mp-exp {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .mp-usage {
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 3rem;
+      border-top: 0;
+    }
+    .mp-usage li {
+      border-top: 1px solid var(--ink-12);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .mp-hero__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    }
+    .mp-split {
+      grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr);
+    }
+    .mp-play {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    }
+    .mp-companion {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+      align-items: center;
+    }
+    .mp-companion__figures {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .mp-design {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.42fr);
+    }
+    .mp-list {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+</style>

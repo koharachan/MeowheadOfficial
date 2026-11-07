@@ -1,0 +1,269 @@
+---
+import type { Dict } from '../../i18n';
+import Button from '../ui/Button.astro';
+import SectionField from '../ui/SectionField.astro';
+import MascotStage from '../mascot/MascotStage.tsx';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const m = t.mascot;
+---
+
+<section class="mascot" id="mascot">
+  <SectionField no={m.no} />
+  <div class="mascot__bg" aria-hidden="true"></div>
+
+  <div class="shell mascot__grid">
+    <div class="mascot__copy">
+      <div class="mascot__meta" data-anim="fade">
+        <span class="mono mascot__no">{m.no}</span>
+        <span class="mascot__rule" aria-hidden="true"></span>
+        <span class="mono">{m.label}</span>
+      </div>
+
+      <h2 class="h2 mascot__title" data-stream data-anim="fade" data-delay="0.05">{m.title}</h2>
+
+      <div class="mascot__text" data-anim="fade" data-delay="0.1">
+        {m.body.map((p) => <p class="body-text">{p}</p>)}
+      </div>
+
+      <ul class="mascot__states" data-anim="fade" data-delay="0.16">
+        {m.states.map((s) => <li>{s.label}</li>)}
+      </ul>
+
+      <div class="mascot__cta" data-anim="fade" data-delay="0.2">
+        <Button href={m.cta.href} label={m.cta.label} variant="solid" />
+      </div>
+    </div>
+
+    <div class="mascot__stage">
+      <MascotStage
+        client:visible
+        states={m.states.map((s) => ({ id: s.id, label: s.label, image: s.image, note: s.note }))}
+        alt={m.alt}
+        reduceLabel={t.ux.close}
+        companion={{ image: m.companion.image, alt: m.companion.alt, name: m.companion.name }}
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .mascot {
+    position: relative;
+    padding-block: clamp(4.5rem, 10vw, 9rem);
+    overflow: clip;
+  }
+
+  .mascot__bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60% 55% at 72% 42%, rgba(255, 90, 26, 0.07), transparent 70%),
+      var(--cream);
+    pointer-events: none;
+  }
+
+  .mascot__grid {
+    position: relative;
+    display: grid;
+    gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+
+  .mascot__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: var(--ink-56);
+    margin-bottom: 1.25rem;
+  }
+
+  .mascot__no {
+    color: var(--orange);
+  }
+
+  .mascot__rule {
+    width: clamp(28px, 5vw, 64px);
+    height: 1px;
+    background: var(--ink-20);
+  }
+
+  .mascot__title {
+    max-width: 16ch;
+    margin-bottom: 1.5rem;
+  }
+
+  .mascot__text {
+    display: grid;
+    gap: 1rem;
+    max-width: 46ch;
+  }
+
+  .mascot__states {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.5rem;
+  }
+
+  .mascot__states li {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-56);
+    border: 1px solid var(--ink-12);
+    border-radius: 999px;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .mascot__cta {
+    margin-top: 1.75rem;
+  }
+
+  .mascot__stage {
+    min-width: 0;
+  }
+
+  @media (min-width: 900px) {
+    .mascot__grid {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+      gap: clamp(2rem, 5vw, 5rem);
+    }
+  }
+</style>
+
+<style is:global>
+  .stage {
+    width: 100%;
+  }
+
+  .stage__frame {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--ink-12);
+    background:
+      linear-gradient(to right, var(--ink-04) 1px, transparent 1px) 0 0 / 25% 100%,
+      linear-gradient(to bottom, var(--ink-04) 1px, transparent 1px) 0 0 / 100% 25%,
+      var(--cream-2);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .stage__tilt {
+    position: relative;
+    width: 84%;
+    height: 84%;
+    transition: transform 420ms var(--ease-out);
+    will-change: transform;
+  }
+
+  .stage__hit {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+  }
+
+  .stage__hit:focus-visible {
+    outline: 2px solid var(--orange);
+    outline-offset: 6px;
+  }
+
+  .stage__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+    transition:
+      opacity 480ms var(--ease-out),
+      transform 620ms var(--ease-out);
+    pointer-events: none;
+  }
+
+  .stage__img[data-active='true'] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .stage__shadow {
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    width: 46%;
+    height: 22px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(20, 18, 16, 0.16), transparent);
+    filter: blur(2px);
+    pointer-events: none;
+  }
+
+  .stage__companion {
+    position: absolute;
+    left: clamp(0.75rem, 2vw, 1.5rem);
+    bottom: clamp(0.75rem, 2vw, 1.5rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ink-38);
+    animation: tibleBob 5.5s var(--ease-inout) infinite;
+  }
+
+  .stage__companion img {
+    width: clamp(40px, 6vw, 64px);
+    height: auto;
+  }
+
+  @keyframes tibleBob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  .stage__caption {
+    position: absolute;
+    left: clamp(0.75rem, 2vw, 1.5rem);
+    top: clamp(0.75rem, 2vw, 1.5rem);
+    right: clamp(0.75rem, 2vw, 1.5rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.9rem;
+  }
+
+  .stage__state {
+    color: var(--orange);
+    font-size: 0.5625rem;
+  }
+
+  .stage__note {
+    font-size: var(--font-size, var(--fs-small));
+    font-size: var(--fs-small);
+    color: var(--ink-56);
+    line-height: 1.5;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage__companion {
+      animation: none;
+    }
+    .stage__img {
+      transition: opacity 200ms linear;
+      transform: none;
+    }
+  }
+</style>

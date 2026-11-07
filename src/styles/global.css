@@ -1,0 +1,364 @@
+@import "tailwindcss";
+@import "./tokens.css";
+@import "./islands.css";
+
+@theme {
+  --color-ink: #141210;
+  --color-cream: #fff9f1;
+  --color-cream-2: #fbf2e7;
+  --color-cream-3: #f3e8d9;
+  --color-orange: #ff5a1a;
+
+  --font-sans: "Archivo", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-cjk: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --breakpoint-xs: 30rem;
+  --max-width-text: 62ch;
+}
+
+/* ---------------- reset ---------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto; /* Lenis 接管；reduced-motion 下用 auto */
+  overflow-x: clip;
+}
+body {
+  background: var(--cream);
+  /* 防孤字：标题、短段不留下单个字挂行尾 */
+  text-wrap: pretty;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-kerning: normal;
+  overflow-x: clip;
+  text-rendering: optimizeLegibility;
+}
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* 行内图标：跟文字视觉中线对齐，不用手调 margin */
+:where(p, span, a, button, li, dd, dt, label, summary) > svg {
+  display: inline-block;
+  vertical-align: -0.125em;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+::selection {
+  background: var(--orange);
+  color: var(--cream);
+}
+
+/* ---------------- focus ---------------- */
+:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.on-dark :focus-visible {
+  outline-color: #ff7a3d;
+}
+
+/* ---------------- typography helpers ---------------- */
+.font-cjk {
+  font-family: var(--font-cjk);
+}
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  font-weight: 500;
+  font-feature-settings: "tnum" 1;
+}
+.mono-sm {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.tabular,
+time,
+.counter {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* 数字防抖：任何数字块都用等宽数字，滚动计数时不会左右跳 */
+.tabular,
+time,
+.mono,
+.mono-sm {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- 表单：无 outline 的双环咬合 ---------------- */
+.field,
+input[type='text'],
+input[type='email'],
+input[type='search'],
+textarea,
+select {
+  outline: none;
+  background: var(--surface-0);
+  box-shadow: var(--ring-rest);
+  border: 0;
+  border-radius: 10px;
+  transition:
+    box-shadow 220ms var(--ease-out),
+    background-color 220ms var(--ease-out);
+}
+
+.field:focus,
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='search']:focus,
+textarea:focus,
+select:focus,
+.field:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+  background: #fff;
+}
+
+.display {
+  font-family: var(--font-cjk);
+  font-size: var(--fs-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-display);
+  font-weight: 900;
+}
+.h1 {
+  font-family: var(--font-cjk);
+  font-size: var(--fs-h1);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-title);
+  font-weight: 900;
+}
+.h2 {
+  font-family: var(--font-cjk);
+  font-size: var(--fs-h2);
+  line-height: 1.24;
+  letter-spacing: var(--tr-title);
+  font-weight: 800;
+}
+.h3 {
+  font-family: var(--font-cjk);
+  font-size: var(--fs-h3);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+  color: var(--ink-70);
+  font-weight: 400;
+}
+.body-text {
+  font-size: var(--fs-body);
+  line-height: 1.85;
+  color: var(--ink-70);
+}
+.body-text strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ---------------- layout helpers ---------------- */
+.shell {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.section {
+  position: relative;
+  padding-block: clamp(4.5rem, 11vw, 10rem);
+}
+.hair-t {
+  border-top: var(--hair);
+}
+.hair-b {
+  border-bottom: var(--hair);
+}
+.rule {
+  height: 1px;
+  width: 100%;
+  background: var(--ink-12);
+}
+
+/* 工程图纸感：四角裁切标记 */
+.cropmarks::before,
+.cropmarks::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--ink-20);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.cropmarks::before {
+  top: 0;
+  left: 0;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+.cropmarks::after {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+/* ---------------- responsive chrome ---------------- */
+/* CTA 由 Button 组件渲染，样式规则必须放在无作用域的地方 */
+@media (max-width: 640px) {
+  .nav__cta {
+    display: none !important;
+  }
+}
+
+/* ---------------- text reveal ---------------- */
+.line-mask {
+  display: block;
+  overflow: hidden;
+}
+.line-mask > span {
+  display: block;
+  will-change: transform;
+}
+
+/* ---------------- misc ---------------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.no-scroll {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------- 复制按钮：微弹一下，2.5s 后自熄 ---------------- */
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.6rem;
+  padding: 0.28em 0.6em;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-1);
+  color: var(--ink-56);
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 200ms var(--ease-out),
+    color 200ms var(--ease-out);
+}
+
+.copy-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.copy-btn__done {
+  display: none;
+  color: var(--orange);
+}
+
+.copy-btn[data-copied='true'] {
+  background: var(--orange-soft);
+}
+
+.copy-btn[data-copied='true'] .copy-btn__idle {
+  display: none;
+}
+
+.copy-btn[data-copied='true'] .copy-btn__done {
+  display: inline;
+  animation: copy-pop 620ms var(--spring-pop) both;
+}
+
+@keyframes copy-pop {
+  from {
+    transform: scale(0.82);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ---------------- 流式打字 ---------------- */
+/* 只有 JS 真的把字拆开后才隐藏——无 JS 时标题原样可见 */
+[data-stream].is-streaming .stream-ch {
+  display: inline-block;
+  opacity: 0;
+  will-change: filter, opacity;
+}
+
+[data-stream].is-streaming.is-stream-done .stream-ch {
+  opacity: 1;
+  filter: none;
+}
+
+[data-stream] {
+  text-wrap: balance;
+}
+

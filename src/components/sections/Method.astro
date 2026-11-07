@@ -1,0 +1,196 @@
+---
+import type { Dict } from '../../i18n';
+import SectionHead from '../ui/SectionHead.astro';
+import SectionField from '../ui/SectionField.astro';
+
+interface Props {
+  t: Dict;
+}
+const { t } = Astro.props;
+const m = t.method;
+const positions = [
+  { cx: 280, cy: 176, labelY: 118, labelX: 280 },
+  { cx: 206, cy: 306, labelY: 336, labelX: 168 },
+  { cx: 354, cy: 306, labelY: 336, labelX: 392 },
+];
+---
+
+<section class="method section" id="method">
+  <SectionField no={m.no} align="left" />
+  <div class="method__bg" aria-hidden="true"></div>
+
+  <div class="shell">
+    <SectionHead no={m.no} label={m.label} title={m.title} lede={m.lede} />
+
+    <div class="method__body">
+      <figure class="method__figure" data-anim="draw" data-scrub data-scrub-y="36" data-scrub-rotate="4">
+        <svg viewBox="0 0 560 520" role="img" aria-label={m.note}>
+          <g class="rings">
+            {
+              positions.map((p) => (
+                <circle
+                  cx={p.cx}
+                  cy={p.cy}
+                  r="118"
+                  fill="rgba(255,90,26,0.09)"
+                  stroke="currentColor"
+                  stroke-width="1"
+                  data-fill-fade
+                />
+              ))
+            }
+            {
+              positions.map((p) => (
+                <circle cx={p.cx} cy={p.cy} r="118" fill="none" stroke="currentColor" stroke-width="1.25" data-stroke />
+              ))
+            }
+          </g>
+          <g class="labels">
+            {
+              positions.map((p, i) => (
+                <text x={p.labelX} y={p.labelY} text-anchor="middle" class="label">
+                  {m.rings[i].title}
+                </text>
+              ))
+            }
+          </g>
+          <g class="crosshair" aria-hidden="true">
+            <path d="M280 176m-6 0h12M280 176m0-6v12" />
+            <path d="M206 306m-6 0h12M206 306m0-6v12" />
+            <path d="M354 306m-6 0h12M354 306m0-6v12" />
+          </g>
+        </svg>
+      </figure>
+
+      <ol class="method__rings" data-anim="stagger">
+        {
+          m.rings.map((ring) => (
+            <li class="mring">
+              <div class="mring__head">
+                <span class="mono mring__code">{ring.code}</span>
+                <h3 class="h3">{ring.title}</h3>
+              </div>
+              <p class="body-text">{ring.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <p class="method__note" data-anim="fade">
+      <span class="method__note-dot" aria-hidden="true"></span>
+      {m.note}
+    </p>
+  </div>
+</section>
+
+<style>
+  .method {
+    position: relative;
+    background: var(--cream-3);
+    overflow: clip;
+  }
+
+  .method__bg {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to right, var(--ink-04) 1px, transparent 1px);
+    background-size: 25% 100%;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .method__body {
+    position: relative;
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+
+  .method__figure {
+    margin: 0;
+    color: var(--ink);
+    max-width: 560px;
+    width: 100%;
+    justify-self: center;
+  }
+
+  .method__figure svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .rings circle[data-fill-fade] {
+    mix-blend-mode: multiply;
+  }
+
+  .label {
+    font-family: var(--font-cjk);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    fill: var(--ink);
+  }
+
+  .crosshair path {
+    stroke: var(--orange);
+    stroke-width: 1;
+    fill: none;
+  }
+
+  .method__rings {
+    display: grid;
+    gap: clamp(1.25rem, 2.4vw, 1.75rem);
+  }
+
+  .mring {
+    display: grid;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ink-12);
+    box-shadow: none;
+  }
+
+  .mring__head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .mring__code {
+    color: var(--orange);
+    font-size: 0.5625rem;
+  }
+
+  .mring .body-text {
+    max-width: 42ch;
+  }
+
+  .method__note {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--ink-12);
+    font-size: var(--fs-h4);
+    font-weight: 600;
+    color: var(--ink-90);
+  }
+
+  .method__note-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--orange);
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 900px) {
+    .method__body {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
+      gap: clamp(3rem, 6vw, 6rem);
+    }
+  }
+</style>

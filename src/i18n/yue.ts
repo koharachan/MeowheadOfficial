@@ -1,0 +1,583 @@
+import type { Dict } from './types';
+
+/**
+ * 粵語（香港／廣東話書面語）。技術名詞保留原文，
+ * 其餘按粵語講法寫，唔做「普通話加個『嘅』」嘅半桶水翻譯。
+ */
+export const yue: Dict = {
+  lang: 'yue',
+  htmlLang: 'zh-HK',
+  ogLocale: 'zh_HK',
+  path: { home: '/yue/', mascot: '/yue/mascot/', blog: '/yue/blog/', downloads: '/yue/downloads/', legacy: '/ie/' },
+
+  downloads: {
+    label: '資源 / RESOURCES',
+    title: '要咩，直接下。',
+    lede: '標誌、吉祥物、3D 模型，原樣俾你。改色、二次創作、商業授權，問聲先。',
+    note: '檔案放喺本站，直接下載，唔使註冊。',
+    action: '下載',
+    items: [
+      {
+        name: '標誌資源包',
+        href: '/downloads/maomaotou-logo-pack.zip',
+        format: 'ZIP · SVG / PNG',
+        size: '62 KB',
+        note: '五種變體、橫排組合、App 圖示、16–128px 位圖、使用說明',
+      },
+      {
+        name: '吉祥物立繪包',
+        href: '/downloads/maomaotou-mascot-pack.zip',
+        format: 'ZIP · WebP',
+        size: '389 KB',
+        note: '緒方尋美 7 種狀態 + tible 4 種狀態 + 頭部特寫，透明底',
+      },
+      {
+        name: '3D 標誌模型',
+        href: '/models/logo_3d.glb',
+        format: 'GLB · meshopt',
+        size: '131 KB',
+        note: '35,336 面，要 meshopt 解碼器；同一個資料夾另有未壓縮版本',
+      },
+      {
+        name: '品牌提案板',
+        href: '/brand/proposal.png',
+        format: 'PNG · 2040×1960',
+        size: '227 KB',
+        note: '一頁睇晒全部規範：標誌、色板、變體、最細尺寸',
+      },
+      {
+        name: '網站圖示集',
+        href: '/favicon.svg',
+        format: 'SVG / ICO / PNG',
+        size: '約 60 KB',
+        note: 'favicon.svg、favicon.ico、apple-touch-icon、192/512、maskable',
+      },
+    ],
+    licenseTitle: '許可',
+    license: [
+      '呢頁所有素材用 MIT 協議開放：複製、修改、合併、發佈、商用、再授權都得。',
+      '唯一要求係保留版權聲明同許可聲明（倉庫根目錄嘅 LICENSE 文件）。',
+      '素材按「原樣」提供，唔附帶任何擔保。',
+      '商標唔喺授權範圍：可以攞去做你嘅項目，但唔好用貓貓頭或者尋美冒充我哋。',
+    ],
+  },
+
+  blog: {
+    label: '日誌 / BLOG',
+    title: '寫低咗嘅嘢。',
+    lede: '工程記錄：做過嘅取捨、踩過嘅坑、為咩咁揀。唔寫客戶，唔寫獎項，唔寫行業趨勢。',
+    readUnit: '分鐘睇完',
+    toc: '本頁目錄 / CONTENTS',
+    more: '更多日誌',
+    top: '返返頂',
+    license: '本文用 CC BY 4.0 授權：署名後可以自由轉載、改編、商用。',
+    back: '全部日誌',
+    all: '日誌',
+    home: '返首頁',
+    note: '以上係工程記錄，唔包含客戶資料同未公開數據。',
+  },
+
+  meta: {
+    title: '貓貓頭網絡科技（廣東）有限公司 · 上到衛星，下到代碼',
+    description:
+      '貓貓頭網絡科技（廣東）有限公司做衛星通訊終端、軟件開發同系統集成、人工智能同資訊安全。硬件、軟件同安全由同一間公司交付。',
+    keywords: '貓貓頭網絡科技,衛星通訊終端,軟件開發,系統集成,人工智能,資訊安全,廣東韶關',
+    ogAlt: '貓貓頭網絡科技 — 上到衛星，下到代碼',
+  },
+
+  brand: {
+    name: '貓貓頭網絡科技',
+    nameFull: '貓貓頭網絡科技（廣東）有限公司',
+    roman: 'MAOMAOTOU NETWORK TECHNOLOGY',
+    logoAlt: '貓貓頭網絡科技標誌：一個合埋眼微笑嘅黑色貓頭，橙色三角鼻',
+    claim: 'all in one',
+  },
+
+  nav: {
+    links: [
+      { label: '能力', href: '#capability' },
+      { label: '方法', href: '#method' },
+      { label: '吉祥物', href: '#mascot' },
+      { label: '為咩', href: '#why' },
+      { label: '流程', href: '#process' },
+      { label: '團隊', href: '#team' },
+      { label: '位置', href: '#location' },
+      { label: '聯絡', href: '#contact' },
+    ],
+    cta: { label: '傾兩句', href: '#contact' },
+    menu: '選單',
+    close: '閂',
+  },
+
+  langs: [
+    { code: 'zh', label: '中', name: '中文（普通話）' },
+    { code: 'yue', label: '粵', name: '粵語（廣東話）' },
+    { code: 'en', label: 'EN', name: 'English' },
+  ],
+  langSwitch: { label: '中', short: '中', href: '/' },
+
+  ux: {
+    skip: '跳去主要內容',
+    loading: '載入緊',
+    loadingDone: '搞掂',
+    scroll: '向下滑',
+    close: '閂',
+    sectionNav: '頁面段落索引',
+    peek: { bubble: '頁底仲有一位喺度等你。', cta: '識下尋美' },
+  },
+
+  chapters: [
+    { id: 'hero', no: '01', label: '開場', short: '開場' },
+    { id: 'claim', no: '02', label: '主張', short: '主張' },
+    { id: 'capability', no: '03', label: '能力', short: '能力' },
+    { id: 'method', no: '04', label: '方法', short: '方法' },
+    { id: 'mascot', no: '05', label: '吉祥物', short: '吉祥物' },
+    { id: 'why', no: '06', label: '為咩', short: '為咩' },
+    { id: 'process', no: '07', label: '流程', short: '流程' },
+    { id: 'team', no: '08', label: '團隊', short: '團隊' },
+    { id: 'location', no: '09', label: '位置', short: '位置' },
+    { id: 'contact', no: '10', label: '聯絡', short: '聯絡' },
+  ],
+  splash: { boot: '道門開緊，前面就係。' },
+  hero: {
+    kicker: '貓貓頭網絡科技（廣東）有限公司',
+    lines: ['上到衛星，', '下到代碼。'],
+    lede:
+      '衛星終端係我哋造嘅，跑喺終端上面嘅系統都係我哋寫嘅。硬件、軟件同安全之間，冇第三間供應商。',
+    primary: { label: '睇下我哋做咩', href: '#capability' },
+    secondary: { label: '傾下你個項目', href: '#contact' },
+    specs: [
+      { k: '成立', v: '2026.11.04' },
+      { k: '註冊資本', v: 'CNY 10,000,000' },
+      { k: '註冊地', v: '廣東 · 韶關' },
+    ],
+    caption: '首屏係即時渲染嘅 3D 標誌，會跟住滑動轉向。',
+    posterAlt: '貓貓頭 3D 標誌嘅靜態渲染圖',
+    sceneNote: 'LIVE WEBGL',
+    sceneNoteFallback: 'STATIC FALLBACK',
+  },
+
+  claim: {
+    no: '02',
+    label: '主張 / ALL IN ONE',
+    lines: ['唔係軟硬結合，', '係同一間公司。'],
+    body: [
+      '「all in one」係交付方式：一份合約、一個團隊、一套接口。硬件、系統同安全之間冇供應商接縫。',
+      '標誌頭頂嗰個 M 有兩個峰，谷係中縫，合埋先係一個完整嘅頭。我哋做嘅嘢一樣：將分開嘅嘢合成一個。',
+    ],
+    notes: [
+      { k: 'M', v: '兩個峰係兩隻耳仔，谷係中縫' },
+      { k: 'all in one', v: '雙峰合成一個整體' },
+    ],
+  },
+
+  capability: {
+    no: '03',
+    label: '能力 / CAPABILITIES',
+    title: '四條線，全部喺經營範圍入面。',
+    lede: '我哋只寫執照上面寫過嘅能力。冇證書就唔承諾，未做過就唔舉例。',
+    items: [
+      {
+        code: 'S-01',
+        title: '衛星通訊終端',
+        summary: '由終端整機，到天上嘅數據落地。',
+        bullets: [
+          '衛星移動通訊終端整機設計同小批量製造',
+          '導航、授時同定位模組嘅集成同聯調',
+          '衛星遙感數據接收同業務系統對接',
+        ],
+      },
+      {
+        code: 'S-02',
+        title: '軟件同系統集成',
+        summary: '將散喺各處嘅系統，接成一條流水線。',
+        bullets: [
+          '訂製業務系統、後台同數據中台開發',
+          '異構系統對接、數據遷移同接口治理',
+          '容器化部署同可觀測性建設',
+        ],
+      },
+      {
+        code: 'S-03',
+        title: '人工智能',
+        summary: '將模型放入業務流程，唔係放入 PPT。',
+        bullets: ['模型選型、私有化部署同微調', '檢索增強嘅知識庫同業務問答', '推理成本同回應延遲優化'],
+      },
+      {
+        code: 'S-04',
+        title: '資訊安全',
+        summary: '寫第一行代碼嗰陣，就把門鎖好。',
+        bullets: ['安全開發流程同代碼審計', '邊界防護、日誌採集同審計', '數據分級、權限同存取控制設計'],
+      },
+    ],
+    footnote: '以上能力對應營業執照經營範圍，唔包含任何尚未取得嘅資質或者許可。',
+  },
+
+  method: {
+    no: '04',
+    label: '方法 / THREE RINGS',
+    title: '製造、軟件、服務，三環相扣。',
+    lede: '單點能力邊個都有，難嘅係接縫位唔會甩。',
+    rings: [
+      { code: 'RING 01', title: '製造', body: '做得出。結構、外殼、小批量試產同出廠測試，全部喺我哋手上。' },
+      { code: 'RING 02', title: '軟件', body: '跑得起。終端上面嘅系統同後台服務由同一批人寫，查問題唔使跨公司。' },
+      { code: 'RING 03', title: '服務', body: '用得落去。上線只係開始，培訓、運維同迭代仍然由我哋負責。' },
+    ],
+    note: '三環交疊嗰一塊，先係我哋真正嘅產品。',
+  },
+
+  mascot: {
+    no: '05',
+    label: '吉祥物 / HIROMI',
+    title: '佢係呢套系統入面嘅「人」。',
+    body: [
+      '尋美（OGATA HIROMI）係貓貓頭嘅吉祥物。佢只會出現喺你真係會睇到嘅地方：載入、提交成功、404，同埋滑到頁尾嗰陣由右邊探出嚟嘅嗰個頭。',
+      '佢會跟住滑鼠睇你，㩒一下就換表情。阻住嘅話就㩒右下角嗰個交叉。',
+    ],
+    cta: { label: '識下尋美', href: '/mascot/' },
+    alt: '貓娘吉祥物緒方尋美：黑髮貓耳、奶白毛衣、橙色三角鼻，正在揮手',
+    companion: {
+      name: 'tible',
+      roman: 'TIBLE',
+      label: '細吉祥物',
+      body: 'tible 係嗰個黑色貓頭本身。佢冇身體，只會出現喺好細嘅地方：載入指示、按鈕角標，同你行錯路嗰一頁。',
+      alt: '細吉祥物 tible：一個合埋眼微笑嘅黑色貓頭，橙色三角鼻',
+      image: '/img/mascot/tible-idle.webp',
+    },
+    states: [
+      { id: 'idle', label: '待機', image: '/img/mascot/hiromi-idle.webp', note: '企喺度，乜都唔做。' },
+      { id: 'wave', label: '打招呼', image: '/img/mascot/hiromi-wave.webp', note: '第一次見面。' },
+      { id: 'think', label: '諗緊', image: '/img/mascot/hiromi-think.webp', note: '冇日誌嘅第 3 分鐘。' },
+      { id: 'happy', label: '開心', image: '/img/mascot/hiromi-happy.webp', note: '構建通過咗。' },
+      { id: 'sleep', label: '眼瞓', image: '/img/mascot/hiromi-sleep.webp', note: '凌晨兩點嘅機房。' },
+      { id: 'oops', label: '出錯', image: '/img/mascot/hiromi-oops.webp', note: '呢條路冇頁面。' },
+    ],
+  },
+
+  why: {
+    no: '06',
+    label: '為咩 / WHY US',
+    title: '三條，唔吹。',
+    items: [
+      {
+        no: 'A',
+        title: '一間公司，一條責任線。',
+        body: '硬件、系統同安全由同一方交付。出咗事就係我哋嘅事，唔使喺供應商之間轉手。',
+      },
+      {
+        no: 'B',
+        title: '講清楚唔做咩先。',
+        body: '超出經營範圍嘅嘢唔接，做唔到嘅指標唔寫入合約。寧願喺第一次會議就講「呢塊唔得」。',
+      },
+      {
+        no: 'C',
+        title: '每個階段都有嘢跑得。',
+        body: '唔靠一份靚 PPT 收中期錢。方案階段俾可運行嘅骨架，構建階段每兩個星期俾一版驗收到嘅。',
+      },
+    ],
+  },
+
+  process: {
+    no: '07',
+    label: '流程 / PROCESS',
+    title: '五步，每一步都有交付物。',
+    lede: '每個階段做咩、使幾多錢、幾時可以停。',
+    deliverableLabel: '交付物',
+    steps: [
+      { no: '01', title: '對齊', body: '搞清楚目標、邊界同預算，講明今次唔做嘅事。', deliverable: '範圍說明 + 唔做清單' },
+      { no: '02', title: '方案', body: '技術選型、里程碑同驗收標準，寫成一份簽得字嘅文件。', deliverable: '技術方案 + 可運行骨架' },
+      { no: '03', title: '構建', body: '兩個星期一個迭代，每次完結都有一版睇得嘅嘢。', deliverable: '可運行版本 + 變更記錄' },
+      { no: '04', title: '驗收', body: '效能、安全同無障礙逐項過一次，唔靠感覺。', deliverable: '驗收清單 + 測試報告' },
+      { no: '05', title: '交接', body: '源碼、文件同運維手冊全量移交，唔留黑盒。', deliverable: '源碼 + 文件 + 運維手冊' },
+    ],
+  },
+
+  team: {
+    no: '08',
+    label: '團隊 / TEAM',
+    title: '搵邊個，寫喺呢度。',
+    lede: '公司唔大。簽字、交付、技術判斷，各歸一個人。',
+    members: [
+      {
+        no: '01',
+        role: '法定代表人',
+        name: '',
+        handle: 'xiaoyanboke.cn',
+        href: 'https://xiaoyanboke.cn',
+        avatar: '/team/xiaoyan.png',
+        duty: '對外簽署、工商同合規事務。',
+      },
+      {
+        no: '02',
+        role: '股東 / CEO',
+        name: '',
+        handle: 'blog.meowhead.cn',
+        href: 'https://blog.meowhead.cn',
+        avatar: '/team/meowhead.png',
+        duty: '經營同交付，對項目結果負責。',
+      },
+      {
+        no: '03',
+        role: '算法顧問',
+        name: '',
+        handle: 'luoaowoo.cn',
+        href: 'https://luoaowoo.cn',
+        avatar: '/team/luo.png',
+        duty: '模型選型同算法方案嘅外部評審。',
+      },
+    ],
+    note: '只列對外公開嘅角色；唔包含未披露嘅協作方。',
+  },
+  location: {
+    no: '09',
+    label: '位置 / LOCATION',
+    title: '喺軌道上面睇，我哋喺呢度。',
+    lede: '韶關市武江區百旺西路 8 號。向下滑，由衛星軌道一路落去門牌號。',
+    hint: '即時衛星影像 · 天地圖',
+    attribution: '審圖號 GS（2026）4921號',
+    chips: [
+      { k: '省份', v: '廣東省' },
+      { k: '城市', v: '韶關市' },
+      { k: '區', v: '武江區' },
+      { k: '郵編', v: '512026' },
+    ],
+    caption: '廣東省韶關市武江區百旺西路 8 號 5 號廠房 B 區 F469 房（只限辦公用途）',
+    fail: '地圖載入失敗，請以上面地址為準。',
+    aria: '韶關市武江區百旺西路 8 號嘅位置地圖',
+    coordinates: '113.5575 E / 24.7480 N',
+  },
+  contact: {
+    no: '10',
+    label: '聯絡 / CONTACT',
+    title: '講清楚你想做咩，我哋回得比你想像中快。',
+    lede: '第一次溝通唔需要方案書。一句話講清場景，我哋會話你知做唔做得到、大概幾耐、幾多錢。',
+    facts: [
+      { k: '辦公室地址', v: '廣東省韶關市武江區百旺西路 8 號 5 號廠房 B 區 F469 房（只限辦公用途）' },
+      { k: '統一社會信用代碼', v: '91440200MAKT9DRH5P' },
+      { k: '電子郵箱', v: 'hello@maomaotou.tech（佔位地址）' },
+      { k: '註冊資本', v: '人民幣壹仟萬元' },
+    ],
+    map: {
+      label: '位置 / LOCATION',
+      caption: '廣東省韶關市武江區百旺西路 8 號 5 號廠房 B 區 F469 房（只限辦公用途）',
+      fail: '地圖載入失敗。以上面地址為準，或者自己搜「韶關市武江區百旺西路 8 號」。',
+      aria: '公司位置地圖，基於天地圖',
+      coordinates: '113.5575 E / 24.7480 N',
+    },
+    form: {
+      legend: '項目諮詢',
+      name: '你點稱呼',
+      org: '公司 / 團隊',
+      email: '電郵',
+      topic: '想傾咩',
+      topics: ['衛星通訊終端', '軟件開發同系統集成', '人工智能', '資訊安全', '其他'],
+      message: '一句話講清需求',
+      submit: '發送',
+      note: '而家係示範表單，提交唔會真正發送資料。',
+      successTitle: '收到喇。',
+      resetLabel: '再發一條',
+      successBody: '呢個係示範表單，冇資料被發出。真上線嗰陣，呢度會換成我哋嘅回覆時間承諾。',
+      error: '請至少填寫稱呼、電郵同需求描述。',
+      placeholder: {
+        name: '例如：陳生',
+        org: '選填',
+        email: 'name@company.com',
+        message: '例如：要喺廠區內部部署一套衛星回傳 + 本地睇板，三個月內上線。',
+      },
+    },
+  },
+
+  footer: {
+    tagline: '硬件、軟件同安全，同一間公司交付。',
+    icp: '粵ICP備（辦理中）',
+    icpHref: 'https://beian.miit.gov.cn/',
+    police: '粵公網安備（辦理中）',
+    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',
+    copyright: '© 2026 貓貓頭網絡科技（廣東）有限公司',
+    note: '本站唔使用虛構嘅客戶案例、獎項、營收或者合作方。',
+    columns: [
+      {
+        title: '目錄',
+        links: [
+          { label: '能力', href: '#capability' },
+          { label: '方法', href: '#method' },
+          { label: '流程', href: '#process' },
+          { label: '聯絡', href: '#contact' },
+        ],
+      },
+      {
+        title: '更多',
+        links: [
+          { label: '吉祥物 尋美', href: '/mascot/' },
+          { label: '日誌', href: '/blog/' },
+          { label: '資源下載', href: '/downloads/' },
+          { label: '千禧兼容版', href: '/ie/' },
+          { label: 'English', href: '/en/' },
+        ],
+      },
+    ],
+  },
+
+  teapot: {
+    label: '418 / I AM A TEAPOT',
+    title: '我係一個茶壺。',
+    lines: ['可以倒茶。', '唔可以倒咖啡。', '呢個唔係幽默，係 RFC 2324。', '你都可以乜都唔倒。'],
+    stamp: '拒絕咖啡',
+    hint: '㩒一下個壺。',
+    pour: '倒好喇。',
+    home: { label: '返首頁', href: '/yue/' },
+    mascot: { label: '識下尋美', href: '/yue/mascot/' },
+  },
+  forbidden: {
+    label: '403 / FORBIDDEN',
+    titleCn: '呢道門只係對一部分地區開。',
+    titleGlobal: '呢一頁要通行證。',
+    bodyCn: '呢個係一個管理後台路徑，我哋冇將佢放喺公開存取範圍。',
+    bodyGlobal: '呢個係一個管理後台路徑，只係對持有憑據嘅人開放。',
+    home: { label: '返首頁', href: '/yue/' },
+    mascot: { label: '識下尋美', href: '/yue/mascot/' },
+    note: '如果你認為自己應該有權存取，寫信去 hello@maomaotou.tech。',
+    regionNote: '提示：按你網絡所在嘅地區，呢一頁嘅說明會唔同。',
+  },
+  notFound: {
+    code: '404',
+    title: '呢條路冇頁面。',
+    body: '你要搵嘅嘢唔喺呢個地址。尋美舉住一張手繪地圖，指住首頁。',
+    home: { label: '返首頁', href: '/yue/' },
+    mascot: { label: '識下尋美', href: '/yue/mascot/' },
+    alt: '尋美舉住一張手繪地圖，一臉疑惑',
+  },
+
+  mascotPage: {
+    chapters: [
+      { id: 'top', no: '01', label: '登場', short: '開場' },
+      { id: 'file', no: '02', label: '檔案', short: '檔案' },
+      { id: 'personality', no: '03', label: '性格', short: '性格' },
+      { id: 'expressions', no: '04', label: '表情', short: '表情' },
+      { id: 'usage', no: '05', label: '出場', short: '出場' },
+      { id: 'tible', no: '06', label: 'tible', short: 'tible' },
+      { id: 'design', no: '07', label: '設計', short: '設計' },
+      { id: 'play', no: '08', label: '互動', short: '互動' },
+    ],
+    meta: {
+      title: '尋美 OGATA HIROMI · 貓貓頭網絡科技嘅吉祥物',
+      description:
+        '尋美（OGATA HIROMI）係貓貓頭網絡科技（廣東）有限公司嘅吉祥物：貓娘設定檔案、六種表情、出場規則同設計說明。',
+    },
+    hero: {
+      kicker: 'CHARACTER FILE / 01',
+      name: '尋美',
+      roman: 'OGATA HIROMI',
+      tagline: '系統入面嗰個會呼吸嘅零件。',
+      intro: [
+        '佢唔係裝飾。佢出現喺載入、報錯、成功同沉默嘅角落，替文案承受嗰啲講唔出口嘅情緒。',
+        '貓耳、黑髮、奶白毛衣，鼻尖嗰點橙同標誌一樣色。佢只做一件事：令螢幕後面好似有人。',
+      ],
+      portraitAlt: '尋美嘅全身立繪：貓耳、黑髮、奶白毛衣、黑色短褲、奶白襪同尾巴',
+      back: '返首頁',
+    },
+    file: {
+      label: '檔案 / FILE',
+      title: '基本參數。',
+      rows: [
+        { k: '代號', v: 'HIROMI-01' },
+        { k: '身份', v: '吉祥物兼報錯專員' },
+        { k: '身高', v: '2.5 頭身' },
+        { k: '體重', v: '一個貓頭' },
+        { k: '產地', v: '廣東 · 韶關' },
+        { k: '出廠', v: '2026.11' },
+      ],
+    },
+    personality: {
+      label: '性格 / PERSONALITY',
+      title: '三條設定。',
+      items: [
+        { no: '01', title: '容易眼瞓。', body: '機房太靜喇，佢成日喺機櫃罅隙度瞓着。載入慢嘅時候唔好怪佢。' },
+        { no: '02', title: '對報錯有潔癖。', body: '冇日誌嘅 bug 佢唔認。所以我哋嘅服務預設打印結構化日誌。' },
+        { no: '03', title: '唔講嘢，但好識睇。', body: '佢只用耳仔同眼表達態度，所以你永遠知道佢咩意思。' },
+      ],
+    },
+    expressions: {
+      label: '表情 / EXPRESSIONS',
+      title: '六種狀態，夠用喇。',
+      lede: '表情決定佢可以出現喺邊。多一種表情，就多一個用得着佢嘅場景。',
+      items: [
+        { id: 'idle', name: '待機', note: '預設狀態，企喺度，尾巴輕輕擺。' },
+        { id: 'wave', name: '打招呼', note: '第一次見面、表單歡迎、頁面首次進入。' },
+        { id: 'think', name: '諗緊', note: '載入中、處理緊、等回應。' },
+        { id: 'happy', name: '開心', note: '提交成功、構建通過、任務完成。' },
+        { id: 'sleep', name: '眼瞓', note: '空白狀態、長時間冇操作、夜晚兩點。' },
+        { id: 'oops', name: '出錯', note: '404、表單驗證失敗、接口異常。' },
+      ],
+    },
+    usage: {
+      label: '出場 / USAGE',
+      title: '佢只會出現喺你真係會睇到嘅地方。',
+      lede: '唔做吉祥物牆。每一次出場都要承擔一個功能，否則就唔出場。',
+      items: [
+        { code: 'LOADING', title: '首屏載入', body: '喺 3D 模型同字體下載期間，替我哋爭 1.2 秒嘅耐性。' },
+        { code: '404', title: '行錯路', body: '搵唔到頁面嘅時候，佢舉起一張手繪地圖，指住首頁。' },
+        { code: 'SUCCESS', title: '提交成功', body: '比任何 toast 都容易被睇到嘅一個手勢。' },
+        { code: 'PEEK', title: '角落探頭', body: '滑到頁尾，佢由右邊探個頭出嚟，提你仲有下一頁。' },
+      ],
+    },
+    stanza: {
+      label: '自述 / FIRST PERSON',
+      lines: [
+        '我管呢一格。',
+        '404、載入中、提交成功，都喺呢度。',
+        '我唔講嘢，只係望住你。',
+        '冇日誌嘅 bug，我會望耐啲。',
+        '眼瞓就耷低個頭，但唔會走開。',
+        '鼻上面嗰點橙，係由標誌嗰度借返嚟嘅。',
+      ],
+    },
+    design: {
+      label: '設計 / DESIGN NOTES',
+      title: '為咩係貓娘。',
+      paragraphs: [
+        '標誌係一個黑色貓頭：上緣兩個峰、下緣圓潤、一點橙色三角鼻。吉祥物唔應該係另一套語言，所以我哋將貓頭種咗成人。',
+        '佢嘅線條比標誌軟。標誌要細到 16px 都仲清晰，尋美只要喺螢幕上面似有嘢喺度。所以佢嘅圓更圓，頭髮更亂。',
+        '全身只用三種顏色。胭脂係橙色調低透明度，冇引入第四種。',
+      ],
+      notes: [
+        { k: '輪廓', v: '外輪廓 2.5px，內部細節 1.5px' },
+        { k: '配色', v: '#141210 / #FFF9F1 / #FF5A1A' },
+        { k: '渲染', v: '平面插畫，唔用 3D' },
+      ],
+    },
+    companion: {
+      label: '第二位 / TIBLE',
+      title: 'tible 係嗰個頭。',
+      body: [
+        '如果話尋美係「人」，tible 就係「標」——佢就係標誌上面嗰個黑色貓頭，去咗身體，淨返一個表情。',
+        'tible 嘅尺寸上限係 48px。佢只會出現喺極細嘅地方：載入指示、按鈕角標、404 頁面上面嗰張手繪地圖。因為佢細，所以佢唔需要講嘢。',
+      ],
+      traits: [
+        { k: '尺寸', v: '16 — 48px' },
+        { k: '顏色', v: '墨黑 + 橙鼻' },
+        { k: '出場', v: '載入 / 角標 / 404' },
+      ],
+      alt: '細吉祥物 tible 嘅三種表情：微笑、開心、眼瞓',
+    },
+    play: {
+      label: '互動 / PLAY',
+      title: '試下㩒佢。',
+      hint: '㩒一下換表情，再㩒一下聽佢講嘢。',
+      lines: [
+        '我喺度。唔好急。',
+        '機房地板比工位暖，我特登躺喺度嘅。',
+        '呢條唔係錯誤，係你打錯咗。',
+        '唔好再篤喇，日誌先睇到一半。',
+        '再篤一次，我就將你都記入日誌。',
+        '俾我二十分鐘，啲錯誤會自己走。',
+      ],
+      reset: '重設',
+    },
+    cta: {
+      title: '佢都喺首頁等你。',
+      body: '首頁第五屏就係佢嘅位置，滑到嗰度，佢會換三次表情。',
+      button: { label: '返首頁睇下', href: '/yue/' },
+    },
+  },
+};

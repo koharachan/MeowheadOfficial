@@ -1,0 +1,92 @@
+---
+/**
+ * 贯穿整屏的「图纸底纹」：竖向发丝线 + 巨型章节号，随滚动平移。
+ * 它让每一屏都真的在跟着手走，同时把整站缝成一张连续的技术图纸。
+ */
+interface Props {
+  no: string;
+  tone?: 'light' | 'dark';
+  lines?: 3 | 4;
+  align?: 'right' | 'left';
+}
+const { no, tone = 'light', lines = 3, align = 'right' } = Astro.props;
+---
+
+<div class="field" aria-hidden="true" data-tone={tone} data-align={align}>
+  <div class="field__grid" data-scrub data-scrub-y="64">
+    {Array.from({ length: lines }).map(() => <span></span>)}
+  </div>
+  <div class="field__no" data-scrub data-scrub-y="-90">{no}</div>
+</div>
+
+<style>
+  .field {
+    position: absolute;
+    inset: 0;
+    overflow: clip;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .field__grid {
+    position: absolute;
+    inset: -80px 0;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    padding-inline: var(--gutter);
+    max-width: var(--maxw);
+    margin-inline: auto;
+    left: 0;
+    right: 0;
+  }
+
+  .field__grid span {
+    border-right: 1px solid var(--ink-04);
+  }
+
+  .field__grid span:last-child {
+    border-right: 0;
+  }
+
+  .field[data-tone='dark'] .field__grid span {
+    border-right-color: rgba(255, 249, 241, 0.05);
+  }
+
+  .field__no {
+    position: absolute;
+    bottom: clamp(1rem, 3vw, 2.5rem);
+    right: var(--gutter);
+    font-family: var(--font-mono);
+    font-size: clamp(4rem, 12vw, 11rem);
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--ink-08);
+    font-weight: 500;
+    user-select: none;
+  }
+
+  .field[data-align='left'] .field__no {
+    right: auto;
+    left: var(--gutter);
+  }
+
+  .field[data-tone='dark'] .field__no {
+    -webkit-text-stroke-color: rgba(255, 249, 241, 0.09);
+  }
+
+  @media (max-width: 720px) {
+    .field__no {
+      font-size: 5rem;
+      opacity: 0.7;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field__grid,
+    .field__no {
+      transform: none !important;
+    }
+  }
+</style>

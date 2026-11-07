@@ -1,0 +1,11 @@
+# 管理后台路径：一律 403，内容用我们自己的错误页
+/wp-admin/*     /403/index.html   403
+/wp-admin       /403/index.html   403
+/wpadmin/*      /403/index.html   403
+/wpadmin        /403/index.html   403
+/admin/*        /403/index.html   403
+/admin          /403/index.html   403
+/login          /403/index.html   403
+/reg            /403/index.html   403
+/wp-login.php   /403/index.html   403
+/xmlrpc.php     /403/index.html   403
