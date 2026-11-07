@@ -74,11 +74,11 @@ export const zh: Dict = {
   },
 
   meta: {
-    title: '猫猫头网络科技（广东）有限公司 · 上到卫星，下到代码',
+    title: '猫猫头网络科技（广东）有限公司 · 看见太阳，看见明天',
     description:
       '猫猫头网络科技（广东）有限公司做卫星通信终端、软件开发与系统集成、人工智能与信息安全。硬件、软件与安全由同一家公司交付。',
     keywords: '猫猫头网络科技,卫星通信终端,软件开发,系统集成,人工智能,信息安全,广东韶关',
-    ogAlt: '猫猫头网络科技 — 上到卫星，下到代码',
+    ogAlt: '猫猫头网络科技 — 看见太阳，看见明天',
   },
 
   brand: {
@@ -137,9 +137,9 @@ export const zh: Dict = {
   splash: { boot: '门正在开，前面就是。' },
   hero: {
     kicker: '猫猫头网络科技（广东）有限公司',
-    lines: ['上到卫星，', '下到代码。'],
+    lines: ['看见太阳，', '看见明天。'],
     lede:
-      'all in one',
+      '大道至简——all in one',
     primary: { label: '看我们做什么', href: '#capability' },
     secondary: { label: '聊聊你的项目', href: '#contact' },
     specs: [

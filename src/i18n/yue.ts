@@ -78,11 +78,11 @@ export const yue: Dict = {
   },
 
   meta: {
-    title: '貓貓頭網絡科技（廣東）有限公司 · 上到衛星，下到代碼',
+    title: '貓貓頭網絡科技（廣東）有限公司 · 看見太陽，看見明天',
     description:
       '貓貓頭網絡科技（廣東）有限公司做衛星通訊終端、軟件開發同系統集成、人工智能同資訊安全。硬件、軟件同安全由同一間公司交付。',
     keywords: '貓貓頭網絡科技,衛星通訊終端,軟件開發,系統集成,人工智能,資訊安全,廣東韶關',
-    ogAlt: '貓貓頭網絡科技 — 上到衛星，下到代碼',
+    ogAlt: '貓貓頭網絡科技 — 看見太陽，看見明天',
   },
 
   brand: {
@@ -141,9 +141,9 @@ export const yue: Dict = {
   splash: { boot: '道門開緊，前面就係。' },
   hero: {
     kicker: '貓貓頭網絡科技（廣東）有限公司',
-    lines: ['上到衛星，', '下到代碼。'],
+    lines: ['看見太陽，', '看見明天。'],
     lede:
-      'all in one',
+      '大道至簡——all in one',
     primary: { label: '所為何事', href: '#capability' },
     secondary: { label: '談談你的項目', href: '#contact' },
     specs: [

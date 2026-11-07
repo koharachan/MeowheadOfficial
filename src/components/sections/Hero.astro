@@ -26,7 +26,18 @@ const h = t.hero;
         {h.lines.map((line) => <span class="line-mask"><span>{line}</span></span>)}
       </h1>
 
-      <p class="hero__lede lead" data-anim="fade" data-delay="0.05">{h.lede}</p>
+      <p class="hero__lede" data-anim="fade" data-delay="0.05">
+        {h.lede.split('——').map((part, i) =>
+          i === 0 ? (
+            <span class="hero__lede-cjk">{part}</span>
+          ) : (
+            <>
+              <span class="hero__lede-dash" aria-hidden="true">——</span>
+              <span class="hero__lede-latin">{part}</span>
+            </>
+          )
+        )}
+      </p>
 
       <div class="hero__cta" data-anim="fade" data-delay="0.12">
         <Button href={h.primary.href} label={h.primary.label} variant="solid" />
@@ -148,15 +159,34 @@ const h = t.hero;
     color: var(--ink);
   }
 
-  /* 副文案只留一个短语：给它更紧的字距和更小的字重，别像一句口号 */
+  /* 副文案：中文一句 + 拉丁短语，两段各自排版 */
   .hero__lede {
-    max-width: 34ch;
-    margin-top: 0.35rem;
-    font-family: var(--font-latin);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.1em 0.5em;
+    max-width: 40ch;
+    margin-top: 0.5rem;
     font-size: clamp(0.9375rem, 1.15vw, 1.0625rem);
-    letter-spacing: 0.26em;
-    text-transform: lowercase;
     color: var(--ink-56);
+  }
+
+  .hero__lede-cjk {
+    font-family: var(--font-cjk);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .hero__lede-dash {
+    color: var(--ink-20);
+  }
+
+  .hero__lede-latin {
+    font-family: var(--font-latin);
+    font-size: 0.875em;
+    letter-spacing: 0.22em;
+    text-transform: lowercase;
+    color: var(--ink-38);
   }
 
   .hero__cta {

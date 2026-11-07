@@ -74,7 +74,7 @@ export const en: Dict = {
   },
 
   meta: {
-    title: 'MAOMAOTOU NETWORK TECHNOLOGY · From satellites to a single line of code',
+    title: 'MAOMAOTOU NETWORK TECHNOLOGY · See the sun, see tomorrow',
     description:
       'MAOMAOTOU NETWORK TECHNOLOGY builds satellite communication terminals, software and system integration, applied AI and information security — delivered by one company, not three vendors.',
     keywords:
@@ -138,9 +138,9 @@ export const en: Dict = {
   splash: { boot: 'The doors are opening. Almost through.' },
   hero: {
     kicker: 'MAOMAOTOU NETWORK TECHNOLOGY · GUANGDONG',
-    lines: ['From satellites', 'to a single line.'],
+    lines: ['See the sun.', 'See tomorrow.'],
     lede:
-      'all in one',
+      'The great way is simple — all in one',
     primary: { label: 'What we do', href: '#capability' },
     secondary: { label: 'Talk to us', href: '#contact' },
     specs: [
