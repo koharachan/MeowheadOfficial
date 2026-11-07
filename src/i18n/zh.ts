@@ -139,7 +139,7 @@ export const zh: Dict = {
     kicker: '猫猫头网络科技（广东）有限公司',
     lines: ['上到卫星，', '下到代码。'],
     lede:
-      '卫星终端是我们造的，跑在终端上的系统也是我们写的。硬件、软件与安全之间，没有第三家供应商。',
+      '终端我们造，系统我们写。出了问题，只找一家。',
     primary: { label: '看我们做什么', href: '#capability' },
     secondary: { label: '聊聊你的项目', href: '#contact' },
     specs: [

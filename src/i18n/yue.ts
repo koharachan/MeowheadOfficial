@@ -143,7 +143,7 @@ export const yue: Dict = {
     kicker: '貓貓頭網絡科技（廣東）有限公司',
     lines: ['上到衛星，', '下到代碼。'],
     lede:
-      '衛星終端係我哋造嘅，跑喺終端上面嘅系統都係我哋寫嘅。硬件、軟件同安全之間，冇第三間供應商。',
+      '終端我們造，系統我們寫。出了問題，只找一家。',
     primary: { label: '所為何事', href: '#capability' },
     secondary: { label: '談談你的項目', href: '#contact' },
     specs: [

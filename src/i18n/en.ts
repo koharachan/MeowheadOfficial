@@ -140,7 +140,7 @@ export const en: Dict = {
     kicker: 'MAOMAOTOU NETWORK TECHNOLOGY · GUANGDONG',
     lines: ['From satellites', 'to a single line.'],
     lede:
-      'We build the terminal and we write the system that runs on it. Between hardware, software and security there is no third vendor.',
+      'We build the terminal, we write the system. When something breaks, there is one company to call.',
     primary: { label: 'What we do', href: '#capability' },
     secondary: { label: 'Talk to us', href: '#contact' },
     specs: [
