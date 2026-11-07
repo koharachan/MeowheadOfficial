@@ -387,10 +387,10 @@ export const en: Dict = {
       topics: ['Satellite terminals', 'Software & integration', 'Applied AI', 'Information security', 'Something else'],
       message: 'One sentence about the need',
       submit: 'Send',
-      note: 'This is a demo form. Nothing is actually sent.',
+      note: 'Submitting opens your mail app with the message addressed to xy@6832.me.',
       successTitle: 'Got it.',
       resetLabel: 'Send another',
-      successBody: 'This is a demo form and nothing was sent. In production this spot would hold our reply-time promise.',
+      successBody: 'Your mail app has opened with a draft addressed to xy@6832.me. If nothing happened, copy the text above and send it from your own inbox.',
       error: 'Please fill in at least your name, email and a description.',
       placeholder: {
         name: 'e.g. Mr. Chen',
