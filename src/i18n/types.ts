@@ -146,6 +146,8 @@ export interface Dict {
     lede: string;
     primary: Link;
     secondary: Link;
+    /** 首屏按钮下的小字（可空） */
+    tagline: string;
     specs: Spec[];
     caption: string;
     posterAlt: string;

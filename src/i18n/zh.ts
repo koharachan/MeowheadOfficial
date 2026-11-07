@@ -143,6 +143,7 @@ export const zh: Dict = {
       '大道至简——all in one',
     primary: { label: '看我们做什么', href: '#capability' },
     secondary: { label: '聊聊你的项目', href: '#contact' },
+    tagline: '',
     specs: [
       { k: '成立', v: '2026.11.04' },
       { k: '注册资本', v: 'CNY 10,000,000' },

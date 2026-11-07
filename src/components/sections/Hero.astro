@@ -39,6 +39,14 @@ const h = t.hero;
         )}
       </p>
 
+      {
+        h.tagline && (
+          <p class="hero__tagline mono-sm" data-anim="fade" data-delay="0.1">
+            {h.tagline}
+          </p>
+        )
+      }
+
       <div class="hero__cta" data-anim="fade" data-delay="0.12">
         <Button href={h.primary.href} label={h.primary.label} variant="solid" />
         <Button href={h.secondary.href} label={h.secondary.label} variant="outline" />
@@ -194,6 +202,25 @@ const h = t.hero;
     letter-spacing: 0.22em;
     text-transform: lowercase;
     color: var(--ink-38);
+  }
+
+  /* 按钮上方的小字：一句自我描述，字距放开，不抢副标题 */
+  .hero__tagline {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 0.9rem;
+    color: var(--ink-38);
+    font-size: 0.5625rem;
+    letter-spacing: 0.18em;
+    text-transform: none;
+  }
+
+  .hero__tagline::before {
+    content: '';
+    width: 18px;
+    height: 1px;
+    background: var(--orange);
   }
 
   .hero__cta {

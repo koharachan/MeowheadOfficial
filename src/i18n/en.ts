@@ -144,6 +144,7 @@ export const en: Dict = {
       'The great way is simple — all in one',
     primary: { label: 'What we do', href: '#capability' },
     secondary: { label: 'Talk to us', href: '#contact' },
+    tagline: '',
     specs: [
       { k: 'Founded', v: '2026.11.04' },
       { k: 'Capital', v: 'CNY 10,000,000' },

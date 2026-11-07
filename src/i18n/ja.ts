@@ -146,6 +146,7 @@ export const ja: Dict = {
     lede: '大道至簡——all in one',
     primary: { label: 'できること', href: '#capability' },
     secondary: { label: '相談する', href: '#contact' },
+    tagline: '',
     specs: [
       { k: '設立', v: '2026.11.04' },
       { k: '資本金', v: 'CNY 10,000,000' },

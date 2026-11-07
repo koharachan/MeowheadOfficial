@@ -144,9 +144,10 @@ export const yue: Dict = {
     kicker: '貓貓頭網絡科技（廣東）有限公司',
     lines: ['視紅日，', '躍明日。'],
     lede:
-      '千千種解決方案，誰最大方漂亮',
+      '帶上一切，躍進明日，返璞歸真',
     primary: { label: '所為何事', href: '#capability' },
     secondary: { label: '談談你的項目', href: '#contact' },
+    tagline: '千千種解決方案，誰最大方漂亮',
     specs: [
       { k: '成立', v: '2026.11.04' },
       { k: '註冊資本', v: 'CNY 10,000,000' },
