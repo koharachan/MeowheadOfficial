@@ -8,9 +8,27 @@ interface Props {
 const { t } = Astro.props;
 const lang = t.lang;
 const copy = {
-  zh: { since: '自 2026', label: 'WORLDLINE / 世界线', title: '每篇日志都是一个坐标。', lede: '公司、终端、地球、吉祥物——同一条线。下面每篇日志都挂在其中一点上。', hint: '往下滑，世界线向左走' },
-  en: { since: 'Since 2026', label: 'WORLDLINE', title: 'Every log is a coordinate.', lede: 'The company, the terminal, the globe, the mascot — one line. Each post below hangs on one of these points.', hint: 'Scroll to move the line' },
-  yue: { since: '自 2026', label: 'WORLDLINE / 世界線', title: '每篇日誌都係一個座標。', lede: '公司、終端、地球、吉祥物——同一條線。下面每篇日誌都掛喺呢五個點其中一個度。', hint: '向下滑，世界線向左行' },
+  zh: {
+    since: '自 2021',
+    label: 'WORLDLINE / 世界线',
+    title: '每篇日志都是一个坐标。',
+    lede: '地表开发组 → 猫猫头（开发组）→ 猫猫头网络科技（广东）有限公司。九站，每一站都真的发生过。',
+    hint: '往下滑，世界线向左走',
+  },
+  en: {
+    since: 'Since 2021',
+    label: 'WORLDLINE',
+    title: 'Every log is a coordinate.',
+    lede: 'Surface dev group → Meowhead → Maomaotou Network Technology (Guangdong). Nine stops, all of them real.',
+    hint: 'Scroll to move the line',
+  },
+  yue: {
+    since: '自 2021',
+    label: 'WORLDLINE / 世界線',
+    title: '每篇日誌都係一個座標。',
+    lede: '地表開發組 → 貓貓頭（開發組）→ 貓貓頭網絡科技（廣東）有限公司。九站，每一站都真係發生過。',
+    hint: '向下滑，世界線向左行',
+  },
 }[lang];
 const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
 ---
@@ -32,7 +50,18 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
               <span class="wl__year">{m.date.slice(0, 4)}</span>
               <span class="mono wl__date">{m.date.slice(5).replace('-', '.')}</span>
               <span class="wl__node" aria-hidden="true" />
-              <h3 class="wl__name">{m[lang].title}</h3>
+              <h3 class="wl__name">
+                {m.href ? (
+                  <a class="wl__link" href={m.href} target="_blank" rel="noopener noreferrer">
+                    {m[lang].title}
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                      <path d="M7 17L17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </a>
+                ) : (
+                  m[lang].title
+                )}
+              </h3>
               <span class:list={['mono wl__tag', { 'is-set': m[lang].tag !== '事实' && m[lang].tag !== 'Fact' && m[lang].tag !== '事實' }]}>
                 {m[lang].tag}
               </span>
@@ -132,6 +161,21 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
   .wl__item:first-child .wl__node {
     background: var(--orange);
     box-shadow: 0 0 0 4px var(--orange-soft);
+  }
+
+  .wl__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    border-bottom: 1px solid var(--ink-20);
+    transition:
+      color 200ms var(--ease-out),
+      border-color 200ms var(--ease-out);
+  }
+
+  .wl__link:hover {
+    color: var(--orange);
+    border-color: var(--orange);
   }
 
   .wl__name {

@@ -1,12 +1,14 @@
 /**
- * 世界线：站点上所有东西（终端、字体、地球、吉祥物）都是同一条时间线上的坐标。
- * 只写真实发生过的事；「设定」类内容会明确标注为设定。
+ * 世界线：站点上所有东西都在同一条时间线上。
+ * 全部为公司真实节点（由负责人提供），不写「设定」以外的虚构事件。
  */
 export interface Milestone {
   id: string;
   date: string;
   /** 世界线编号 */
   no: string;
+  /** 可选的对外链接 */
+  href?: string;
   zh: { title: string; body: string; tag: string };
   en: { title: string; body: string; tag: string };
   yue: { title: string; body: string; tag: string };
@@ -14,104 +16,101 @@ export interface Milestone {
 
 export const worldline: Milestone[] = [
   {
-    id: 'founding',
-    date: '2026-11-04',
+    id: 'surface',
+    date: '2021-01-01',
     no: '01',
+    zh: { title: '地表开发组', body: '猫猫头的前身：一个小型开发组，做 Minecraft 服务器与周边的工具。', tag: '事实' },
+    en: { title: 'The Surface dev group', body: 'The ancestor of Meowhead: a small dev group building Minecraft servers and tooling.', tag: 'Fact' },
+    yue: { title: '地表開發組', body: '貓貓頭嘅前身：一個細型開發組，做 Minecraft 伺服器同周邊工具。', tag: '事實' },
+  },
+  {
+    id: 'domain',
+    date: '2025-03-16',
+    no: '02',
+    zh: { title: 'meowhead.cn 注册', body: '名字先落地，业务后来才跟上。', tag: '事实' },
+    en: { title: 'meowhead.cn registered', body: 'The name landed first; the business followed.', tag: 'Fact' },
+    yue: { title: 'meowhead.cn 註冊', body: '個名落咗地先，業務後來先跟上。', tag: '事實' },
+  },
+  {
+    id: 'group',
+    date: '2025-04-29',
+    no: '03',
     zh: {
-      title: '公司注册',
-      body: '韶关市武江区，一张营业执照，三条经营线：卫星通信终端、软件开发与系统集成、信息安全。',
+      title: '猫猫头正式公开',
+      body: '重庆三握云网络科技有限公司成立；猫猫头在小原的带领下，以开发组形式正式公开存在。',
       tag: '事实',
     },
     en: {
-      title: 'Registered',
-      body: 'Wujiang District, Shaoguan. One licence, three lines: satellite terminals, software integration, information security.',
+      title: 'Meowhead goes public',
+      body: 'Chongqing Sanwoyun Network Technology Co., Ltd. is founded; under Koh, Meowhead begins to exist publicly as a dev group.',
       tag: 'Fact',
     },
     yue: {
-      title: '公司註冊',
-      body: '韶關市武江區，一張營業執照，三條經營線：衛星通訊終端、軟件開發同系統集成、資訊安全。',
+      title: '貓貓頭正式公開',
+      body: '重慶三握雲網絡科技有限公司成立；貓貓頭喺小原帶領下，以開發組形式正式公開存在。',
       tag: '事實',
     },
   },
   {
-    id: 'terminal',
-    date: '2026-11-05',
-    no: '02',
+    id: 'merge',
+    date: '2025-05-01',
+    no: '04',
+    zh: { title: '合并地表开发组', body: '两条线并成一条：地表开发组并入猫猫头。', tag: '事实' },
+    en: { title: 'The two lines merge', body: 'Surface folded into Meowhead. One team instead of two.', tag: 'Fact' },
+    yue: { title: '合併地表開發組', body: '兩條線併成一條：地表開發組併入貓貓頭。', tag: '事實' },
+  },
+  {
+    id: 'meowchan',
+    date: '2025-05-02',
+    no: '05',
+    href: 'https://cnb.cool/Meowhead/MeowChan',
+    zh: { title: '发布猫猫酱大模型架构', body: '第一版自研大模型架构对外发布，仓库公开在 CNB。', tag: '事实' },
+    en: { title: 'MeowChan architecture released', body: 'The first in-house model architecture goes public, repo hosted on CNB.', tag: 'Fact' },
+    yue: { title: '發佈貓貓醬大模型架構', body: '第一版自研大模型架構對外發佈，倉庫公開喺 CNB。', tag: '事實' },
+  },
+  {
+    id: 'earthon',
+    date: '2026-05-07',
+    no: '06',
+    zh: { title: '地球 Online PE 通过审核', body: '网易《我的世界》地球 Online PE 网络游戏服务器入驻申请通过审核。', tag: '事实' },
+    en: { title: 'Earth Online PE approved', body: 'The Minecraft Earth Online PE server application passes NetEase review.', tag: 'Fact' },
+    yue: { title: '地球 Online PE 通過審核', body: '網易《我的世界》地球 Online PE 網絡遊戲伺服器入駐申請通過審核。', tag: '事實' },
+  },
+  {
+    id: 'incorporation',
+    date: '2026-11-04',
+    no: '07',
     zh: {
-      title: '第一台终端样机',
-      body: '外壳、板卡、天线都还在桌上。这一天开始有「硬件」这个说法，而不是只有代码。',
+      title: '拿到营业执照',
+      body: '猫猫头网络科技（广东）有限公司成立，正式脱离三握云，独立落地。',
       tag: '事实',
     },
     en: {
-      title: 'First terminal prototype',
-      body: 'Enclosure, board and antenna still on the desk. From this day "hardware" became a real word here, not just code.',
+      title: 'Incorporated',
+      body: 'Maomaotou Network Technology (Guangdong) Co., Ltd. is registered — independent from Sanwoyun.',
       tag: 'Fact',
     },
     yue: {
-      title: '第一台終端樣機',
-      body: '外殼、板卡、天線都仲喺枱面。呢一日開始有「硬件」呢個講法，唔係淨係有代碼。',
+      title: '攞到營業執照',
+      body: '貓貓頭網絡科技（廣東）有限公司成立，正式脫離三握雲，獨立落地。',
       tag: '事實',
     },
   },
   {
     id: 'globe',
     date: '2026-11-05',
-    no: '03',
-    zh: {
-      title: '地球被烘出来',
-      body: '256 张天地图瓦片拼成一张球体贴图。写这篇日志的时候，贴图还躺在 /tmp 里。',
-      tag: '事实',
-    },
-    en: {
-      title: 'The globe is baked',
-      body: '256 Tianditu tiles stitched into one sphere texture. When this log was written the file was still sitting in /tmp.',
-      tag: 'Fact',
-    },
-    yue: {
-      title: '地球烘好咗',
-      body: '256 塊天地圖瓦片砌成一張球體貼圖。寫呢篇日誌嗰陣，貼圖仲擺喺 /tmp 度。',
-      tag: '事實',
-    },
-  },
-  {
-    id: 'hiromi',
-    date: '2026-11-04',
-    no: '04',
-    zh: {
-      title: '寻美出现',
-      body: '从标志那颗猫头派生出来的人形。先有母版，再有七个姿势——她是被设计出来的，不是被找到的。',
-      tag: '设定',
-    },
-    en: {
-      title: 'HIROMI appears',
-      body: 'A person derived from the cat head in the mark. Master first, then seven poses — designed, not discovered.',
-      tag: 'Design',
-    },
-    yue: {
-      title: '尋美出現',
-      body: '由標誌嗰個貓頭派生出嚟嘅人形。先有母版，再有七個姿勢——佢係設計出嚟嘅，唔係搵返嚟嘅。',
-      tag: '設定',
-    },
+    no: '08',
+    zh: { title: '地球被烘出来', body: '256 张天地图瓦片拼成一张球体贴图，用在这一版官网上。', tag: '事实' },
+    en: { title: 'The globe is baked', body: '256 Tianditu tiles stitched into a sphere texture, used on this site.', tag: 'Fact' },
+    yue: { title: '地球烘好咗', body: '256 塊天地圖瓦片砌成一張球體貼圖，用喺呢一版官網。', tag: '事實' },
   },
   {
     id: 'site',
     date: '2026-11-06',
-    no: '05',
-    zh: {
-      title: '这条世界线被写下来',
-      body: '站点上线，日志开始。每篇日志都是这条线上的一个坐标，不是散落的技术笔记。',
-      tag: '事实',
-    },
-    en: {
-      title: 'The worldline is written down',
-      body: 'The site goes live and the log begins. Every post is a coordinate on this line, not a loose technical note.',
-      tag: 'Fact',
-    },
-    yue: {
-      title: '呢條世界線被寫低',
-      body: '網站上線，日誌開始。每篇日誌都係呢條線上面嘅一個座標，唔係散落嘅技術筆記。',
-      tag: '事實',
-    },
+    no: '09',
+    zh: { title: '官网与日志上线', body: '站点上线，工程记录开始公开写。', tag: '事实' },
+    en: { title: 'Site and log go live', body: 'The site ships and the engineering log starts in public.', tag: 'Fact' },
+    yue: { title: '官網同日誌上線', body: '網站上線，工程記錄開始公開寫。', tag: '事實' },
   },
 ];
 
