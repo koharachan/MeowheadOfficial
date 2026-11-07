@@ -143,7 +143,7 @@ export const yue: Dict = {
     kicker: '貓貓頭網絡科技（廣東）有限公司',
     lines: ['視紅日，', '躍明日。'],
     lede:
-      '大道至簡——all in one',
+      '帶上一切，躍進明日，返璞歸真',
     primary: { label: '所為何事', href: '#capability' },
     secondary: { label: '談談你的項目', href: '#contact' },
     specs: [
