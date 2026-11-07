@@ -12,9 +12,9 @@ export const yue: Dict = {
 
   downloads: {
     label: '資源 / RESOURCES',
-    title: '啱使就攞去用。',
-    lede: '標誌、吉祥物、3D 模型，原樣擺喺度。改色、二次創作、賣都得——MIT，唔使問。',
-    note: '檔案放喺本站，直接下載，唔使註冊。',
+    title: '合用者，自取。',
+    lede: '標誌、吉祥物、三維模型，俱置於此。改色、二次創作、商用皆可——MIT 授權，无需問。',
+    note: '檔案置於本站，直接下載，无需註冊。',
     action: '下載',
     items: [
       {
@@ -43,7 +43,7 @@ export const yue: Dict = {
         href: '/brand/proposal.png',
         format: 'PNG · 2040×1960',
         size: '227 KB',
-        note: '一頁睇晒全部規範：標誌、色板、變體、最細尺寸',
+        note: '一頁盡覽全部規範：標誌、色板、變體、最小尺寸',
       },
       {
         name: '網站圖示集',
@@ -58,15 +58,15 @@ export const yue: Dict = {
       '呢頁所有素材用 MIT 協議開放：複製、修改、合併、發佈、商用、再授權都得。',
       '唯一要求係保留版權聲明同許可聲明（倉庫根目錄嘅 LICENSE 文件）。',
       '素材按「原樣」提供，唔附帶任何擔保。',
-      '商標唔喺授權範圍：可以攞去做你嘅項目，但唔好用貓貓頭或者尋美冒充我哋。',
+      '商標不在授權範圍：可用於你的項目，但不得以貓貓頭或尋美冒充我方。',
     ],
   },
 
   blog: {
     label: '日誌 / BLOG',
-    title: '寫低咗嘅嘢。',
-    lede: '工程記錄：做過嘅取捨、踩過嘅坑、為咩咁揀。唔寫客戶，唔寫獎項，唔寫行業趨勢。',
-    readUnit: '分鐘睇完',
+    title: '所寫之事。',
+    lede: '工程記錄：取捨、踩過的坑、何以如此選擇。不寫客戶，不寫獎項，不寫行業趨勢。',
+    readUnit: '分鐘讀完',
     toc: '本頁目錄 / CONTENTS',
     more: '更多日誌',
     top: '返返頂',
@@ -98,7 +98,7 @@ export const yue: Dict = {
       { label: '能力', href: '#capability' },
       { label: '方法', href: '#method' },
       { label: '吉祥物', href: '#mascot' },
-      { label: '為咩', href: '#why' },
+      { label: '為何', href: '#why' },
       { label: '流程', href: '#process' },
       { label: '團隊', href: '#team' },
       { label: '位置', href: '#location' },
@@ -119,7 +119,7 @@ export const yue: Dict = {
   ux: {
     skip: '跳去主要內容',
     loading: '載入緊',
-    loadingDone: '搞掂',
+    loadingDone: '就緒',
     scroll: '向下滑',
     close: '閂',
     sectionNav: '頁面段落索引',
@@ -132,7 +132,7 @@ export const yue: Dict = {
     { id: 'capability', no: '03', label: '能力', short: '能力' },
     { id: 'method', no: '04', label: '方法', short: '方法' },
     { id: 'mascot', no: '05', label: '吉祥物', short: '吉祥物' },
-    { id: 'why', no: '06', label: '為咩', short: '為咩' },
+    { id: 'why', no: '06', label: '為何', short: '為何' },
     { id: 'process', no: '07', label: '流程', short: '流程' },
     { id: 'team', no: '08', label: '團隊', short: '團隊' },
     { id: 'location', no: '09', label: '位置', short: '位置' },
@@ -144,7 +144,7 @@ export const yue: Dict = {
     lines: ['上到衛星，', '下到代碼。'],
     lede:
       '衛星終端係我哋造嘅，跑喺終端上面嘅系統都係我哋寫嘅。硬件、軟件同安全之間，冇第三間供應商。',
-    primary: { label: '睇下我哋做咩', href: '#capability' },
+    primary: { label: '看我們做什麼', href: '#capability' },
     secondary: { label: '傾下你個項目', href: '#contact' },
     specs: [
       { k: '成立', v: '2026.11.04' },
@@ -174,8 +174,8 @@ export const yue: Dict = {
   capability: {
     no: '03',
     label: '能力 / CAPABILITIES',
-    title: '四條線，全部喺經營範圍入面。',
-    lede: '我哋只寫執照上面寫過嘅能力。冇證書就唔承諾，未做過就唔舉例。',
+    title: '四條線，盡在經營範圍之內。',
+    lede: '只寫執照上載明之能力。無證書則不承諾，未曾做過則不舉例。',
     items: [
       {
         code: 'S-01',
@@ -217,10 +217,10 @@ export const yue: Dict = {
     no: '04',
     label: '方法 / THREE RINGS',
     title: '製造、軟件、服務，三環相扣。',
-    lede: '單點能力邊個都有，難嘅係接縫位唔會甩。',
+    lede: '單點能力人人皆有，難在接縫處不脫節。',
     rings: [
       { code: 'RING 01', title: '製造', body: '做得出。結構、外殼、小批量試產同出廠測試，全部喺我哋手上。' },
-      { code: 'RING 02', title: '軟件', body: '跑得起。終端上面嘅系統同後台服務由同一批人寫，查問題唔使跨公司。' },
+      { code: 'RING 02', title: '軟件', body: '跑得起。終端上的系統與後台服務由同一批人撰寫，查問題無需跨公司。' },
       { code: 'RING 03', title: '服務', body: '用得落去。上線只係開始，培訓、運維同迭代仍然由我哋負責。' },
     ],
     note: '三環交疊嗰一塊，先係我哋真正嘅產品。',
@@ -256,17 +256,17 @@ export const yue: Dict = {
 
   why: {
     no: '06',
-    label: '為咩 / WHY US',
+    label: '為何 / WHY US',
     title: '三條，唔吹。',
     items: [
       {
         no: 'A',
         title: '一間公司，一條責任線。',
-        body: '硬件、系統同安全由同一方交付。出咗事就係我哋嘅事，唔使喺供應商之間轉手。',
+        body: '硬件、系統與安全由同一方交付。出事即是我們的事，無需在供應商之間轉手。',
       },
       {
         no: 'B',
-        title: '講清楚唔做咩先。',
+        title: '先講清不做什麼。',
         body: '超出經營範圍嘅嘢唔接，做唔到嘅指標唔寫入合約。寧願喺第一次會議就講「呢塊唔得」。',
       },
       {
@@ -280,13 +280,13 @@ export const yue: Dict = {
   process: {
     no: '07',
     label: '流程 / PROCESS',
-    title: '五步，每一步都有交付物。',
-    lede: '每個階段做咩、使幾多錢、幾時可以停。',
+    title: '五步，每一步皆有交付物。',
+    lede: '每個階段做何事、耗多少、何時可停。',
     deliverableLabel: '交付物',
     steps: [
-      { no: '01', title: '對齊', body: '搞清楚目標、邊界同預算，講明今次唔做嘅事。', deliverable: '範圍說明 + 唔做清單' },
+      { no: '01', title: '對齊', body: '釐清目標、邊界與預算，講明本次不做的事。', deliverable: '範圍說明 + 唔做清單' },
       { no: '02', title: '方案', body: '技術選型、里程碑同驗收標準，寫成一份簽得字嘅文件。', deliverable: '技術方案 + 可運行骨架' },
-      { no: '03', title: '構建', body: '兩個星期一個迭代，每次完結都有一版睇得嘅嘢。', deliverable: '可運行版本 + 變更記錄' },
+      { no: '03', title: '構建', body: '兩星期一個迭代，每次結束都有一版看得見的成果。', deliverable: '可運行版本 + 變更記錄' },
       { no: '04', title: '驗收', body: '效能、安全同無障礙逐項過一次，唔靠感覺。', deliverable: '驗收清單 + 測試報告' },
       { no: '05', title: '交接', body: '源碼、文件同運維手冊全量移交，唔留黑盒。', deliverable: '源碼 + 文件 + 運維手冊' },
     ],
@@ -295,8 +295,8 @@ export const yue: Dict = {
   team: {
     no: '08',
     label: '團隊 / TEAM',
-    title: '搵邊個，寫喺呢度。',
-    lede: '公司唔大。簽字、交付、技術判斷，各歸一個人。',
+    title: '該尋何人，寫於此。',
+    lede: '公司規模不大。簽署、交付、技術判斷，各歸一人。',
     members: [
       {
         no: '01',
@@ -339,7 +339,7 @@ export const yue: Dict = {
   location: {
     no: '09',
     label: '位置 / LOCATION',
-    title: '喺軌道上面睇，我哋喺呢度。',
+    title: '自軌道俯瞰，此處即是。',
     lede: '韶關市武江區百旺西路 8 號。向下滑，由衛星軌道一路落去門牌號。',
     hint: '即時衛星影像 · 天地圖',
     attribution: '審圖號 GS（2026）4921號',
@@ -357,8 +357,8 @@ export const yue: Dict = {
   contact: {
     no: '10',
     label: '聯絡 / CONTACT',
-    title: '講清楚你想做咩，我哋回得比你想像中快。',
-    lede: '第一次溝通唔需要方案書。一句話講清場景，我哋會話你知做唔做得到、大概幾耐、幾多錢。',
+    title: '講清所求，回覆比想像中快。',
+    lede: '初次溝通無需方案書。一句話講清場景，我們會告之能否做到、大概多久、多少費用。',
     facts: [
       { k: '辦公室地址', v: '廣東省韶關市武江區百旺西路 8 號 5 號廠房 B 區 F469 房（只限辦公用途）' },
       { k: '統一社會信用代碼', v: '91440200MAKT9DRH5P' },
@@ -377,7 +377,7 @@ export const yue: Dict = {
       name: '你點稱呼',
       org: '公司 / 團隊',
       email: '電郵',
-      topic: '想傾咩',
+      topic: '想談什麼',
       topics: ['衛星通訊終端', '軟件開發同系統集成', '人工智能', '資訊安全', '其他'],
       message: '一句話講清需求',
       submit: '發送',
@@ -390,7 +390,7 @@ export const yue: Dict = {
         name: '例如：陳生',
         org: '選填',
         email: 'name@company.com',
-        message: '例如：要喺廠區內部部署一套衛星回傳 + 本地睇板，三個月內上線。',
+        message: '例如：需要在廠區內部署一套衛星回傳 + 本地看板，三個月內上線。',
       },
     },
   },
@@ -402,7 +402,7 @@ export const yue: Dict = {
     police: '粵公網安備（辦理中）',
     policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',
     copyright: '© 2026 貓貓頭網絡科技（廣東）有限公司',
-    note: '本站唔使用虛構嘅客戶案例、獎項、營收或者合作方。',
+    note: '本站不使用虛構的客戶案例、獎項、營收或合作方。',
     columns: [
       {
         title: '目錄',
@@ -450,7 +450,7 @@ export const yue: Dict = {
   notFound: {
     code: '404',
     title: '呢條路冇頁面。',
-    body: '你要搵嘅嘢唔喺呢個地址。尋美舉住一張手繪地圖，指住首頁。',
+    body: '你要找的東西不在這個地址。尋美舉著一張手繪地圖，指向首頁。',
     home: { label: '返首頁', href: '/yue/' },
     mascot: { label: '識下尋美', href: '/yue/mascot/' },
     alt: '尋美舉住一張手繪地圖，一臉疑惑',
@@ -520,12 +520,12 @@ export const yue: Dict = {
     },
     usage: {
       label: '出場 / USAGE',
-      title: '佢只會出現喺你真係會睇到嘅地方。',
+      title: '它只出現在你真正會看到的地方。',
       lede: '唔做吉祥物牆。每一次出場都要承擔一個功能，否則就唔出場。',
       items: [
         { code: 'LOADING', title: '首屏載入', body: '喺 3D 模型同字體下載期間，替我哋爭 1.2 秒嘅耐性。' },
-        { code: '404', title: '行錯路', body: '搵唔到頁面嘅時候，佢舉起一張手繪地圖，指住首頁。' },
-        { code: 'SUCCESS', title: '提交成功', body: '比任何 toast 都容易被睇到嘅一個手勢。' },
+        { code: '404', title: '行錯路', body: '找不到頁面時，它舉起一張手繪地圖，指向首頁。' },
+        { code: 'SUCCESS', title: '提交成功', body: '比任何 toast 都更容易被看到的一個手勢。' },
         { code: 'PEEK', title: '角落探頭', body: '滑到頁尾，佢由右邊探個頭出嚟，提你仲有下一頁。' },
       ],
     },
@@ -542,7 +542,7 @@ export const yue: Dict = {
     },
     design: {
       label: '設計 / DESIGN NOTES',
-      title: '為咩係貓娘。',
+      title: '為何是貓娘。',
       paragraphs: [
         '標誌係一個黑色貓頭：上緣兩個峰、下緣圓潤、一點橙色三角鼻。吉祥物唔應該係另一套語言，所以我哋將貓頭種咗成人。',
         '佢嘅線條比標誌軟。標誌要細到 16px 都仲清晰，尋美只要喺螢幕上面似有嘢喺度。所以佢嘅圓更圓，頭髮更亂。',
@@ -585,7 +585,7 @@ export const yue: Dict = {
     cta: {
       title: '佢都喺首頁等你。',
       body: '首頁第五屏就係佢嘅位置，滑到嗰度，佢會換三次表情。',
-      button: { label: '返首頁睇下', href: '/yue/' },
+      button: { label: '回首頁看看', href: '/yue/' },
     },
   },
 };
