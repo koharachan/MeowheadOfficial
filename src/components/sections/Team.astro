@@ -37,6 +37,7 @@ const tm = t.team;
               <span class="member__id">
                 <span class="mono member__no">{m.no}</span>
                 <span class="mono member__role">{m.role}</span>
+                <span class="mono member__origin">{m.origin}</span>
               </span>
             </div>
 
@@ -183,7 +184,29 @@ const tm = t.team;
 
   .member__id {
     display: grid;
-    gap: 0.2rem;
+    gap: 0.25rem;
+    justify-items: start;
+  }
+
+  /* 籍贯标签：小圆角，明度分层不用描边 */
+  .member__origin {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15em 0.45em;
+    border-radius: 4px;
+    background: var(--surface-2);
+    color: var(--ink-38);
+    font-size: 0.4375rem;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    transition:
+      background-color 220ms var(--ease-out),
+      color 220ms var(--ease-out);
+  }
+
+  .member:hover .member__origin {
+    background: var(--orange-soft);
+    color: var(--orange);
   }
 
   .member__no {
