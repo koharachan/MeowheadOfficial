@@ -148,9 +148,15 @@ const h = t.hero;
     color: var(--ink);
   }
 
+  /* 副文案只留一个短语：给它更紧的字距和更小的字重，别像一句口号 */
   .hero__lede {
     max-width: 34ch;
-    margin-top: 0.2rem;
+    margin-top: 0.35rem;
+    font-family: var(--font-latin);
+    font-size: clamp(0.9375rem, 1.15vw, 1.0625rem);
+    letter-spacing: 0.26em;
+    text-transform: lowercase;
+    color: var(--ink-56);
   }
 
   .hero__cta {

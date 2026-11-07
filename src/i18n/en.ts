@@ -140,7 +140,7 @@ export const en: Dict = {
     kicker: 'MAOMAOTOU NETWORK TECHNOLOGY · GUANGDONG',
     lines: ['From satellites', 'to a single line.'],
     lede:
-      'We build the terminal, we write the system. When something breaks, there is one company to call.',
+      'all in one',
     primary: { label: 'What we do', href: '#capability' },
     secondary: { label: 'Talk to us', href: '#contact' },
     specs: [
