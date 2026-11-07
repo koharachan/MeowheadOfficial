@@ -12,21 +12,21 @@ const copy = {
     since: '自 2021',
     label: 'WORLDLINE / 世界线',
     title: '每篇日志都是一个坐标。',
-    lede: '地表开发组 → 三握云内部的一个开发组 → 分拆独立成猫猫头网络科技（广东）有限公司。九站，每一站都真的发生过。',
+    lede: '地表开发组 → 猫猫头开发组 → 猫猫头网络科技（广东）有限公司。九站，每一站都真的发生过。',
     hint: '往下滑，世界线向左走',
   },
   en: {
     since: 'Since 2021',
     label: 'WORLDLINE',
     title: 'Every log is a coordinate.',
-    lede: 'Surface dev group → a dev group inside Sanwoyun → spun out into Maomaotou Network Technology (Guangdong). Nine stops, all real.',
+    lede: 'Surface dev group → the Meowhead dev group → Maomaotou Network Technology (Guangdong). Nine stops, all real.',
     hint: 'Scroll to move the line',
   },
   yue: {
     since: '自 2021',
     label: 'WORLDLINE / 世界線',
     title: '每篇日誌都係一個座標。',
-    lede: '地表開發組 → 三握雲內部嘅一個開發組 → 分拆獨立成貓貓頭網絡科技（廣東）有限公司。九站，每一站都真係發生過。',
+    lede: '地表開發組 → 貓貓頭開發組 → 貓貓頭網絡科技（廣東）有限公司。九站，每一站都真係發生過。',
     hint: '向下滑，世界線向左行',
   },
 }[lang];
@@ -72,6 +72,16 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
       </ol>
       <span class="wl__axis" aria-hidden="true"><i class="wl__fill" data-wl-fill /></span>
     </div>
+
+    <p class="wl__rel">
+      {
+        lang === 'en'
+          ? 'Note: Meowhead and Sanwoyun are separate organisations with no affiliation. Sanwoyun was named by Koh and run day to day by Zhu Bolin; Meowhead is planned and led by Koh.'
+          : lang === 'yue'
+            ? '註：貓貓頭同三握雲係兩個獨立組織，冇任何隸屬關係。三握雲由小原起名、朱柏霖直接領導；貓貓頭由小原直接規劃同領導。'
+            : '注：猫猫头与三握云是两个独立组织，没有任何隶属关系。三握云由小原起名、朱柏霖直接领导；猫猫头由小原直接规划和领导。'
+      }
+    </p>
 
     <p class="mono wl__hint">{copy.hint}</p>
   </div>
@@ -222,6 +232,17 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     width: 0;
     background: var(--orange);
     transition: width 120ms linear;
+  }
+
+  .wl__rel {
+    margin-top: 1.1rem;
+    max-width: 68ch;
+    color: var(--ink-56);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    text-wrap: pretty;
+    padding-left: 0.85rem;
+    border-left: 2px solid var(--orange);
   }
 
   .wl__hint {

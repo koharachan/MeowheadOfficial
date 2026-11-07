@@ -37,17 +37,17 @@ export const worldline: Milestone[] = [
     no: '03',
     zh: {
       title: '猫猫头正式公开',
-      body: '重庆三握云网络科技有限公司成立；猫猫头作为该公司的一个开发组（部门），在这一天正式公开存在。',
+      body: '重庆三握云网络科技有限公司成立，名字由小原所起，日常由朱柏霖直接领导。同一时期，猫猫头由小原直接规划和领导，以开发组形式正式公开存在——两条线各自独立，互不隶属。',
       tag: '事实',
     },
     en: {
       title: 'Meowhead goes public',
-      body: 'Chongqing Sanwoyun Network Technology is founded. From this day Meowhead exists publicly as a dev group — a department inside that company.',
+      body: 'Chongqing Sanwoyun Network Technology is founded — named by Koh, run day to day by Zhu Bolin. In the same period Meowhead exists publicly as a dev group, planned and led by Koh. Two separate lines, neither under the other.',
       tag: 'Fact',
     },
     yue: {
       title: '貓貓頭正式公開',
-      body: '重慶三握雲網絡科技有限公司成立；貓貓頭作為該公司嘅一個開發組（部門），喺呢一日正式公開存在。',
+      body: '重慶三握雲網絡科技有限公司成立，個名由小原所起，日常由朱柏霖直接領導。同一時期，貓貓頭由小原直接規劃同領導，以開發組形式正式公開存在——兩條線各自獨立，互不隸屬。',
       tag: '事實',
     },
   },
@@ -82,17 +82,17 @@ export const worldline: Milestone[] = [
     no: '07',
     zh: {
       title: '拿到营业执照',
-      body: '猫猫头网络科技（广东）有限公司成立：由三握云的一个部门分拆独立，成为独立法人。',
+      body: '猫猫头网络科技（广东）有限公司成立：猫猫头取得独立法人资格，与三握云没有任何隶属关系。',
       tag: '事实',
     },
     en: {
       title: 'Incorporated',
-      body: 'Maomaotou Network Technology (Guangdong) is registered — spun out of a department at Sanwoyun into a separate company.',
+      body: 'Maomaotou Network Technology (Guangdong) is registered — Meowhead becomes its own legal entity, with no affiliation to Sanwoyun.',
       tag: 'Fact',
     },
     yue: {
       title: '攞到營業執照',
-      body: '貓貓頭網絡科技（廣東）有限公司成立：由三握雲一個部門分拆獨立，成為獨立法人。',
+      body: '貓貓頭網絡科技（廣東）有限公司成立：貓貓頭取得獨立法人資格，同三握雲冇任何隸屬關係。',
       tag: '事實',
     },
   },
