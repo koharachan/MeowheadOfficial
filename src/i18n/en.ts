@@ -172,9 +172,8 @@ export const en: Dict = {
   capability: {
     no: '03',
     label: 'CAPABILITY',
-    title: 'Four lines, all inside our licence.',
-    lede:
-      'We only claim what is written on our business licence. No certificate, no promise. No past project, no example.',
+    title: 'Four things we do ourselves',
+    lede: '',
     items: [
       {
         code: 'S-01',

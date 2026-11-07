@@ -175,8 +175,8 @@ export const yue: Dict = {
   capability: {
     no: '03',
     label: '能力 / CAPABILITIES',
-    title: '四條線，盡在經營範圍之內。',
-    lede: '只寫執照上載明之能力。無證書則不承諾，未曾做過則不舉例。',
+    title: '呢四件事，我們自己動手',
+    lede: '',
     items: [
       {
         code: 'S-01',

@@ -174,8 +174,8 @@ export const ja: Dict = {
   capability: {
     no: '03',
     label: 'できること / CAPABILITIES',
-    title: '四つの領域、すべて事業範囲の内側です。',
-    lede: '書類に書かれた能力しか書きません。資格がなければ約束せず、やったことがなければ例を出しません。',
+    title: 'この四つは、自分たちで動かしています',
+    lede: '',
     items: [
       {
         code: 'S-01',

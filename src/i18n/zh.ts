@@ -171,8 +171,8 @@ export const zh: Dict = {
   capability: {
     no: '03',
     label: '能力 / CAPABILITIES',
-    title: '四条线，都在经营范围里。',
-    lede: '我们只写执照上写过的能力。没有证书就不承诺，没做过就不举例。',
+    title: '这四件事，我们自己动手',
+    lede: '',
     items: [
       {
         code: 'S-01',
