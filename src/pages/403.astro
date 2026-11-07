@@ -5,8 +5,10 @@ import { getDict } from '../i18n';
 
 const zh = getDict('zh');
 const en = getDict('en');
+const ja = getDict('ja');
 const fz = zh.forbidden;
 const fe = en.forbidden;
+const fj = ja.forbidden;
 
 /* 403 诗 · 两套：
    CN 命中 B（名单是我填的） · 非 CN 命中 C（门在。钥匙不在。） */
@@ -24,6 +26,10 @@ const poemEnGlobal = [
   'Turn back, or call someone.',
   "She's inside, waiting for you.",
 ];
+
+/* 日语：和标题同一口气，不端着 */
+const poemJaCn = ['この扉は、一部の地域にしか開いてない。', '地図を小さく描きすぎたのは僕のせい。', '引き返すか、ドアを叩いて。', '彼女は中で待ってる。急かさない。'];
+const poemJaGlobal = ['扉はここにある。鍵がここにないだけ。', 'ドアを間違えたわけじゃない。', '戻るか、誰かを呼んで。', '彼女は中で待ってる。'];
 ---
 
 <!doctype html>
@@ -58,17 +64,21 @@ const poemEnGlobal = [
             region = /^Asia\/(Shanghai|Chongqing|Harbin|Urumqi|Kashgar)$/.test(tz) ? 'cn' : 'global';
           }
 
-          if (qLang === 'en' || qLang === 'zh') {
+          if (qLang === 'en' || qLang === 'zh' || qLang === 'ja' || qLang === 'yue') {
             locale = qLang;
-          } else if (root.dataset.localeHint === 'en' || root.dataset.localeHint === 'zh') {
+          } else if (root.dataset.localeHint) {
             locale = root.dataset.localeHint;
           } else {
-            locale = (navigator.language || 'zh').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+            var nav = (navigator.language || 'zh').toLowerCase();
+            locale = nav.indexOf('zh') === 0 ? 'zh' : nav.indexOf('ja') === 0 ? 'ja' : 'en';
           }
         } catch (e) {
           region = 'cn';
           locale = 'zh';
         }
+
+        // 路径前缀 /ja/ 优先于浏览器语言
+        if (location.pathname.indexOf('/ja') === 0) locale = 'ja';
 
         root.dataset.region = region;
         root.dataset.locale = locale;
@@ -89,11 +99,15 @@ const poemEnGlobal = [
       <h1 class="fb__title" data-lang="zh" data-region-global>{fz.titleGlobal}</h1>
       <h1 class="fb__title" data-lang="en" data-region-cn>{fe.titleCn}</h1>
       <h1 class="fb__title" data-lang="en" data-region-global>{fe.titleGlobal}</h1>
+      <h1 class="fb__title" data-lang="ja" data-region-cn>{fj.titleCn}</h1>
+      <h1 class="fb__title" data-lang="ja" data-region-global>{fj.titleGlobal}</h1>
 
       <p class="fb__body" data-lang="zh" data-region-cn>{fz.bodyCn}</p>
       <p class="fb__body" data-lang="zh" data-region-global>{fz.bodyGlobal}</p>
       <p class="fb__body" data-lang="en" data-region-cn>{fe.bodyCn}</p>
       <p class="fb__body" data-lang="en" data-region-global>{fe.bodyGlobal}</p>
+      <p class="fb__body" data-lang="ja" data-region-cn>{fj.bodyCn}</p>
+      <p class="fb__body" data-lang="ja" data-region-global>{fj.bodyGlobal}</p>
 
       <div class="fb__poem">
         <TypedPoem
@@ -102,6 +116,8 @@ const poemEnGlobal = [
           linesEn={poemEnCn}
           linesZhAlt={poemZhGlobal}
           linesEnAlt={poemEnGlobal}
+          linesJa={poemJaCn}
+          linesJaAlt={poemJaGlobal}
           ariaLabel="403 诗：这个门只对一部分地区开。名单是我填的，填窄了。掉头，或者来敲一下门。她在页面里等你，不催。"
         />
       </div>
@@ -114,21 +130,34 @@ const poemEnGlobal = [
         <a class="fb__btn fb__btn--solid" href={fe.home.href}>{fe.home.label}</a>
         <a class="fb__btn" href={fe.mascot.href}>{fe.mascot.label}</a>
       </div>
+      <div class="fb__actions" data-lang="ja">
+        <a class="fb__btn fb__btn--solid" href={fj.home.href}>{fj.home.label}</a>
+        <a class="fb__btn" href={fj.mascot.href}>{fj.mascot.label}</a>
+      </div>
 
       <p class="fb__note mono-sm" data-lang="zh">{fz.note}</p>
       <p class="fb__note mono-sm" data-lang="en">{fe.note}</p>
+      <p class="fb__note mono-sm" data-lang="ja">{fj.note}</p>
     </main>
   </body>
 </html>
 
 <style>
   /* 语言 / 地区切换：用 !important 压过组件自身的 display */
-  html:not([data-locale='en']) [data-lang='en'] {
+  html:not([data-locale='en']) [data-lang='en'],
+  html:not([data-locale='ja']) [data-lang='ja'] {
     display: none !important;
   }
 
-  html[data-locale='en'] [data-lang='zh'] {
+  html[data-locale='en'] [data-lang='zh'],
+  html[data-locale='en'] [data-lang='ja'],
+  html[data-locale='ja'] [data-lang='zh'],
+  html[data-locale='ja'] [data-lang='en'] {
     display: none !important;
+  }
+
+  html[data-locale='ja'] [data-lang='ja'] {
+    display: revert !important;
   }
 
   html:not([data-region='global']) [data-region-global] {

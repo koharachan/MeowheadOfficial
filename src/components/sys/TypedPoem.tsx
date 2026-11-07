@@ -94,6 +94,8 @@ export default function TypedPoem({
   linesZhAlt,
   linesEnAlt,
   linesYue,
+  linesJa,
+  linesJaAlt,
   ariaLabel,
 }: {
   linesZh: string[];
@@ -103,9 +105,12 @@ export default function TypedPoem({
   linesEnAlt?: string[];
   /** 粤语版 */
   linesYue?: string[];
+  /** 日语版 */
+  linesJa?: string[];
+  linesJaAlt?: string[];
   ariaLabel: string;
 }) {
-  const [locale, setLocale] = useState<'zh' | 'en' | 'yue'>('zh');
+  const [locale, setLocale] = useState<'zh' | 'en' | 'yue' | 'ja'>('zh');
   const [region, setRegion] = useState<'cn' | 'global'>('cn');
   /** 9999 = 全部可见（SSR 与无 JS 时的状态） */
   const [shown, setShown] = useState(9999);
@@ -117,19 +122,24 @@ export default function TypedPoem({
     const l = document.documentElement.dataset.locale;
     if (l === 'en') setLocale('en');
     if (l === 'yue' && linesYue) setLocale('yue');
+    if (l === 'ja' && linesJa) setLocale('ja');
     if (document.documentElement.dataset.region === 'global' && linesZhAlt) setRegion('global');
   }, [linesZhAlt]);
 
   const lines =
-    region === 'global' && linesZhAlt && linesEnAlt
-      ? locale === 'en'
-        ? linesEnAlt
-        : linesZhAlt
-      : locale === 'yue' && linesYue
-        ? linesYue
-        : locale === 'en'
-          ? linesEn
-          : linesZh;
+    region === 'global' && linesJaAlt && locale === 'ja'
+      ? linesJaAlt
+      : region === 'global' && linesZhAlt && linesEnAlt
+        ? locale === 'en'
+          ? linesEnAlt
+          : linesZhAlt
+        : locale === 'ja' && linesJa
+          ? linesJa
+          : locale === 'yue' && linesYue
+            ? linesYue
+            : locale === 'en'
+              ? linesEn
+              : linesZh;
 
   const tokens = useMemo(() => {
     const all: { text: string; line: number; idx: number; punct: boolean }[] = [];
