@@ -100,12 +100,20 @@ function imageryProvider(Cesium: any, layer: 'img' | 'cia') {
 const RANGE_FAR = 22_000_000;
 const RANGE_NEAR = 1_200;
 
+/** 放大在哪一格完成：0.55 之后是「最清晰段」的驻留区，球不再动。
+    轨道全长 260vh，剩下 45% 约 72vh 的可滚行程留给这帧画面。 */
+const ZOOM_END = 0.62;
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const zoomOf = (p: number) => clamp01(p / ZOOM_END);
+
 export default function GlobeToMap({
   label,
   coordinates,
   fail,
   aria,
   attribution,
+  scrollHint,
+  scrollHintEnd,
 }: {
   label: string;
   coordinates: string;
@@ -113,6 +121,10 @@ export default function GlobeToMap({
   aria: string;
   /** 天地图审图号：法规要求随图标注 */
   attribution: string;
+  /** 刚滚到这一屏时的提示：还能继续往下滑 */
+  scrollHint: string;
+  /** 已经压到最大缩放时的提示：上滑可以回看 */
+  scrollHintEnd: string;
 }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvasHost = useRef<HTMLDivElement>(null);
@@ -136,11 +148,12 @@ export default function GlobeToMap({
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const total = rect.height - window.innerHeight;
-      const p = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 1;
+      const p = total > 0 ? clamp01(-rect.top / total) : 1;
       progress.current = p;
-      if (Math.abs(p - pctRef.current) > 0.004) {
-        pctRef.current = p;
-        setPct(p);
+      const q = zoomOf(p);
+      if (Math.abs(q - pctRef.current) > 0.004) {
+        pctRef.current = q;
+        setPct(q);
       }
     };
     const onScroll = () => {
@@ -258,7 +271,7 @@ export default function GlobeToMap({
           raf = requestAnimationFrame(loop);
           if (!viewer || disposed) return;
 
-          const p = progress.current;
+          const p = zoomOf(progress.current);
           // 手动缩放过之后，滚动继续时慢慢回到叙事轨道
           if (lastP >= 0 && Math.abs(p - lastP) > 0.004) bias.current += (1 - bias.current) * 0.06;
           lastP = p;
@@ -405,6 +418,22 @@ export default function GlobeToMap({
 
         <p className="globe__loading mono" data-show={phase === 'poster' ? 'true' : 'false'}>
           正在载入三维地球
+        </p>
+
+        {/* 出场就告诉人这一屏可以滑：不提示没人知道地图会跟着滚 */}
+        <p className="globe__hint" data-done={pct > 0.92 ? 'true' : 'false'}>
+          <span>{pct > 0.92 ? scrollHintEnd : scrollHint}</span>
+          <svg
+            viewBox="0 0 24 24"
+            width="12"
+            height="12"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            aria-hidden="true"
+          >
+            <path d="M12 5v14M6 13l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </p>
 
         {mapFailed && (

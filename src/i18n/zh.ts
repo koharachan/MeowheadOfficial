@@ -305,7 +305,7 @@ export const zh: Dict = {
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: '对外形象；寻美就是照着她做的。',
+        duty: '对外形象。',
       },
       {
         no: '02',
@@ -349,6 +349,8 @@ export const zh: Dict = {
     fail: '地图加载失败，请以上方地址为准。',
     aria: '韶关市武江区百旺西路 8 号的位置地图',
     coordinates: '113.5575 E / 24.7480 N',
+    scrollHint: '继续下滑 · 一路放大到街区',
+    scrollHintEnd: '已到最大缩放 · 上滑可以回看',
   },
   contact: {
     no: '10',

@@ -308,7 +308,7 @@ export const ja: Dict = {
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: '対外的な顔。尋美はこの人を元にしています。',
+        duty: '対外的な顔。',
       },
       {
         no: '02',
@@ -352,6 +352,8 @@ export const ja: Dict = {
     fail: '地図の読み込みに失敗しました。上記の住所を参照してください。',
     aria: '韶関市武江区百旺西路 8 号の位置地図',
     coordinates: '113.5575 E / 24.7480 N',
+    scrollHint: 'スクロールで街路まで寄れます',
+    scrollHintEnd: '最大ズーム · 上へ戻せます',
   },
   contact: {
     no: '10',

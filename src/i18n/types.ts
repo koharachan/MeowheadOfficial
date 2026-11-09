@@ -229,6 +229,10 @@ export interface Dict {
     fail: string;
     aria: string;
     coordinates: string;
+    /** 地图刚出现时的滚动提示 */
+    scrollHint: string;
+    /** 压到最大缩放后的提示 */
+    scrollHintEnd: string;
   };
   contact: {
     no: string;

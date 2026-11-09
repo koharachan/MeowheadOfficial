@@ -47,6 +47,8 @@ const l = t.location;
           fail={l.fail}
           aria={l.aria}
           attribution={l.attribution}
+          scrollHint={l.scrollHint}
+          scrollHintEnd={l.scrollHintEnd}
         />
       </div>
 
@@ -120,10 +122,13 @@ const l = t.location;
     font-weight: 600;
   }
 
-  /* sticky 舞台：滚动驱动「地球 → 地图」 */
+  /* sticky 舞台：滚动驱动「地球 → 地图」。
+     高度 260vh = 160vh 的可滚行程：前 55% 一路放大，
+     后 45%（约 72vh）是「最清晰段」的驻留区，球停住不动，
+     滑过头之前要再多滚两下，也随时可以往回滑。 */
   .loc__track {
     position: relative;
-    height: 200vh;
+    height: 240vh;
   }
 
   .loc__pin {
@@ -142,7 +147,7 @@ const l = t.location;
     position: relative;
     flex: 1;
     min-height: 0;
-    border: 1px solid rgba(255, 249, 241, 0.14);
+    border: 1px solid rgba(255, 249, 241, 0.18);
     overflow: hidden;
   }
 
@@ -156,7 +161,7 @@ const l = t.location;
 
   @media (max-width: 720px) {
     .loc__track {
-      height: 170vh;
+      height: 200vh;
     }
     .loc__caption {
       font-size: 0.5625rem;
@@ -388,6 +393,80 @@ const l = t.location;
   .globe__loading[data-show='true'] {
     opacity: 1;
     visibility: visible;
+  }
+
+  /* 滚动提示：一进这一屏就出现，压到最大缩放后换成「可回看」 */
+  .globe__hint {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: clamp(3.4rem, 6vw, 5rem);
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.42rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 249, 241, 0.18);
+    background: rgba(20, 18, 16, 0.55);
+    backdrop-filter: blur(6px);
+    color: rgba(255, 249, 241, 0.78);
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    letter-spacing: 0.12em;
+    text-transform: none;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .globe__hint svg {
+    flex: none;
+    opacity: 0.7;
+    animation: hint-bob 1.7s var(--ease-inout) infinite;
+  }
+
+  .globe__hint[data-done='true'] svg {
+    transform: rotate(180deg);
+    animation: hint-bob-up 1.7s var(--ease-inout) infinite;
+  }
+
+  @keyframes hint-bob {
+    0%,
+    100% {
+      transform: translateY(-1px);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(3px);
+      opacity: 0.95;
+    }
+  }
+
+  @keyframes hint-bob-up {
+    0%,
+    100% {
+      transform: rotate(180deg) translateY(-1px);
+      opacity: 0.5;
+    }
+    50% {
+      transform: rotate(180deg) translateY(3px);
+      opacity: 0.95;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .globe__hint svg {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .globe__hint {
+      bottom: clamp(4.6rem, 12vw, 6rem);
+      font-size: 0.5rem;
+      letter-spacing: 0.08em;
+    }
   }
 
   /* 兜底 2D 地图阶段：天地图自己的 logo 在左下角，把 HUD 抬起来别盖住 */

@@ -121,13 +121,15 @@ time,
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------------- 表单：无 outline 的双环咬合 ---------------- */
-.field,
-input[type='text'],
-input[type='email'],
-input[type='search'],
-textarea,
-select {
+/* ---------------- 表单：无 outline 的双环咬合 ----------------
+   注意：.field 在 SectionField 里是「图纸底纹」用的整屏容器，
+   这里必须限定在表单内，否则每一屏都会被刷成一块圆角面板。 */
+form .field,
+form input[type='text'],
+form input[type='email'],
+form input[type='search'],
+form textarea,
+form select {
   outline: none;
   background: var(--surface-0);
   box-shadow: var(--ring-rest);
@@ -138,13 +140,14 @@ select {
     background-color 220ms var(--ease-out);
 }
 
-.field:focus,
-input[type='text']:focus,
-input[type='email']:focus,
-input[type='search']:focus,
-textarea:focus,
-select:focus,
-.field:focus-visible {
+form .field:focus,
+form .field:focus-within,
+form input[type='text']:focus,
+form input[type='email']:focus,
+form input[type='search']:focus,
+form textarea:focus,
+form select:focus,
+form .field:focus-visible {
   outline: none;
   box-shadow: var(--ring-focus);
   background: #fff;

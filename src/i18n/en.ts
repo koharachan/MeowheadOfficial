@@ -314,7 +314,7 @@ export const en: Dict = {
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: 'Public face — HIROMI is modelled on her.',
+        duty: 'Public face.',
       },
       {
         no: '02',
@@ -358,6 +358,8 @@ export const en: Dict = {
     fail: 'The map could not load. Please use the address above.',
     aria: 'Map of No. 8 Baiwang West Road, Wujiang District, Shaoguan',
     coordinates: '113.5575 E / 24.7480 N',
+    scrollHint: 'Keep scrolling — fall to street level',
+    scrollHintEnd: 'Max zoom — scroll up to replay',
   },
   contact: {
     no: '10',

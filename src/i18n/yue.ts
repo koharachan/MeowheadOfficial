@@ -309,7 +309,7 @@ export const yue: Dict = {
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: '對外形象；尋美就係照住佢做嘅。',
+        duty: '對外形象。',
       },
       {
         no: '02',
@@ -355,6 +355,8 @@ export const yue: Dict = {
     fail: '地圖載入失敗，請以上面地址為準。',
     aria: '韶關市武江區百旺西路 8 號嘅位置地圖',
     coordinates: '113.5575 E / 24.7480 N',
+    scrollHint: '繼續向下滑 · 一路放大到街區',
+    scrollHintEnd: '已到最大縮放 · 向上滑可以回看',
   },
   contact: {
     no: '10',
