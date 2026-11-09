@@ -302,14 +302,14 @@ export const yue: Dict = {
     members: [
       {
         no: '01',
-        role: '吉祥物',
+        role: '法人',
         origin: '太湖人',
         name: '小巖',
         email: '',
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: '對外形象。',
+        duty: '',
       },
       {
         no: '02',

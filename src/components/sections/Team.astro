@@ -55,7 +55,7 @@ const tm = t.team;
               </svg>
             </a>
 
-            <p class="member__duty">{m.duty}</p>
+            {m.duty ? <p class="member__duty">{m.duty}</p> : <p class="member__duty" aria-hidden="true">&nbsp;</p>}
           </li>
         ))
       }

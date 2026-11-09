@@ -307,14 +307,14 @@ export const en: Dict = {
     members: [
       {
         no: '01',
-        role: 'Mascot',
+        role: 'Legal entity',
         origin: 'From Taihu',
         name: 'Xiao Yan',
         email: '',
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: 'Public face.',
+        duty: '',
       },
       {
         no: '02',

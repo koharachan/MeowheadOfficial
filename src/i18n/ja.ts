@@ -301,14 +301,14 @@ export const ja: Dict = {
     members: [
       {
         no: '01',
-        role: 'マスコット',
+        role: '法人',
         name: '小岩',
         origin: '太湖人',
         email: '',
         handle: 'xiaoyanboke.cn',
         href: 'https://xiaoyanboke.cn',
         avatar: '/team/xiaoyan.png',
-        duty: '対外的な顔。',
+        duty: '',
       },
       {
         no: '02',
