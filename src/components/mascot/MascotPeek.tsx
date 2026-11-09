@@ -41,7 +41,7 @@ export default function MascotPeek({
       },
       { threshold: 0.05 }
     );
-    ['#location', '#contact'].forEach((sel) => {
+    ['#mascot', '#location', '#contact'].forEach((sel) => {
       const el = document.querySelector(sel);
       if (el) io.observe(el);
     });

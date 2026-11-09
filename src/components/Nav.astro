@@ -19,8 +19,6 @@ const hreflangFor = (code: string) =>
   code === 'zh' ? 'zh-CN' : code === 'yue' ? 'zh-HK' : code === 'ja' ? 'ja' : 'en';
 const base = isHome ? '' : t.path.home;
 const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
-/** 导航编号直接取章节表里的真实编号，避免和正文里的 03/04 对不上 */
-const noOf = (h: string) => t.chapters.find((c) => `#${c.id}` === h)?.no ?? '';
 ---
 
 <div class="progress" data-progress aria-hidden="true"></div>
@@ -41,7 +39,6 @@ const noOf = (h: string) => t.chapters.find((c) => `#${c.id}` === h)?.no ?? '';
           t.nav.links.map((link) => (
             <li>
               <a href={href(link.href)} class="nav__link">
-                <span class="nav__num mono-sm" aria-hidden="true">{noOf(link.href)}</span>
                 <span>{link.label}</span>
               </a>
             </li>
@@ -208,12 +205,6 @@ const noOf = (h: string) => t.chapters.find((c) => `#${c.id}` === h)?.no ?? '';
     transition: color 220ms var(--ease-out);
   }
 
-  .nav__num {
-    font-size: 0.5rem;
-    color: var(--ink-38);
-    transition: color 220ms var(--ease-out);
-  }
-
   .nav__link::after {
     content: '';
     position: absolute;
@@ -233,10 +224,6 @@ const noOf = (h: string) => t.chapters.find((c) => `#${c.id}` === h)?.no ?? '';
 
   .nav__link:hover::after {
     transform: scaleX(1);
-  }
-
-  .nav__link:hover .nav__num {
-    color: var(--orange);
   }
 
   .nav__actions {
