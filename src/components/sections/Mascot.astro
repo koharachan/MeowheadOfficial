@@ -254,7 +254,13 @@ const m = t.mascot;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--ink-38);
+    /* 舞台前沿 z-index 3 会盖住这里（它 pointer-events: none，所以看栈看不出来），
+       要显式抬到它上面，否则名字被渐变压成 1.2:1 的灰字，等于隐形。 */
+    z-index: 4;
+    color: var(--ink-70);
+    text-shadow:
+      0 1px 0 rgba(255, 249, 241, 0.9),
+      0 0 6px rgba(255, 249, 241, 0.9);
     animation: tibleBob 5.5s var(--ease-inout) infinite;
   }
 
@@ -290,7 +296,6 @@ const m = t.mascot;
   }
 
   .stage__note {
-    font-size: var(--font-size, var(--fs-small));
     font-size: var(--fs-small);
     color: var(--ink-56);
     line-height: 1.5;
