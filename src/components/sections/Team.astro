@@ -222,9 +222,9 @@ const tm = t.team;
     padding: 0.15em 0.45em;
     border-radius: 4px;
     background: var(--surface-2);
-    color: var(--ink-38);
-    font-size: 0.4375rem;
-    letter-spacing: 0.08em;
+    color: var(--ink-70);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
     text-transform: none;
     transition:
       background-color 220ms var(--ease-out),
@@ -237,13 +237,13 @@ const tm = t.team;
   }
 
   .member__no {
-    color: var(--ink-38);
-    font-size: 0.5rem;
+    color: var(--ink-56);
+    font-size: 0.625rem;
   }
 
   .member__role {
-    color: var(--ink-56);
-    font-size: 0.5rem;
+    color: var(--ink-70);
+    font-size: 0.625rem;
   }
 
   .member__name {
@@ -300,8 +300,9 @@ const tm = t.team;
   }
 
   @media (min-width: 760px) {
+    /* 成员的列数跟着人数走：建站时是 3 人一列到底，加人后会单出一个空格子 */
     .team__grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .team__intro {
