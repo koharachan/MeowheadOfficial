@@ -1,7 +1,22 @@
-/**
- * 企业日志。内容全部来自这次建站里真实做过的技术决策，
- * 不写客户、不写奖项、不写"赋能"。
- */
+/* ============================================================================
+ * posts.ts —— 企业日志的数据源（纯数据，没有逻辑）
+ * ----------------------------------------------------------------------------
+ * 管什么：
+ *   四语言日志的正文、题记、标签、阅读时长。
+ * 怎么用：
+ *   import { posts } from '../../data/posts'
+ *   - 列表页：直接遍历 posts 渲染（pages/blog/index.astro:9 → components/blog/PostList.astro）
+ *   - 详情页：getStaticPaths 里把每条映射成 { params: { slug }, props: { post } }
+ *     （pages/blog/[slug].astro:11），再用 slug 取当前这篇。
+ * 可复制示例：
+ *   posts.map((post) => <PostList post={post} lang="zh" />)
+ * 数据约定：
+ *   - 顺序 = 展示顺序，必须最新在前（pages/blog/[slug].astro:21 的「上一篇」是
+ *     posts.filter(...).slice(0, 2)，靠的就是这个顺序，别再按 date 排一次）。
+ *   - 四种语言都得写全，缺一种那语言页面会渲染出 undefined。
+ *   - readMinutes 是手写的估读值，不参与计算。
+ *   - 内容全部来自这次建站里真实做过的技术决策，不写客户、不写奖项、不写"赋能"。
+ * ========================================================================== */
 export interface PostBlock {
   /** 小节标题，同时作为右侧目录的条目 */
   h: string;
@@ -17,9 +32,13 @@ export interface PostCopy {
 }
 
 export interface Post {
+  /** 详情页地址段：/blog/<slug>/，也是 getStaticPaths 的参数，改它等于改链接 */
   slug: string;
+  /** 'YYYY-MM-DD'，展示用；列表顺序不靠它，靠数组顺序 */
   date: string;
+  /** 分类标签：每种语言一份，直接显示在列表条目上 */
   tag: { zh: string; en: string; yue: string; ja: string };
+  /** 预估阅读分钟数，手写；页面显示成「N 分钟」 */
   readMinutes: number;
   zh: PostCopy;
   en: PostCopy;

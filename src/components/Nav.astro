@@ -1,30 +1,53 @@
 ---
-import type { Dict } from '../i18n';
-import { LANGS, basePath, pathFor } from '../i18n';
-import Button from './ui/Button.astro';
+/*
+全站导航（<Nav />）：一条顶栏 + 一个铺满全屏的手机菜单。
+  - 顶栏：品牌、几个板块链接、下载 / 博客入口、语言切换、一个主行动按钮
+  - 窄屏（≤1080px）板块链接收进汉堡按钮，点开铺满全屏的菜单
+  - 最上面那条 2px 橙线是整页阅读进度，顶栏滚过一段距离后换成磨砂底（.is-stuck）
+  - 这两件动效都由 scripts/motion.ts 统一挂在 [data-progress] / [data-nav] / [data-menu-toggle] 上，
+    这个文件只把骨架和钩子摆好，不写脚本
+
+每个页面从外层引一次（首页由 pages/HomePage 引，其余页各引一次）：
+
+  <Nav t={t} />                    // 首页：页面内的 #锚点直接就能用
+  <Nav t={t} isHome={false} />     // 子页面：给 #锚点补上首页路径，否则点了没反应
+  <Nav t={zh} isHome={false} />    // 404 这种没有当前语言的页面，传一份固定的字典
+
+t（i18n 的 Dict）里用到的字段：t.brand.*、t.nav.links / cta / menu / close、t.langs、
+t.path.home / downloads / blog、t.ux.sectionNav、t.downloads.action、t.blog.all。
+
+类名、#mobile-menu 这个 id、以及所有 data-* 都是样式和脚本的钩子，改名会当场失效。
+*/
+import type { Dict } from '../i18n';                 // 整份文案的类型，页面传进来的就是它
+import { LANGS, basePath, pathFor } from '../i18n';  // 四种语言、当前页的公共路径、切语言后的地址
+import Button from './ui/Button.astro';              // 顶栏那颗实心按钮、菜单里那颗描边按钮
 
 interface Props {
-  t: Dict;
-  current?: string;
+  t: Dict;                 // 当前语言的整份文案
   /** 不在首页时要给锚点补上首页路径，否则点了没反应 */
-  isHome?: boolean;
+  isHome?: boolean;        // 默认当首页：锚点前不用加路径
 }
-const { t, isHome = true } = Astro.props;
+const { t, isHome = true } = Astro.props;                          // 取出文案和「是不是首页」
 /** 当前页面在三种语言下的路径 */
-const pageBase = basePath(Astro.url.pathname);
-const langHref = (l: (typeof LANGS)[number]) => pathFor(l, pageBase);
-const langLabel = (code: string) => t.langs.find((x) => x.code === code)?.label ?? code;
-const langName = (code: string) => t.langs.find((x) => x.code === code)?.name ?? code;
+const pageBase = basePath(Astro.url.pathname);                     // 去掉语言前缀后剩下的这一页
+const langHref = (l: (typeof LANGS)[number]) => pathFor(l, pageBase); // 切到某种语言后的地址：还是同一页
+const langLabel = (code: string) => t.langs.find((x) => x.code === code)?.label ?? code; // 切换上显示的短字，如「中」
+const langName = (code: string) => t.langs.find((x) => x.code === code)?.name ?? code;   // 悬停提示里的语言全称
+// 站内语言代码是简写，hreflang / lang 要的是浏览器认识的标准标签：粤语按香港算，其余原样
 const hreflangFor = (code: string) =>
   code === 'zh' ? 'zh-CN' : code === 'yue' ? 'zh-HK' : code === 'ja' ? 'ja' : 'en';
-const base = isHome ? '' : t.path.home;
-const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
+const homePrefix = isHome ? '' : t.path.home;                      // 不在首页时，锚点前面要补的首页路径
+// 只有页内锚点（#xxx）才需要补首页路径；外链和整页链接原样交出去
+const linkHref = (link: string) => (link.startsWith('#') ? `${homePrefix}${link}` : link);
 ---
 
+{/* 贴在页面最顶的 2px 橙线，宽度跟着阅读进度走，由 scripts/motion.ts 改 transform */}
 <div class="progress" data-progress aria-hidden="true"></div>
 
+{/* ---------- 顶栏 ---------- */}
 <header class="nav" data-nav>
   <div class="nav__inner shell">
+    {/* 品牌：图标 + 中文名 + 一行罗马字 */}
     <a class="brand" href={t.path.home} aria-label={t.brand.nameFull}>
       <img class="brand__mark" src="/brand/mark_primary.svg" alt="" width="30" height="30" decoding="async" />
       <span class="brand__text">
@@ -33,12 +56,13 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
       </span>
     </a>
 
+    {/* 桌面端的板块链接：窄屏会被下面的断点整块藏起来 */}
     <nav class="nav__links" aria-label={t.ux.sectionNav}>
       <ul>
         {
           t.nav.links.map((link) => (
             <li>
-              <a href={href(link.href)} class="nav__link">
+              <a href={linkHref(link.href)} class="nav__link">
                 <span>{link.label}</span>
               </a>
             </li>
@@ -47,9 +71,12 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
       </ul>
     </nav>
 
+    {/* 右侧动作区：下载、博客、语言切换、主按钮、汉堡，从右往左依次排开 */}
     <div class="nav__actions">
+      {/* 两个小字入口，窄屏（≤860px）隐藏 */}
       <a class="nav__blog mono" href={t.path.downloads}>{t.downloads.action}</a>
       <a class="nav__blog mono" href={t.path.blog}>{t.blog.all}</a>
+      {/* 语言切换胶囊：当前语言反色显示，并标 aria-current=page */}
       <div class="langs" role="group" aria-label="語言 / Language">
         {
           LANGS.map((l) => (
@@ -66,8 +93,9 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
           ))
         }
       </div>
-      <Button href={href(t.nav.cta.href)} label={t.nav.cta.label} variant="solid" class="nav__cta" />
+      <Button href={linkHref(t.nav.cta.href)} label={t.nav.cta.label} variant="solid" class="nav__cta" />
 
+      {/* 汉堡：两个 span 是两条横杠，aria-expanded 由脚本切；只有窄屏才显示 */}
       <button class="burger" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label={t.nav.menu}>
         <span></span><span></span>
       </button>
@@ -75,8 +103,10 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
   </div>
 </header>
 
+{/* ---------- 全屏手机菜单：默认藏在屏外，脚本给 .is-open 拉下来 ---------- */}
 <div class="menu" id="mobile-menu" data-menu-panel>
   <div class="menu__inner">
+    {/* 菜单头：一句主张 + 右上角关闭按钮（和汉堡共用 data-menu-toggle） */}
     <div class="menu__head">
       <span class="mono">{t.brand.claim}</span>
       <button class="menu__close" type="button" data-menu-toggle aria-label={t.nav.close}>
@@ -85,11 +115,12 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
         </svg>
       </button>
     </div>
+    {/* 菜单里的板块链接：前面垫一个 01、02 这种两位序号 */}
     <ul class="menu__list">
       {
         t.nav.links.map((link, i) => (
           <li>
-            <a href={href(link.href)}>
+            <a href={linkHref(link.href)}>
               <span class="mono-sm">{String(i + 1).padStart(2, '0')}</span>
               {link.label}
             </a>
@@ -97,6 +128,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
         ))
       }
     </ul>
+    {/* 菜单底：语言切换 + 一颗描边按钮 */}
     <div class="menu__foot">
       <div class="menu__langs">
         {
@@ -107,26 +139,28 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
           ))
         }
       </div>
-      <Button href={href(t.nav.cta.href)} label={t.nav.cta.label} variant="outline" />
+      <Button href={linkHref(t.nav.cta.href)} label={t.nav.cta.label} variant="outline" />
     </div>
   </div>
 </div>
 
 <style>
+  /* ---- 顶部阅读进度线 ---- */
   .progress {
     position: fixed;
-    inset: 0 0 auto 0;
+    inset: 0 0 auto 0;   /* 只贴顶部：左右铺满，高 2px，不占别的位置 */
     height: 2px;
     background: var(--orange);
-    transform: scaleX(0);
-    transform-origin: left;
-    z-index: 120;
-    will-change: transform;
+    transform: scaleX(0);       /* 初始宽度 0，脚本按进度改这个比例 */
+    transform-origin: left;     /* 从左往右长 */
+    z-index: 120;               /* 压住顶栏（110），但要留在手机菜单（130）下面 */
+    will-change: transform;     /* 每帧都在改 transform，提前提示浏览器 */
   }
 
+  /* ---- 顶栏本体 ---- */
   .nav {
     position: fixed;
-    inset: 2px 0 auto 0;
+    inset: 2px 0 auto 0;        /* 往下让 2px，正好不盖住上面那条进度线 */
     z-index: 110;
     height: 76px;
     display: flex;
@@ -134,9 +168,10 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     transition:
       background-color 320ms var(--ease-out),
       backdrop-filter 320ms var(--ease-out),
-      box-shadow 320ms var(--ease-out);
+      box-shadow 320ms var(--ease-out);   /* 滚动变磨砂时这三种一起过渡，不会跳 */
   }
 
+  /* 滚过一段距离后脚本挂上的样式：半透明奶白底 + 磨砂 + 一条细分隔线 */
   .nav.is-stuck {
     background: color-mix(in srgb, var(--cream) 86%, transparent);
     backdrop-filter: blur(14px) saturate(1.1);
@@ -146,16 +181,17 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
   .nav__inner {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between;   /* 品牌靠左、动作区靠右，中间的链接自然居中 */
     gap: 1.5rem;
     width: 100%;
   }
 
+  /* ---- 品牌 ---- */
   .brand {
     display: inline-flex;
     align-items: center;
     gap: 0.65rem;
-    flex-shrink: 0;
+    flex-shrink: 0;   /* 挤的时候不许把品牌压扁 */
   }
 
   .brand__mark {
@@ -165,12 +201,12 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
   }
 
   .brand:hover .brand__mark {
-    transform: rotate(-6deg) scale(1.06);
+    transform: rotate(-6deg) scale(1.06);   /* 悬停时图标轻微歪一下，算一个小彩蛋 */
   }
 
   .brand__text {
     display: flex;
-    flex-direction: column;
+    flex-direction: column;   /* 中文名在上、罗马字在下 */
     gap: 2px;
     line-height: 1;
   }
@@ -183,18 +219,19 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
 
   .brand__roman {
     font-size: 0.5rem;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.2em;   /* 小字靠得开一点才认得出 */
     color: var(--ink-56);
   }
 
+  /* ---- 桌面板块链接 ---- */
   .nav__links ul {
     display: flex;
     align-items: center;
-    gap: clamp(1rem, 2vw, 2rem);
+    gap: clamp(1rem, 2vw, 2rem);   /* 链接间距跟着屏宽走 */
   }
 
   .nav__link {
-    position: relative;
+    position: relative;   /* 给下面那条下划线定位 */
     display: inline-flex;
     align-items: baseline;
     gap: 0.4em;
@@ -205,6 +242,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     transition: color 220ms var(--ease-out);
   }
 
+  /* 悬停时从左往右长出来的一条橙色下划线 */
   .nav__link::after {
     content: '';
     position: absolute;
@@ -226,6 +264,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     transform: scaleX(1);
   }
 
+  /* ---- 右侧动作区 ---- */
   .nav__actions {
     display: flex;
     align-items: center;
@@ -233,12 +272,13 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     flex-shrink: 0;
   }
 
+  /* 下载 / 博客两个小字入口 */
   .nav__blog {
     font-size: 0.5625rem;
     letter-spacing: 0.14em;
     color: var(--ink-56);
     padding-block: 0.35rem;
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid transparent;   /* 先占住位置，悬停时只换颜色，不跳行 */
     transition:
       color 200ms var(--ease-out),
       border-color 200ms var(--ease-out);
@@ -251,10 +291,11 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
 
   @media (max-width: 860px) {
     .nav__blog {
-      display: none;
+      display: none;   /* 更窄的屏先砍掉这两个：手机菜单里有同样的入口 */
     }
   }
 
+  /* ---- 语言切换胶囊 ---- */
   .langs {
     display: inline-flex;
     align-items: center;
@@ -277,6 +318,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
       background-color 200ms var(--ease-out);
   }
 
+  /* 当前语言：墨色底反白，一眼能看出是哪门语言 */
   .lang.is-active {
     color: var(--cream);
     background: var(--ink);
@@ -287,6 +329,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     background: var(--cream-2);
   }
 
+  /* ---- 汉堡按钮：只有窄屏显示 ---- */
   .burger {
     display: none;
     width: 40px;
@@ -299,7 +342,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     align-items: center;
     justify-content: center;
     gap: 4px;
-    flex-direction: column;
+    flex-direction: column;   /* 两条横杠上下排 */
   }
 
   .burger span {
@@ -311,21 +354,23 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
   }
 
   /* ---------------- mobile menu ---------------- */
+  /* ---- 全屏手机菜单：默认整块挪到屏幕上方之外，隐藏且不吃点击 ---- */
   .menu {
     position: fixed;
     inset: 0;
-    z-index: 130;
+    z-index: 130;   /* 全场最高：要盖住顶栏和进度线 */
     background: var(--cream);
     display: flex;
     flex-direction: column;
     padding: 1.25rem var(--gutter) 2rem;
-    transform: translateY(-100%);
+    transform: translateY(-100%);   /* 藏到屏幕上边之外 */
     visibility: hidden;
     transition:
       transform 480ms var(--ease-out),
       visibility 480ms;
   }
 
+  /* 脚本打开菜单时挂上：拉回来、恢复可见 */
   .menu.is-open {
     transform: translateY(0);
     visibility: visible;
@@ -359,7 +404,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
   .menu__list {
     display: flex;
     flex-direction: column;
-    margin-top: auto;
+    margin-top: auto;      /* 上下两个 auto 让链接列表垂直居中 */
     margin-bottom: auto;
     gap: 0.25rem;
   }
@@ -369,7 +414,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     align-items: baseline;
     gap: 0.75rem;
     padding: 0.7rem 0;
-    font-size: clamp(1.75rem, 7vw, 2.5rem);
+    font-size: clamp(1.75rem, 7vw, 2.5rem);   /* 手机上是大字，一行一个 */
     font-weight: 800;
     letter-spacing: -0.02em;
     border-bottom: 1px solid var(--ink-08);
@@ -394,6 +439,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     color: var(--ink-56);
   }
 
+  /* ---- 断点：1080 收起板块链接换汉堡，640 再缩一档 ---- */
   @media (max-width: 1080px) {
     .nav__links {
       display: none;
@@ -405,10 +451,10 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
 
   @media (max-width: 640px) {
     .nav {
-      height: 66px;
+      height: 66px;   /* 小屏省一点高度，留更多地方给内容 */
     }
     .brand__roman {
-      display: none;
+      display: none;   /* 罗马字太小，小屏上省掉 */
     }
     .nav__inner {
       gap: 0.75rem;

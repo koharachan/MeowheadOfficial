@@ -1,92 +1,136 @@
 ---
-import type { Dict } from '../../i18n';
-import GlobeToMap from '../map/GlobeToMap.tsx';
-import SectionField from '../ui/SectionField.astro';
+/*
+首页第 09 屏「位置」——深色屏：上半是地址，下半是一路从卫星轨道落到门牌号的地球。
+
+管什么：
+  上半（.loc__head）：编号 · 标签 · 大标题 · 导语 + 一排「省份 / 城市 / 区 / 邮编」小标签。
+  下半（.loc__track）：一整块被钉在屏幕上的舞台，里面是 GlobeToMap 这个 React 岛——
+    先是一颗地球，随着往下滚一路放大，最后落到天地图的街区视图，再压出地址标注。
+
+两条完全不同的路径，改之前先认清自己在改哪条：
+  1) 桌面（有鼠标、有 hover）：靠滚动驱动。.loc__track 有 240vh 高，里面的 .loc__pin 用 sticky
+     钉在屏幕顶上 100svh，所以「轨道滚完」= 滚了约 140vh。GlobeToMap 拿
+     .loc__track 的高度算进度（轨道高 − 视口高 = 行程），换成 0~1 的进度再换成相机高度。
+     进度到 0.62 时放大做完（ZOOM_END，见 GlobeToMap.tsx），之后球停住，剩下一段是驻留区。
+  2) 手机 / 触屏（没有 hover，或屏 ≤720px）：不靠滚动。下面那条媒体查询把长轨道拆掉
+     （.loc__track 高度 auto、.loc__pin 取消 sticky），舞台固定成 min(66svh, 520px) 高；
+     GlobeToMap 一进视口就自己播一遍 4.2 秒的放大，播完停住。两个判断条件必须和
+     GlobeToMap.tsx 里的 isMobileView() 一字不差地对应，改一处就得改两处。
+
+怎么调用（HomePage.astro 里已经这么写，改布局时照抄）：
+  <Location t={t} />
+  t 是整份文案字典（四份语言结构一样，字段见 i18n/types.ts 的 location 段）。
+  GlobeToMap 的 label / coordinates / fail / aria / attribution / scrollHint / scrollHintEnd
+  全部来自 t.location，本文件不写任何地址文案。
+
+本屏的 id 是 "location"，同时整屏带 on-dark 类：左边叙事轴 NarrativeRail 靠 id 找这一屏、
+  点亮「位置」那一格，并靠 .on-dark 判断这一屏是深底（轴压到这儿要换成白描边）；
+  轴上每一根刻度还会逐根实测底色。两个都不许动。
+*/
+import type { Dict } from '../../i18n';                              // 整站文案的类型：四种语言共用这一份结构
+import GlobeToMap from '../map/GlobeToMap.tsx';                     // 下半屏那颗会放大的地球 + 天地图（React 岛）
+import SectionField from '../ui/SectionField.astro';                // 贯穿全屏的图纸底纹：深色版竖线 + 巨大的「09」
 
 interface Props {
-  t: Dict;
+  t: Dict;                                                          // 整份文案字典，由页面在构建期传进来
 }
 const { t } = Astro.props;
-const l = t.location;
+const copy = t.location;                                            // 这一屏自己的那段文案，模板里只读它
 ---
 
 <section class="loc on-dark" id="location">
-  <SectionField no={l.no} tone="dark" align="left" />
+  {/* 底纹：深色版竖线 + 巨大的「09」。tone="dark" 让线更淡（深底上深线看不见） */}
+  <SectionField no={copy.no} tone="dark" align="left" />
 
+  {/* --- 上半屏：地址说明 --- */}
   <div class="shell loc__head">
+    {/* 编号 · 短横线 · 标签（深底上的次级文字色是半透明白） */}
     <div class="loc__meta" data-anim="fade">
-      <span class="mono loc__no">{l.no}</span>
+      <span class="mono loc__no">{copy.no}</span>
       <span class="loc__rule" aria-hidden="true"></span>
-      <span class="mono">{l.label}</span>
+      <span class="mono">{copy.label}</span>
     </div>
 
+    {/* 大标题 + 导语（「往下滚，从卫星轨道一路落到门牌号」——就是下面那段舞台在做的事） */}
     <div class="loc__intro">
-      <h2 class="h2 loc__title" data-stream data-anim="fade" data-delay="0.05">{l.title}</h2>
-      <p class="lead loc__lede" data-anim="fade" data-delay="0.1">{l.lede}</p>
+      <h2 class="h2 loc__title" data-stream data-anim="fade" data-delay="0.05">{copy.title}</h2>
+      <p class="lead loc__lede" data-anim="fade" data-delay="0.1">{copy.lede}</p>
     </div>
 
+    {/* 省份 / 城市 / 区 / 邮编：四个小标签一行排开，放不下就换行 */}
     <dl class="loc__chips" data-anim="stagger">
       {
-        l.chips.map((c) => (
+        copy.chips.map((chip) => (
           <div>
-            <dt class="mono">{c.k}</dt>
-            <dd>{c.v}</dd>
+            <dt class="mono">{chip.k}</dt>
+            <dd>{chip.v}</dd>
           </div>
         ))
       }
     </dl>
   </div>
 
+  {/* --- 下半屏：滚动舞台 --- */}
+  {/* 这条轨道的 height 就是动画总长度：GlobeToMap 用「轨道高 − 视口高」当行程算进度。
+      手机端下面那条媒体查询会把 height 改成 auto，让它退化成一张固定高度的普通图 */}
   <div class="loc__track">
+    {/* 被 sticky 钉住的舞台：滚轨道的这段时间里，它一直贴在屏幕顶上不动，动的是里面的球 */}
     <div class="loc__pin">
+      {/* 地图画框：一道发丝线边框 + overflow:hidden，球放大到出界时不会漏到边框外面 */}
       <div class="loc__frame">
+        {/* client:visible = 滚到这一屏附近才开始下载 Cesium/天地图的 JS，首屏不为它买单 */}
         <GlobeToMap
           client:visible
-          label={l.hint}
-          coordinates={l.coordinates}
-          fail={l.fail}
-          aria={l.aria}
-          attribution={l.attribution}
-          scrollHint={l.scrollHint}
-          scrollHintEnd={l.scrollHintEnd}
+          label={copy.hint}
+          coordinates={copy.coordinates}
+          fail={copy.fail}
+          aria={copy.aria}
+          attribution={copy.attribution}
+          scrollHint={copy.scrollHint}
+          scrollHintEnd={copy.scrollHintEnd}
         />
       </div>
 
-      <p class="loc__caption mono-sm">{l.caption}</p>
+      {/* 画框底下那行小字：完整门牌地址（法定要写全，包括「仅限办公使用」） */}
+      <p class="loc__caption mono-sm">{copy.caption}</p>
     </div>
   </div>
 </section>
 
 <style>
+  /* 这一块只作用在 Astro 模板自己渲染的 DOM 上（作用域是 Astro 自动加的）；
+     地球上那些 .globe__* 是 React 岛自己画的，样式在文件末尾的 is:global 里。 */
+
   .loc {
-    position: relative;
-    background: #141210;
-    color: var(--ink);
-    padding-top: clamp(4rem, 8vw, 7rem);
-    overflow: clip;
+    position: relative;                                  /* 给绝对定位的底纹当锚 */
+    background: #141210;                                 /* 全站唯一的纯深底：这一屏要像在暗房里看地球 */
+    color: var(--ink);                                   /* 深底上的正文色（--ink 在 on-dark 上下文里会反色） */
+    padding-top: clamp(4rem, 8vw, 7rem);                 /* 顶上 64~112px，给固顶导航让出空间 */
+    overflow: clip;                                      /* 球放大出界时不许撑出横向滚动条 */
   }
 
+  /* --- 上半屏 --- */
   .loc__head {
     display: grid;
-    gap: clamp(1.25rem, 3vw, 2rem);
-    padding-bottom: clamp(2rem, 4vw, 3.5rem);
+    gap: clamp(1.25rem, 3vw, 2rem);                      /* 编号行 / 标题块 / 标签行之间的间距 20~32px */
+    padding-bottom: clamp(2rem, 4vw, 3.5rem);            /* 和下面的舞台拉开 32~56px */
   }
 
   .loc__meta {
     display: flex;
     align-items: center;
     gap: 0.9rem;
-    color: rgba(255, 249, 241, 0.45);
+    color: rgba(255, 249, 241, 0.45);                    /* 深底上没有 --ink-56 可用，用 45% 的白代替 */
   }
 
   .loc__no {
-    color: var(--orange);
+    color: var(--orange);                                /* 深底上橙色更跳，正好当锚点 */
   }
 
   .loc__rule {
-    width: clamp(28px, 5vw, 64px);
+    width: clamp(28px, 5vw, 64px);                       /* 编号和标签之间的短横线，28~64px */
     height: 1px;
-    background: rgba(255, 249, 241, 0.24);
+    background: rgba(255, 249, 241, 0.24);               /* 24% 白：深底上的发丝线 */
   }
 
   .loc__intro {
@@ -95,131 +139,150 @@ const l = t.location;
   }
 
   .loc__title {
-    max-width: 20ch;
+    max-width: 20ch;                                     /* 大标题最多 20 字折行 */
   }
 
   .loc__lede {
-    max-width: 46ch;
-    color: rgba(255, 249, 241, 0.6);
+    max-width: 46ch;                                     /* 导语一行最多 46 字 */
+    color: rgba(255, 249, 241, 0.6);                     /* 深底上的导语：60% 白，比正文淡一档 */
   }
 
+  /* --- 四个小标签 --- */
   .loc__chips {
     display: flex;
-    flex-wrap: wrap;
-    gap: clamp(1rem, 3vw, 2.5rem);
-    border-top: 1px solid rgba(255, 249, 241, 0.16);
-    padding-top: 1.25rem;
+    flex-wrap: wrap;                                     /* 手机放不下就换行，不挤成两行小字 */
+    gap: clamp(1rem, 3vw, 2.5rem);                       /* 标签之间 16~40px */
+    border-top: 1px solid rgba(255, 249, 241, 0.16);     /* 顶上一条线，和信息区一起收个口 */
+    padding-top: 1.25rem;                                /* 别贴着那条线 */
   }
 
   .loc__chips dt {
-    color: rgba(255, 249, 241, 0.38);
-    font-size: 0.5rem;
+    color: rgba(255, 249, 241, 0.38);                    /* 标签名最淡：只是个标题 */
+    font-size: 0.5rem;                                   /* 8px，压成印章大小 */
     margin-bottom: 0.3rem;
   }
 
   .loc__chips dd {
-    font-size: 0.9375rem;
+    font-size: 0.9375rem;                                /* 15px：值要能一眼读清 */
     font-weight: 600;
   }
 
-  /* sticky 舞台：滚动驱动「地球 → 地图」。
-     高度 260vh = 160vh 的可滚行程：前 55% 一路放大，
-     后 45%（约 72vh）是「最清晰段」的驻留区，球停住不动，
-     滑过头之前要再多滚两下，也随时可以往回滑。 */
+  /* --- 滚动舞台：桌面端的骨架 ---
+     高度 240vh，其中 100svh 被 sticky 的舞台占着不动，真正能滚的行程约 140vh。
+     行程怎么用：前 62%（ZOOM_END）一路放大，后 38% 是驻留区——球停在最清晰那一格，
+     想滑过去还得再滚几下，也随时可以往回滑看一遍。 */
   .loc__track {
-    position: relative;
-    height: 240vh;
+    position: relative;                                  /* 舞台相对它 sticky；它也是算进度的尺子 */
+    height: 240vh;                                       /* 240vh 是「放大时间」的总长：改小动画变快、变浅 */
   }
 
+  /* 被钉住的舞台：整个屏幕那么高，球在正中，底下一行小字 */
   .loc__pin {
-    position: sticky;
-    top: 0;
-    height: 100svh;
+    position: sticky;                                    /* 钉住：滚轨道的这段时间里它不动 */
+    top: 0;                                              /* 贴屏幕顶 */
+    height: 100svh;                                      /* 一屏高（svh：按最小视口算，手机地址栏收起时不跳） */
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.75rem;
-    padding-inline: var(--gutter);
-    padding-block: clamp(1rem, 3vh, 2rem);
+    flex-direction: column;                              /* 画框在上、小字在下 */
+    justify-content: center;                             /* 整体垂直居中 */
+    gap: 0.75rem;                                        /* 画框和小字之间 12px */
+    padding-inline: var(--gutter);                       /* 左右跟全站同一条 gutter */
+    padding-block: clamp(1rem, 3vh, 2rem);               /* 上下留一点，别顶满屏幕 */
   }
 
+  /* 地图画框 */
   .loc__frame {
-    position: relative;
-    flex: 1;
-    min-height: 0;
-    border: 1px solid rgba(255, 249, 241, 0.18);
-    overflow: hidden;
+    position: relative;                                  /* 岛里的绝对定位元素都相对它 */
+    flex: 1;                                             /* 吃掉小字之外的全部高度 */
+    min-height: 0;                                       /* flex 子项默认不肯缩，这行允许它缩到 0 才不溢出 */
+    border: 1px solid rgba(255, 249, 241, 0.18);         /* 一道淡边框，把地图框成一张照片 */
+    overflow: hidden;                                    /* 球放大出框的部分裁掉 */
   }
 
+  /* 画框底下的小字：完整地址 */
   .loc__caption {
-    color: rgba(255, 249, 241, 0.42);
+    color: rgba(255, 249, 241, 0.42);                    /* 42% 白：脚注级 */
     text-align: center;
-    text-transform: none;
+    text-transform: none;                                /* mono-sm 默认大写，地址要保持原样 */
     letter-spacing: 0.04em;
-    font-size: 0.625rem;
+    font-size: 0.625rem;                                 /* 10px */
   }
 
-  /* 手机端不再靠滚动驱动：没有 240vh 的长轨道，舞台也不再 sticky，
-     放大动画进视口就自己播一遍（见 GlobeToMap.tsx） */
+  /* --- 手机 / 触屏：把「滚动驱动」整条路径拆掉 ---
+     只在两件事同时不成立时生效？不是：两个条件任意一个成立就命中
+     （屏 ≤720px，或者没有 hover 的粗指针设备，比如平板、手机横过来）。
+     这里撤掉轨道和 sticky，舞台退化成一张固定高度的普通图；
+     放大动画交给 GlobeToMap：进视口自动播 4.2 秒，不跟手指走。
+     条件必须和 GlobeToMap.tsx 的 isMobileView() 保持一致，否则会出现
+     「样式按手机排、脚本按桌面跑」——球不动、提示也不对。 */
   @media (max-width: 720px), (hover: none) and (pointer: coarse) {
     .loc__track {
-      height: auto;
+      height: auto;                                      /* 没有长轨道 = 没有可滚行程，脚本那边也不会去算 */
     }
     .loc__pin {
-      position: relative;
+      position: relative;                                /* 取消钉住，正常跟着页面流走 */
       top: auto;
-      height: auto;
-      display: block;
+      height: auto;                                      /* 不再占满一屏，高度由内容决定 */
+      display: block;                                    /* 取消纵向 flex，画框自己定高 */
     }
     .loc__frame {
-      flex: none;
-      height: min(66svh, 520px);
+      flex: none;                                        /* 没有 flex 上下文了，明确写死 */
+      height: min(66svh, 520px);                         /* 66svh 和 520px 取小：矮屏不撑破，高屏不空旷 */
     }
     .loc__caption {
-      margin-top: 0.75rem;
-      font-size: 0.5625rem;
-      line-height: 1.6;
+      margin-top: 0.75rem;                               /* 和画框留 12px */
+      font-size: 0.5625rem;                              /* 9px：手机上一行放得下完整地址 */
+      line-height: 1.6;                                  /* 放不下要折行，行高别太挤 */
     }
   }
 </style>
 
 <style is:global>
+  /* 下面这一整块画的都是 GlobetoMap 这个 React 岛自己渲染出来的 DOM（.globe__* 一族）。
+     岛里的元素不带 Astro 的作用域标记，样式只能写成全局的；
+     这些类名只在这个组件的内部用，不会和别处撞。 */
+
+  /* 岛的最外层：铺满 .loc__frame，所以定位相对画框 */
   .globe {
     position: absolute;
     inset: 0;
   }
 
+  /* 舞台：整个画面的底。用径向渐变当底色，球还没画出来时也不至于一片死黑 */
   .globe__stage {
     position: relative;
     width: 100%;
     height: 100%;
-    overflow: hidden;
-    background: radial-gradient(120% 90% at 50% 45%, #1c1a17 0%, #141210 62%);
+    overflow: hidden;                                    /* 球放大出界时裁掉，别溢到画框外 */
+    background: radial-gradient(120% 90% at 50% 45%, #1c1a17 0%, #141210 62%); /* 中心略亮、边缘沉下去，像一束顶光 */
   }
 
+  /* 地球外圈那道虚线轨道环 */
   .globe__orbit {
     position: absolute;
     left: 50%;
-    top: 46%;
-    width: min(62vh, 62vw);
-    aspect-ratio: 1;
-    transform: translate(-50%, -50%);
-    border: 1px dashed rgba(255, 249, 241, 0.1);
+    top: 46%;                                            /* 比正中略高一点：视觉重心才不会往下坠 */
+    width: min(62vh, 62vw);                              /* 环的大小跟屏幕走，取长边都放得下的那个 */
+    aspect-ratio: 1;                                     /* 正圆 */
+    transform: translate(-50%, -50%);                    /* 校到正中 */
+    border: 1px dashed rgba(255, 249, 241, 0.1);         /* 10% 白的虚线，只是暗示「这是个天体」 */
     border-radius: 999px;
-    pointer-events: none;
+    pointer-events: none;                                /* 纯装饰，不许吃鼠标 */
   }
 
+  /* Cesium 画的三维地球 */
   .globe__globe {
     position: absolute;
     inset: 0;
     opacity: 1;
-    transition: opacity 720ms var(--ease-out);
+    transition: opacity 720ms var(--ease-out);           /* 球和地图交接时互相淡入淡出 */
   }
 
+  /* 地图出来后把球淡掉（留着不 display:none，是为了让 Cesium 的相机继续活着、能回看） */
   .globe__globe[data-dim='true'] {
     opacity: 0;
   }
 
+  /* Cesium 会在 canvas 上写内联宽高，用 !important 盖掉，让球正好填满画框 */
   .globe__globe canvas {
     display: block;
     width: 100% !important;
@@ -231,11 +294,12 @@ const l = t.location;
   .globe__globe .cesium-viewer-cesiumWidgetContainer,
   .globe__globe .cesium-widget,
   .globe__globe .cesium-widget canvas {
-    width: 100% !important;
+    width: 100% !important;                              /* 同上：压过 Cesium 自己写的内联尺寸 */
     height: 100% !important;
-    background: transparent !important;
+    background: transparent !important;                  /* Cesium 默认给一层白底，留着就没法融进深色屏 */
   }
 
+  /* Cesium 自带的底栏 / 工具栏 / 时间轴 / 动画控件一律不要：我们只用它的画面 */
   .globe__globe .cesium-viewer-bottom,
   .globe__globe .cesium-viewer-toolbar,
   .globe__globe .cesium-viewer-animationContainer,
@@ -246,55 +310,56 @@ const l = t.location;
   /* 懒加载期间：先用离线烘的球体海报顶着，Cesium 就绪后淡出 */
   .globe__poster {
     position: absolute;
-    z-index: 3;
+    z-index: 3;                                          /* 压在地球和地图上面（它们没有 z-index，按文档顺序本就在下） */
     left: 50%;
     top: 50%;
-    width: min(64vh, 64vw);
+    width: min(64vh, 64vw);                              /* 比轨道环略大一圈，看着像同一颗球 */
     height: auto;
     transform-origin: center;
     opacity: 0;
     transition:
-      opacity 900ms var(--ease-out),
-      transform 220ms linear;
+      opacity 900ms var(--ease-out),                     /* 淡出慢一点，别让画面「跳」一下 */
+      transform 220ms linear;                            /* 跟着滚动的缩放要跟手，所以是 linear 且更短 */
     pointer-events: none;
     user-select: none;
-    filter: drop-shadow(0 40px 90px rgba(0, 0, 0, 0.55));
+    filter: drop-shadow(0 40px 90px rgba(0, 0, 0, 0.55)); /* 一圈很虚的投影，把球从深底上「托」起来 */
   }
 
   .globe__poster[data-show='true'] {
     opacity: 1;
   }
 
+  /* 系统开了「减少动态效果」：海报不淡入淡出，直接换 */
   @media (prefers-reduced-motion: reduce) {
     .globe__poster {
       transition: none;
     }
   }
 
+  /* 兜底 2D 地图（天地图瓦片）：压在球上面，球淡掉之后接管画面 */
   .globe__map {
     position: absolute;
     inset: 0;
     opacity: 0;
     transition: opacity 900ms var(--ease-out);
-    filter: saturate(0.66) sepia(0.16) contrast(1.04) brightness(1.02);
-    pointer-events: none;
+    filter: saturate(0.66) sepia(0.16) contrast(1.04) brightness(1.02); /* 降饱和 + 微暖：让卫星图融进这套奶白/橙的配色，不显突兀 */
+    pointer-events: none;                                /* 平时不吃鼠标；出来后见下面 [data-show] 才接管 */
   }
 
   .globe__map[data-show='true'] {
     opacity: 1;
-    pointer-events: auto;
+    pointer-events: auto;                                /* 地图出来了才允许拖拽、缩放 */
   }
 
-
-
+  /* 地址标注（小吉祥物）：位置由脚本每帧写 transform，所以这里只定锚点和过渡 */
   .globe__mapmarker {
     position: absolute;
-    left: 0;
+    left: 0;                                             /* 锚定左上角，脚本给的是像素位移 */
     top: 0;
     pointer-events: none;
     opacity: 0;
     transition: opacity 400ms var(--ease-out);
-    will-change: transform;
+    will-change: transform;                              /* 每帧都在动，提前提示浏览器单独提层 */
   }
 
   .globe__mapmarker[data-show='true'] {
@@ -303,38 +368,39 @@ const l = t.location;
 
   .globe__mapmarker img {
     display: block;
-    width: 64px;
+    width: 64px;                                         /* 64px 宽：街区级缩放下看得出是谁，又不挡住门牌 */
     height: auto;
-    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));  /* 压一点影子，贴在卫星图上也立得住 */
   }
 
+  /* 左下角那组读数（标签 / 坐标 / 进度） */
   /* 放在左下角：顶部会被固定导航压住 */
   .globe__hud {
     position: absolute;
-    z-index: 4;
+    z-index: 4;                                          /* 在地图和标注之上 */
     left: clamp(0.75rem, 2vw, 1.5rem);
     bottom: clamp(0.75rem, 2vw, 1.25rem);
     display: flex;
     align-items: center;
     gap: 0.9rem;
     color: rgba(255, 249, 241, 0.55);
-    pointer-events: none;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    pointer-events: none;                                /* 只是读数，不许挡住地图拖拽 */
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);           /* 压在亮色卫星图上也得读得清 */
   }
 
   .globe__hud-label {
-    color: var(--orange);
-    font-size: 0.5rem;
+    color: var(--orange);                                /* 「实时卫星影像 · 天地图」那一小行 */
+    font-size: 0.5rem;                                   /* 8px */
   }
 
   .globe__hud-coords,
   .globe__hud-pct {
-    font-size: 0.5rem;
+    font-size: 0.5rem;                                   /* 8px：坐标和百分比同一档 */
   }
 
   .globe__hud-pct {
-    font-variant-numeric: tabular-nums;
-    color: rgba(255, 249, 241, 0.32);
+    font-variant-numeric: tabular-nums;                  /* 数字等宽，百分比跳动时不会左右抖 */
+    color: rgba(255, 249, 241, 0.32);                    /* 最淡：它只是「滚到哪儿了」的旁证 */
   }
 
   /* 缩放按钮（三维与兜底 2D 通用） */
@@ -342,19 +408,19 @@ const l = t.location;
     position: absolute;
     z-index: 4;
     right: clamp(0.75rem, 2vw, 1.5rem);
-    bottom: clamp(3.4rem, 5vw, 4.2rem);
+    bottom: clamp(3.4rem, 5vw, 4.2rem);                  /* 抬高一截，避让右下角的「打开大地图」 */
     display: grid;
-    gap: 1px;
+    gap: 1px;                                            /* 两颗按钮之间只留 1px，让中间的线当分隔 */
     border: 1px solid rgba(255, 249, 241, 0.2);
     border-radius: 999px;
-    overflow: hidden;
-    background: rgba(20, 18, 16, 0.6);
+    overflow: hidden;                                    /* 圆角裁掉子按钮的直角 */
+    background: rgba(20, 18, 16, 0.6);                   /* 半透明深底 + 毛玻璃，压在地图上看得清 */
     backdrop-filter: blur(6px);
-    opacity: 0;
+    opacity: 0;                                          /* 默认藏着：只有压到地图阶段才让脚本打开 */
     visibility: hidden;
     transition:
       opacity 300ms var(--ease-out),
-      visibility 300ms;
+      visibility 300ms;                                  /* visibility 也参与过渡，隐藏时才不会「瞬间消失」 */
   }
 
   .globe__zoom[data-show='true'] {
@@ -364,11 +430,11 @@ const l = t.location;
 
   .globe__zoom-btn {
     display: grid;
-    place-items: center;
+    place-items: center;                                 /* 加减号在方块正中 */
     width: 34px;
-    height: 34px;
+    height: 34px;                                        /* 34px：手指点得中，又不至于抢地图 */
     border: 0;
-    background: transparent;
+    background: transparent;                             /* 底色由外层 .globe__zoom 统一给 */
     color: rgba(255, 249, 241, 0.8);
     cursor: pointer;
     transition:
@@ -377,27 +443,28 @@ const l = t.location;
   }
 
   .globe__zoom-btn + .globe__zoom-btn {
-    border-top: 1px solid rgba(255, 249, 241, 0.16);
+    border-top: 1px solid rgba(255, 249, 241, 0.16);     /* 第二颗按钮的上边线 = 两颗之间的分隔线 */
   }
 
   .globe__zoom-btn:hover {
-    background: var(--orange);
+    background: var(--orange);                           /* hover 变橙：这两颗是能点的 */
     color: var(--cream);
   }
 
+  /* 加载中的小胶囊 */
   .globe__loading {
     position: absolute;
     z-index: 3;
     left: 50%;
-    bottom: 12%;
-    transform: translateX(-50%);
+    bottom: 12%;                                         /* 放在偏下位置，别挡住球的正中 */
+    transform: translateX(-50%);                         /* 水平居中 */
     margin: 0;
     padding: 0.45rem 0.8rem;
     border-radius: 999px;
     background: rgba(20, 18, 16, 0.55);
     color: rgba(255, 249, 241, 0.72);
-    font-size: 0.5625rem;
-    letter-spacing: 0.14em;
+    font-size: 0.5625rem;                                /* 9px */
+    letter-spacing: 0.14em;                              /* 拉开字距，读起来像状态灯 */
     text-transform: none;
     opacity: 0;
     visibility: hidden;
@@ -415,7 +482,7 @@ const l = t.location;
     position: absolute;
     z-index: 4;
     left: 50%;
-    bottom: clamp(3.4rem, 6vw, 5rem);
+    bottom: clamp(3.4rem, 6vw, 5rem);                    /* 抬到缩放按钮那一带，避让底部读数 */
     transform: translateX(-50%);
     display: inline-flex;
     align-items: center;
@@ -428,19 +495,20 @@ const l = t.location;
     backdrop-filter: blur(6px);
     color: rgba(255, 249, 241, 0.78);
     font-family: var(--font-mono);
-    font-size: 0.5625rem;
+    font-size: 0.5625rem;                                /* 9px */
     letter-spacing: 0.12em;
     text-transform: none;
-    white-space: nowrap;
-    pointer-events: none;
+    white-space: nowrap;                                 /* 提示是一句话，宁可窄屏缩字号也不折成两行 */
+    pointer-events: none;                                /* 不许挡住下面的滚动（桌面端靠滚动驱动） */
   }
 
   .globe__hint svg {
-    flex: none;
+    flex: none;                                          /* 箭头不被文字挤扁 */
     opacity: 0.7;
-    animation: hint-bob 1.7s var(--ease-inout) infinite;
+    animation: hint-bob 1.7s var(--ease-inout) infinite;  /* 上下轻轻浮动，暗示「往下滑」 */
   }
 
+  /* 已经压到最大缩放：箭头翻过来，动画换成「往上」那一套 */
   .globe__hint[data-done='true'] svg {
     transform: rotate(180deg);
     animation: hint-bob-up 1.7s var(--ease-inout) infinite;
@@ -453,7 +521,7 @@ const l = t.location;
       opacity: 0.5;
     }
     50% {
-      transform: translateY(3px);
+      transform: translateY(3px);                        /* 往下走 3px：方向就是页面滚动的方向 */
       opacity: 0.95;
     }
   }
@@ -461,7 +529,7 @@ const l = t.location;
   @keyframes hint-bob-up {
     0%,
     100% {
-      transform: rotate(180deg) translateY(-1px);
+      transform: rotate(180deg) translateY(-1px);        /* 先翻 180°，再沿「翻转后」的轴上浮 */
       opacity: 0.5;
     }
     50% {
@@ -472,15 +540,16 @@ const l = t.location;
 
   @media (prefers-reduced-motion: reduce) {
     .globe__hint svg {
-      animation: none;
+      animation: none;                                   /* 少动效：箭头不浮动，光留在那儿提示 */
     }
   }
 
+  /* 手机：提示压到更低的位置，避开底部那排读数和按钮 */
   @media (max-width: 720px) {
     .globe__hint {
       bottom: clamp(4.6rem, 12vw, 6rem);
-      font-size: 0.5rem;
-      letter-spacing: 0.08em;
+      font-size: 0.5rem;                                 /* 8px：窄屏上这句提示要给地图让位 */
+      letter-spacing: 0.08em;                            /* 字距也收一点，一行才放得下 */
     }
   }
 
@@ -489,32 +558,35 @@ const l = t.location;
     bottom: clamp(3.5rem, 5vw, 4.5rem);
   }
 
-  /* 审图号：法规要求随图标注，固定显示，不随进度变化 */
+  /* 审图号：法规要求随图标注，固定显示，不随进度变化。
+     用一条竖线和前面的读数隔开，像盖章盖在角落 */
   .globe__hud-attr {
     margin-left: 0.35rem;
     padding-left: 0.9rem;
     border-left: 1px solid rgba(255, 249, 241, 0.22);
-    font-size: 0.5rem;
+    font-size: 0.5rem;                                   /* 8px：审图号必须显示，但不必抢眼 */
     letter-spacing: 0.06em;
     color: rgba(255, 249, 241, 0.62);
-    text-transform: none;
+    text-transform: none;                                /* 「GS（2026）4921号」要保持法定的原样，不能变大写 */
   }
 
+  /* 手机：读数一行放不下就折行，审图号单独占一整行 */
   @media (max-width: 720px) {
     .globe__hud {
       flex-wrap: wrap;
-      gap: 0.35rem 0.9rem;
-      max-width: 82%;
+      gap: 0.35rem 0.9rem;                               /* 行距紧、列距松：折行后两行别分得太开 */
+      max-width: 82%;                                    /* 留出右边缩放按钮的位置 */
     }
 
     .globe__hud-attr {
-      margin-left: 0;
+      margin-left: 0;                                    /* 独占一行时，那道竖线没有意义，去掉 */
       padding-left: 0;
       border-left: 0;
-      width: 100%;
+      width: 100%;                                       /* 强制换行 */
     }
   }
 
+  /* 右下角「打开大地图」：手机端唯一的可点项（那边地图本身不能拖） */
   .globe__open {
     position: absolute;
     z-index: 4;
@@ -525,16 +597,16 @@ const l = t.location;
     gap: 0.45em;
     padding: 0.5rem 0.85rem;
     font-family: var(--font-mono);
-    font-size: 0.5625rem;
+    font-size: 0.5625rem;                                /* 9px */
     letter-spacing: 0.14em;
-    text-transform: uppercase;
+    text-transform: uppercase;                           /* 这里保留大写：它是按钮，不是句子 */
     color: rgba(255, 249, 241, 0.72);
     background: rgba(20, 18, 16, 0.6);
     border: 1px solid rgba(255, 249, 241, 0.2);
     border-radius: 999px;
     cursor: pointer;
     opacity: 0;
-    visibility: hidden;
+    visibility: hidden;                                  /* 默认藏着，由脚本按阶段打开 */
     transition:
       opacity 300ms var(--ease-out),
       visibility 300ms,
@@ -553,45 +625,55 @@ const l = t.location;
     color: var(--cream);
   }
 
+  /* 地图彻底加载失败时的说明文字：居中，换成中文地址兜底 */
   .globe__fail {
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 28ch;
+    transform: translate(-50%, -50%);                    /* 校到画框正中 */
+    max-width: 28ch;                                     /* 一行最多 28 字，居中读着才舒服 */
     text-align: center;
-    font-size: 0.8125rem;
+    font-size: 0.8125rem;                                /* 13px：失败信息要比旁白大，得让人看见 */
     line-height: 1.7;
     color: rgba(255, 249, 241, 0.6);
   }
 
+  /* 少动效：球和地图直接换，不做淡入淡出 */
   @media (prefers-reduced-motion: reduce) {
     .globe__globe,
     .globe__map {
-      transition-duration: 1ms;
+      transition-duration: 1ms;                          /* 用 1ms 而不是 none：过渡结束事件还得照常触发 */
     }
   }
 
-  /* 手机端：地图只当画面用——不能点、不能拖，手指落在上面照常滚页面；
-     放大动画进视口就自己播（见 GlobeToMap.tsx），所以 ± 按钮和「上滑」提示都收掉。
-     唯一的可点项是右下角「打开大地图」 */
+  /* --- 手机 / 触屏：地图只当画面用 ---
+     不能点、不能拖，手指落在上面照常滚页面；放大动画进视口就自己播（见 GlobeToMap.tsx），
+     所以 ± 按钮和「上滑」提示都收掉。唯一的可点项是右下角「打开大地图」。
+
+     ⚠ 这一条必须留在 <style is:global> 的最末尾，不能往上挪：
+       .globe__zoom 和 .globe__hint 在上面已经各有一条同特异性（0,1,0）的 display 规则没有，
+       但 .globe__zoom 的 opacity/visibility 是 0,1,0、上面还有 .globe__zoom[data-show] 是 0,2,0——
+       这里要盖住的是同特异性/更低特异性的那几条，CSS 同特异性时「后写的赢」，
+       一旦挪到前面，就会被后面那些规则重新盖掉，手机端 ± 按钮和提示会又冒出来。
+       实测坑：挪到中间时按钮在手机上复现，这里必须收尾。 */
   @media (max-width: 720px), (hover: none) and (pointer: coarse) {
+    /* 用 !important 压过 Cesium 自己给 canvas 挂的 pointer 事件与触摸行为（它那边的规则更具体） */
     .globe__stage canvas,
     .globe__globe,
     .globe__map,
     .globe__poster,
     .globe__mapmarker {
-      pointer-events: none !important;
-      touch-action: pan-y !important;
+      pointer-events: none !important;                   /* 点地图 = 点页面，照常滚 */
+      touch-action: pan-y !important;                    /* 只允许上下滚，横划不抢手势 */
     }
 
     .globe__zoom,
     .globe__hint {
-      display: none !important;
+      display: none !important;                          /* 手机上这两样没有意义，直接不画 */
     }
 
     .globe__open {
-      z-index: 5;
+      z-index: 5;                                        /* 抬到地图之上，别被地图的层盖住 */
     }
   }
 </style>

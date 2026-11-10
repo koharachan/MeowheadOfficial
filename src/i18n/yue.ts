@@ -314,7 +314,6 @@ export const yue: Dict = {
       {
         no: '02',
         role: '股東 / CEO',
-        name: '',
         origin: '韶關人',
         name: '小原',
         email: 'xy@6832.me',
@@ -326,7 +325,6 @@ export const yue: Dict = {
       {
         no: '03',
         role: '算法顧問',
-        name: '',
         origin: '鄭州人',
         name: '洛嗷嗚',
         email: '',

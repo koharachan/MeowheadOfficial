@@ -1,29 +1,49 @@
 ---
-import type { Dict } from '../../i18n';
-import SectionField from '../ui/SectionField.astro';
+/*
+为什么选我们：深色底的一屏，只有一句「三条，不吹。」加三条理由（A 一家公司一条责任线 /
+B 先说清楚不做什么 / C 每个阶段都有能跑的东西），一条一行、上下用细线隔开。
+
+本文件只有排版，没有逻辑：标题按行往上推、三条理由各自淡入、左边的字母 A/B/C 随滚动上浮 26px。
+
+在哪被调用：src/components/pages/HomePage.astro，吉祥物屏之后
+调用示例：
+  <Why t={t} />    // t 是整份文案字典，本屏只读其中的 why 段
+
+和别处的关系：
+  - id="why"：叙事轴 NarrativeRail 靠它定位这一屏（第六根刻度、点它滚到这里），
+    首页的深色屏名单 DARK_SECTIONS 里也有 'why'，叙事轴据此把刻度文字翻成浅色。这个 id 不许改。
+  - on-dark：整屏深色底，和「主张」屏同一套浅色文字规则、同一个底色 #141210。
+  - 文案在 src/i18n/{zh,en,ja,yue}.ts 的 why 段：no / label / title / items。
+*/
+import type { Dict } from '../../i18n';               // 文案字典的类型
+import SectionField from '../ui/SectionField.astro';  // 底下的图纸底纹层（深色版）
 
 interface Props {
-  t: Dict;
+  t: Dict;      // 整份文案
 }
 const { t } = Astro.props;
-const w = t.why;
+const why = t.why;   // 本屏文案：章节号 / 小标题 / 大标题 / 三条理由
 ---
 
 <section class="why on-dark" id="why">
-  <SectionField no={w.no} tone="dark" align="left" />
+  <!-- 底纹层：巨型「06」加 3 条竖线，深色版 -->
+  <SectionField no={why.no} tone="dark" align="left" />
   <div class="shell">
+    <!-- 顶部小字行：章节号 06 + 「为什么 / WHY US」，整行淡入 -->
     <header class="why__head" data-anim="fade">
-      <span class="mono why__no">{w.no}</span>
-      <span class="mono why__label">{w.label}</span>
+      <span class="mono why__no">{why.no}</span>
+      <span class="mono why__label">{why.label}</span>
     </header>
 
+    <!-- 大标题「三条，不吹。」：这里只有一行，仍包一层 .line-mask，入场效果才和其他屏一致 -->
     <h2 class="why__title display" data-anim="lines">
-      <span class="line-mask"><span>{w.title}</span></span>
+      <span class="line-mask"><span>{why.title}</span></span>
     </h2>
 
+    <!-- 三条理由：ol 有顺序（A → B → C），每条左边一个字母、右边标题加解释 -->
     <ol class="why__list">
       {
-        w.items.map((item) => (
+        why.items.map((item) => (
           <li class="why__item" data-anim="fade">
             <span class="why__letter mono" data-scrub data-scrub-y="26">{item.no}</span>
             <h3 class="why__item-title">{item.title}</h3>
@@ -36,14 +56,16 @@ const w = t.why;
 </section>
 
 <style>
+  /* 整屏外壳：和「主张」屏同一个深色底 #141210、同一套米色文字；上下留白比「主张」屏略小，节奏有收有放 */
   .why {
     position: relative;
     background: #141210;
     color: var(--cream);
     padding-block: clamp(4.5rem, 10vw, 9rem);
-    overflow: clip;
+    overflow: clip;   /* 抠掉底纹溢出的部分 */
   }
 
+  /* 顶部小字行：章节号 + 小标题；45% 的米色，比正文更退后一层 */
   .why__head {
     display: flex;
     align-items: center;
@@ -52,10 +74,12 @@ const w = t.why;
     margin-bottom: clamp(1.25rem, 3vw, 2rem);
   }
 
+  /* 章节号橙色，和其余深色屏一致 */
   .why__no {
     color: var(--orange);
   }
 
+  /* 大标题：字号用 --fs-h1（比首屏小、比小标题大的中间档），900 字重，最多 14 个字换行 */
   .why__title {
     font-size: var(--fs-h1);
     font-weight: 900;
@@ -63,11 +87,13 @@ const w = t.why;
     max-width: 14ch;
   }
 
+  /* 三条理由：列表自己只在顶上加一条线，每条底部再各加一条，连起来就是一列分隔线 */
   .why__list {
     display: grid;
     border-top: 1px solid rgba(255, 249, 241, 0.16);
   }
 
+  /* 一条理由：左边字母 +（窄屏竖排的）标题和解释；字母列宽由内容决定（auto） */
   .why__item {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -78,12 +104,14 @@ const w = t.why;
     align-items: start;
   }
 
+  /* 左边那个字母 A/B/C：橙色 11px；padding-top 0.55em 让它和右边标题的第一行基线对齐 */
   .why__letter {
     color: var(--orange);
     font-size: 0.6875rem;
     padding-top: 0.55em;
   }
 
+  /* 理由标题：800 字重、负字距 -0.01em（大字号下收紧一点才不松散） */
   .why__item-title {
     font-size: clamp(1.25rem, 2.2vw, 1.75rem);
     font-weight: 800;
@@ -91,6 +119,7 @@ const w = t.why;
     line-height: 1.3;
   }
 
+  /* 理由解释：窄屏时落在第 2 列（字母右边），一行最长 46 个字 */
   .why__item-body {
     grid-column: 2;
     color: rgba(255, 249, 241, 0.6);
@@ -99,16 +128,19 @@ const w = t.why;
     max-width: 46ch;
   }
 
+  /* 900px 起改三栏：字母 / 标题 / 解释 并排，垂直居中对齐，三行读起来像表格 */
   @media (min-width: 900px) {
     .why__item {
       grid-template-columns: 2.5rem minmax(0, 1fr) minmax(0, 1fr);
       align-items: center;
     }
 
+    /* 宽屏上标题可以再大一号 */
     .why__item-title {
       font-size: clamp(1.5rem, 2.4vw, 2rem);
     }
 
+    /* 解释挪到第 3 栏 */
     .why__item-body {
       grid-column: 3;
     }

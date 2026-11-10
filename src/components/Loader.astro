@@ -1,8 +1,25 @@
 ---
+/*
+启动态 / SPLASH（<Loader />）：第一次进首页时压在最上面的一块开机动画。
+  - 三件事：斜切叠层（墨块 / 橙块 / 斜纹卡片互相压边，硬投影、无圆角）、
+    元素共享（标题带一层橙色重影；tible 贴纸在退场时飞进顶栏品牌图标）、
+    滑动驱动（滚轮 / 触摸 / 点击 / 按键都能把序列一把推到终点，不用干等）
+  - 进度条 10 格 + 三位百分数，节奏故意不均匀，像在自检
+  - 收工后整块淡出并从 DOM 删掉；系统开了「减少动态效果」的话一开始就不出现
+  - 无 JS 时靠 CSS 的 animation-delay 自己退场（见 .splash 上的 splashAuto）
+
+用法：只有首页引，整页只引一次，放在页面内容之前：
+
+  <Loader t={t} />        // t 是 i18n 的 Dict，这里只用 t.splash.boot 和 t.ux.loading 两句文案
+
+时间线（毫秒）：60/140 两块斜块滑入 → 180 斜纹卡片 → 260 主面板 → 520 贴纸拍上来
+→ 脚本 2.6s 兜底收工 → CSS 2.8s 兜底收工。改时间要两边一起改，下面注释里都标了。
+data-splash / data-seg / data-pct / data-sticker 是脚本钩子，类名是样式钩子，别改名。
+*/
 import type { Dict } from '../i18n';
 
 interface Props {
-  t: Dict;
+  t: Dict;   // 当前语言的整份文案，本组件只取两句：开机语和「加载中」
 }
 const { t } = Astro.props;
 ---
@@ -15,20 +32,25 @@ const { t } = Astro.props;
   3) 滑动驱动（滚轮 / 触摸 / 点击都能把启动序列「推」到终点，而不是干等）
 -->
 <div class="splash" data-splash aria-hidden="true">
+  {/* 底层：半调网点，缓慢漂移，像纸上的印刷网点 */}
   <div class="splash__dots" aria-hidden="true"></div>
+  {/* 两块斜切色块 + 底部斜条纹：从左右两侧滑进来，退场再滑出去 */}
   <div class="splash__slab splash__slab--a" aria-hidden="true"></div>
   <div class="splash__slab splash__slab--b" aria-hidden="true"></div>
   <div class="splash__stripes" aria-hidden="true"></div>
 
+  {/* 舞台：背后一张斜纹卡、前面一张主面板，贴纸压在右下角 */}
   <div class="splash__stage">
     <div class="splash__card" aria-hidden="true"></div>
 
     <div class="splash__panel">
+      {/* 顶部状态行：左边序号、右边地点，像机箱上的铭牌 */}
       <div class="splash__meta">
         <span class="mono">BOOT / 00</span>
         <span class="mono">SHAOGUAN · GD</span>
       </div>
 
+      {/* 标题与橙色重影共框：重影错开一点，就是印刷套色没对准的感觉 */}
       <h2 class="splash__title">
         <span class="splash__ghost" aria-hidden="true">MAOMAO</span>
         <span class="splash__title-main">MAOMAO</span>
@@ -37,12 +59,14 @@ const { t } = Astro.props;
       <p class="splash__boot">{t.splash.boot}</p>
       <p class="splash__sub mono">NETWORK TECHNOLOGY / 猫猫头网络科技</p>
 
+      {/* 三个小标签，第一个反色当主标签 */}
       <div class="splash__chips" aria-hidden="true">
         <span class="mono">ALL IN ONE</span>
         <span class="mono">EST. 2026</span>
         <span class="mono">CN / GD</span>
       </div>
 
+      {/* 10 格进度条 + 右侧三位百分数；格数要和脚本里的节奏数组一起改 */}
       <div class="splash__bar" data-bar aria-hidden="true">
         {Array.from({ length: 10 }).map(() => <i data-seg></i>)}
         <span class="splash__pct" data-pct>000</span>
@@ -54,14 +78,17 @@ const { t } = Astro.props;
       </div>
     </div>
 
+    {/* tible 贴纸：退场时会飞进顶栏的品牌图标（见文件末尾脚本） */}
     <div class="splash__sticker" data-sticker aria-hidden="true">
       <img src="/img/mascot/tible-happy.webp" alt="" width="150" height="150" decoding="async" />
       <span class="splash__sticker-tape" aria-hidden="true"></span>
     </div>
   </div>
 
+  {/* 左边缘竖排小字，纯装饰 */}
   <span class="splash__strap mono" aria-hidden="true">SYSTEM BOOT · MAOMAO NETWORK TECHNOLOGY · ALL IN ONE</span>
 
+  {/* 四角标：序列号、机型、年份、备案号，纯装饰 */}
   <span class="splash__corner splash__corner--tl mono" aria-hidden="true">01 / SPLASH</span>
   <span class="splash__corner splash__corner--br mono" aria-hidden="true">MIBO-01 · ONLINE</span>
   <span class="splash__corner splash__corner--tr mono" aria-hidden="true">© 2026</span>
@@ -69,15 +96,24 @@ const { t } = Astro.props;
 </div>
 
 <style>
+  /* 时间线（毫秒，从页面开始算）：
+       60  左侧墨色斜块滑入
+      140  右侧橙色斜块滑入
+      180  背后那张斜纹卡片浮上来
+      260  主面板（状态行 + 标题 + 进度条）落下
+      520  tible 贴纸「啪」地贴上去，带一点回弹
+     2600  脚本兜底收工（见文件末尾的 script）
+     2800  无 JS 时纯 CSS 兜底收工（.splash 上的 splashAuto）
+     退场：色块 / 卡片 / 面板各自飞走，贴纸飞进顶栏品牌图标 */
   .splash {
     position: fixed;
     inset: 0;
-    z-index: 300;
+    z-index: 300;   /* 最高一层：盖住顶栏(110)和手机菜单(130) */
     background: var(--cream);
     overflow: hidden;
     isolation: isolate;
     /* 无 JS 时也必须自己退场 */
-    animation: splashAuto 500ms var(--ease-out) 2.8s forwards;
+    animation: splashAuto 500ms var(--ease-out) 2.8s forwards;   /* 2.8s 是无 JS 时的兜底退场，和脚本里的 2.6s 兜底是两条保险，改一条记得看另一条 */
   }
 
   /* 退场时底色立刻变透明：让色块滑开时直接露出真正的页面，而不是一块奶油白 */
@@ -106,8 +142,8 @@ const { t } = Astro.props;
   .splash__dots {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(var(--ink) 1.1px, transparent 1.1px);
-    background-size: 13px 13px;
+    background-image: radial-gradient(var(--ink) 1.1px, transparent 1.1px);   /* 半径 1.1px 的小圆点：再大就像气泡，再小就看不见 */
+    background-size: 13px 13px;   /* 间距 13px，跟下面 dotsDrift 的漂移距离一致，滚动起来才看不出接缝 */
     opacity: 0.07;
     transform: scale(1.02);
     animation: dotsDrift 6s linear infinite;
@@ -131,7 +167,7 @@ const { t } = Astro.props;
     width: 74%;
     height: 150%;
     background: var(--ink);
-    transform: skewX(-9deg) translateX(-108%);
+    transform: skewX(-9deg) translateX(-108%);   /* 斜 9 度是整套叠层的统一角度，三块色块的入场 / 退场关键帧都用它 */
     animation: slabIn 620ms var(--ease-out) 60ms forwards;
     transition: transform 760ms var(--ease-out);
   }
@@ -183,7 +219,7 @@ const { t } = Astro.props;
     width: min(560px, 86vw);
     background: var(--cream);
     border: 2px solid var(--ink);
-    box-shadow: 10px 10px 0 var(--ink);
+    box-shadow: 10px 10px 0 var(--ink);   /* 硬投影：不模糊、不带圆角，纸片叠纸片的感觉就靠这一行 */
     padding: clamp(1.1rem, 2.6vw, 1.9rem);
     transform: translateY(18px) rotate(-2.2deg);
     opacity: 0;
@@ -263,7 +299,7 @@ const { t } = Astro.props;
     position: absolute;
     inset: 0;
     color: var(--orange);
-    transform: translate(6px, 5px);
+    transform: translate(6px, 5px);   /* 重影错开 6/5px：太小看不出立体，太大就像重影字了 */
     z-index: -1;
     clip-path: inset(0 0 0 0);
   }
@@ -314,7 +350,7 @@ const { t } = Astro.props;
   .splash__bar {
     position: relative;
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(10, 1fr);   /* 10 列对应模板里 10 个 <i>，加格子要同步改脚本里的 stepWaits */
     gap: 4px;
     margin-top: 1.2rem;
     height: 14px;
@@ -360,7 +396,7 @@ const { t } = Astro.props;
 
   .splash__hint {
     color: var(--orange);
-    animation: hintBlink 1.4s steps(2, end) infinite;
+    animation: hintBlink 1.4s steps(2, end) infinite;   /* steps(2) 是硬切换着闪，不用平滑淡入淡出，像指示灯 */
   }
 
   @keyframes hintBlink {
@@ -543,6 +579,7 @@ const { t } = Astro.props;
     }
   }
 
+  /* 系统里勾了「减少动态效果」：整块不显示，直接进页面 */
   @media (prefers-reduced-motion: reduce) {
     .splash {
       display: none;
@@ -551,76 +588,87 @@ const { t } = Astro.props;
 </style>
 
 <script>
+  /*
+  启动页的推进与退场（只在浏览器里跑，整个组件挂在 [data-splash] 上）：
+    1. 一格一格点亮进度条，节奏故意不均匀，看起来像机器在自检
+    2. 用户滚轮 / 触摸 / 点击 / 按键一下，就直接跳到 100% 收工
+    3. 不管怎样 2.6s 一定收工（CSS 里还有 2.8s 的兜底，两边都留着）
+    4. 收工：tible 贴纸先飞进顶栏的品牌图标，整块淡出，1s 后从 DOM 删掉
+  系统开了「减少动态效果」的：启动页直接删掉，页面立刻可用。
+  */
   (() => {
-    const el = document.querySelector<HTMLElement>('[data-splash]');
-    if (!el) return;
+    const splash = document.querySelector<HTMLElement>('[data-splash]'); // 启动页整块
+    if (!splash) return;                                                 // 这个页面没有启动页（只有首页有）
 
+    // 系统里勾了「减少动态效果」：别播动画，删掉并直接放行页面
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) {
-      el.remove();
-      document.documentElement.classList.add('is-ready');
+      splash.remove();
+      document.documentElement.classList.add('is-ready');   // is-ready = 首屏可以看了，别处的动画都等这个
       return;
     }
 
-    const segs = Array.from(el.querySelectorAll<HTMLElement>('[data-seg]'));
-    const pct = el.querySelector<HTMLElement>('[data-pct]');
-    let done = false;
+    const segments = Array.from(splash.querySelectorAll<HTMLElement>('[data-seg]')); // 进度条那 10 格
+    const percent = splash.querySelector<HTMLElement>('[data-pct]');                  // 右上角的三位数字
+    let closed = false;                     // 已经收工了吗？防止退场跑两遍
 
     /* tible 贴纸 → 导航 logo：共享元素飞行 */
     const flySticker = () => {
-      const sticker = el.querySelector<HTMLElement>('[data-sticker]');
-      const target = document.querySelector<HTMLElement>('.brand__mark');
+      const sticker = splash.querySelector<HTMLElement>('[data-sticker]');
+      const target = document.querySelector<HTMLElement>('.brand__mark');   // 顶栏里的品牌图标
       if (!sticker || !target) return;
 
       // 入场动画带 forwards，会盖掉内联 transform，先摘掉
       sticker.style.animation = 'none';
-      const a = sticker.getBoundingClientRect();
-      const b = target.getBoundingClientRect();
-      const dx = b.left + b.width / 2 - (a.left + a.width / 2);
-      const dy = b.top + b.height / 2 - (a.top + a.height / 2);
-      const scale = Math.max(0.12, b.width / a.width);
+      const from = sticker.getBoundingClientRect();   // 贴纸此刻在屏幕上的位置
+      const to = target.getBoundingClientRect();      // 要落到的位置
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);   // 水平移多远：按中心对齐
+      const dy = to.top + to.height / 2 - (from.top + from.height / 2);   // 垂直移多远
+      const scale = Math.max(0.12, to.width / from.width);   // 缩到 logo 那么大；0.12 是下限，防止贴纸特别大时缩成看不见
 
-      // 到位后溶解掉，避免和导航 logo 重影
+      // 到位后溶解掉，避免和导航 logo 重影；淡出比位移晚 420ms，先飞过去再化掉
       sticker.style.transition = 'transform 660ms cubic-bezier(.16,1,.3,1), opacity 260ms 420ms linear';
       sticker.style.transform = `translate(${dx}px, ${dy}px) scale(${scale}) rotate(0deg)`;
       sticker.style.opacity = '0';
     };
 
+    /* 收工：贴纸起飞、整块淡出、从 DOM 删掉。重复调用没有副作用 */
     const close = () => {
-      if (done) return;
-      done = true;
+      if (closed) return;
+      closed = true;
       flySticker();
-      el.classList.add('is-done');
+      splash.classList.add('is-done');                        // CSS 靠这个类播退场
       document.documentElement.classList.add('is-ready');
-      window.setTimeout(() => el.remove(), 1000);
+      window.setTimeout(() => splash.remove(), 1000);         // 退场动画最长 780ms，留点余量再删
     };
 
     /* 分段推进：有一点不均匀的节奏，像在自检 */
-    const rhythm = [90, 70, 120, 60, 150, 80, 60, 130, 70, 90];
-    let i = 0;
-    const step = () => {
-      if (done) return;
-      if (i >= segs.length) {
-        window.setTimeout(close, 140);
+    const stepWaits = [90, 70, 120, 60, 150, 80, 60, 130, 70, 90];   // 每一格停留几毫秒，故意不齐
+    let shown = 0;                                                    // 已经点亮了几格
+    const advance = () => {
+      if (closed) return;
+      if (shown >= segments.length) {
+        window.setTimeout(close, 140);   // 点满了再停一下，让 100% 被看见
         return;
       }
-      segs[i].setAttribute('data-on', '');
-      if (pct) pct.textContent = String(Math.round(((i + 1) / segs.length) * 100)).padStart(3, '0');
-      const wait = rhythm[i] ?? 100;
-      i += 1;
-      window.setTimeout(step, wait);
+      segments[shown].setAttribute('data-on', '');   // 点亮这一格
+      if (percent) percent.textContent = String(Math.round(((shown + 1) / segments.length) * 100)).padStart(3, '0'); // 百分数取整、补足三位
+      const wait = stepWaits[shown] ?? 100;
+      shown += 1;
+      window.setTimeout(advance, wait);
     };
-    window.setTimeout(step, 380);
+    window.setTimeout(advance, 380);   // 等入场动画演 380ms 再开始点亮
 
     /* 滑动 / 触摸 / 点击 / 按键都可以把序列推到终点 */
-    const rush = () => {
-      if (done) return;
-      segs.forEach((s) => s.setAttribute('data-on', ''));
-      if (pct) pct.textContent = '100';
+    const skipToEnd = () => {
+      if (closed) return;
+      segments.forEach((seg) => seg.setAttribute('data-on', ''));   // 十格一次全点亮
+      if (percent) percent.textContent = '100';
       window.setTimeout(close, 80);
     };
+    // once: 推一次就够，之后不再拦用户的操作；passive: 不拖慢滚动
     ['wheel', 'touchstart', 'touchmove', 'keydown', 'click', 'pointerdown'].forEach((ev) =>
-      window.addEventListener(ev, rush, { once: true, passive: true })
+      window.addEventListener(ev, skipToEnd, { once: true, passive: true })
     );
 
     /* 兜底：最多 2.6s 也要走 */

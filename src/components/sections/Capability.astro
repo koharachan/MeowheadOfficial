@@ -1,24 +1,45 @@
 ---
-import type { Dict } from '../../i18n';
-import SectionHead from '../ui/SectionHead.astro';
-import SectionField from '../ui/SectionField.astro';
+/*
+能力屏：「这四件事，我们自己动手」—— 四块能力卡片（卫星通信终端 / 软件与系统集成 /
+人工智能 / 信息安全），每块一个编号、一句概述、三条要点；卡片下面一行小字说明
+这些能力对应营业执照上的经营范围。
+
+本文件只有排版，没有逻辑：卡片逐块淡入（data-anim="stagger"）、角上那个小方块随滚动转 120°。
+
+在哪被调用：src/components/pages/HomePage.astro，深色屏「主张」之后
+调用示例：
+  <Capability t={t} />    // t 是整份文案字典，本屏只读其中的 capability 段
+
+和别处的关系：
+  - id="capability"：叙事轴 NarrativeRail 靠它定位这一屏（第三根刻度、点它滚到这里）。
+    首屏那个「看我们做什么」的按钮也链到这里。这个 id 不许改。
+  - 标题区整块交给 SectionHead（章节号 + 小标题 + 大标题 + 可选导语）；本屏的 lede 目前是空字符串，
+    SectionHead 自己会跳过。
+  - 文案在 src/i18n/{zh,en,ja,yue}.ts 的 capability 段：no / label / title / lede / items / footnote。
+*/
+import type { Dict } from '../../i18n';         // 文案字典的类型
+import SectionHead from '../ui/SectionHead.astro';   // 统一的章节标题区
+import SectionField from '../ui/SectionField.astro'; // 底下的图纸底纹层（浅色版）
 
 interface Props {
-  t: Dict;
+  t: Dict;      // 整份文案
 }
 const { t } = Astro.props;
-const c = t.capability;
+const capability = t.capability;   // 本屏文案：标题区 + 四块能力 + 一行脚注
 ---
 
 <section class="cap section" id="capability">
-  <SectionField no={c.no} lines={4} />
+  <!-- 底纹层：巨型「03」和 4 条竖线；浅色版，默认 tone -->
+  <SectionField no={capability.no} lines={4} />
   <div class="shell">
-    <SectionHead no={c.no} label={c.label} title={c.title} lede={c.lede} />
+    <SectionHead no={capability.no} label={capability.label} title={capability.title} lede={capability.lede} />
 
+    <!-- 四块卡片：ol 是有序列表（能力编号 S-01…S-04 有顺序），逐块错开淡入 -->
     <ol class="cap__grid" data-anim="stagger">
       {
-        c.items.map((item) => (
+        capability.items.map((item) => (
           <li class="cap__cell">
+            <!-- 卡片顶部一行：左边编号 S-01…，右边那个小方块随滚动慢慢转 -->
             <div class="cap__top">
               <span class="mono cap__code">{item.code}</span>
               <span class="cap__tick" aria-hidden="true" data-scrub data-scrub-rotate="120" data-scrub-y="10"></span>
@@ -27,11 +48,12 @@ const c = t.capability;
             <h3 class="h3 cap__title">{item.title}</h3>
             <p class="cap__summary">{item.summary}</p>
 
+            <!-- 三条要点：前面一根小横杠当项目符号，不用圆点（图纸风格） -->
             <ul class="cap__list">
-              {item.bullets.map((b) => (
+              {item.bullets.map((bullet) => (
                 <li>
                   <span class="dash" aria-hidden="true"></span>
-                  <span>{b}</span>
+                  <span>{bullet}</span>
                 </li>
               ))}
             </ul>
@@ -40,12 +62,14 @@ const c = t.capability;
       }
     </ol>
 
-    <p class="cap__foot mono-sm" data-anim="fade">{c.footnote}</p>
+    <!-- 脚注：说明这四块能力都在营业执照的经营范围里 -->
+    <p class="cap__foot mono-sm" data-anim="fade">{capability.footnote}</p>
   </div>
 </section>
 
 <style>
-  /* 不用描边切格子：格子之间留 1px 缝，缝里透出页面底色，靠 --surface 的明度差分块 */
+  /* 四块卡片排法：窄屏一列、720px 两列、1180px 四列（见文件末尾两个 media query）。
+     不用给每块描边，而是让格子之间留 1px 缝、缝里透出底层 --cream，靠明度差分块 */
   .cap__grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -53,6 +77,8 @@ const c = t.capability;
     background: var(--cream);
   }
 
+  /* 单块卡片：竖排（编号行 / 标题 / 概述 / 要点），背景比页面底色亮一档（--surface-0），
+     所以「缝」是把卡片分开的那层 --cream。min-height 保证四块高度一致，底边能对齐 */
   .cap__cell {
     position: relative;
     display: flex;
@@ -60,14 +86,11 @@ const c = t.capability;
     gap: 0.9rem;
     padding: clamp(1.5rem, 2.6vw, 2.5rem);
     background: var(--surface-0);
-    transition: background-color 420ms var(--ease-out);
+    transition: background-color 420ms var(--ease-out);   /* 悬停换底色，420ms 慢一点才不闪 */
     min-height: clamp(15rem, 24vw, 19rem);
   }
 
-  .cap__cell:hover {
-    background: var(--surface-1);
-  }
-
+  /* 悬停时卡片底下升起一道 2px 橙线：用 scaleX 从左往右推开，不是改 width，省一次重排 */
   .cap__cell::after {
     content: '';
     position: absolute;
@@ -79,6 +102,8 @@ const c = t.capability;
     transition: transform 500ms var(--ease-out);
   }
 
+  /* 悬停时整块底色再提亮一档；这是本文件唯一生效的 .cap__cell:hover 底色规则
+     （曾经上面还写过一条 --surface-1 的，被这条覆盖掉，已删） */
   .cap__cell:hover {
     background: var(--cream-2);
   }
@@ -87,12 +112,14 @@ const c = t.capability;
     transform: scaleX(1);
   }
 
+  /* 卡片顶部一行：编号靠左、小方块靠右 */
   .cap__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
 
+  /* 编号 S-01…：平时是 38% 的灰，悬停变橙（颜色过渡 300ms，比底色快） */
   .cap__code {
     color: var(--ink-38);
     transition: color 300ms var(--ease-out);
@@ -102,6 +129,7 @@ const c = t.capability;
     color: var(--orange);
   }
 
+  /* 右上角那个小方块：6px 的方框转 45° 就是菱形，和底纹上的标记同一套语言 */
   .cap__tick {
     width: 6px;
     height: 6px;
@@ -109,16 +137,19 @@ const c = t.capability;
     transform: rotate(45deg);
   }
 
+  /* 能力名：clamp 跟着屏幕在 22px~28px 之间走 */
   .cap__title {
     font-size: clamp(1.375rem, 2.1vw, 1.75rem);
   }
 
+  /* 一句概述：小一号、56% 灰、行距 1.7 */
   .cap__summary {
     font-size: var(--fs-small);
     color: var(--ink-56);
     line-height: 1.7;
   }
 
+  /* 要点列表：margin-top: auto 把它顶到卡片底部，四块的要点就对得齐了 */
   .cap__list {
     display: grid;
     gap: 0.5rem;
@@ -126,6 +157,7 @@ const c = t.capability;
     padding-top: 1rem;
   }
 
+  /* 单条要点：横杠 + 文字，按文字基线对齐 */
   .cap__list li {
     display: flex;
     gap: 0.6rem;
@@ -135,6 +167,7 @@ const c = t.capability;
     line-height: 1.65;
   }
 
+  /* 要点前那根 10px 小横杠：上移 0.3em 让它对着文字的中部而不是基线；flex-shrink: 0 防止窄栏把它压没 */
   .dash {
     width: 10px;
     height: 1px;
@@ -143,6 +176,7 @@ const c = t.capability;
     transform: translateY(-0.3em);
   }
 
+  /* 脚注：10px 的小字，行距 1.7 好读，26% 灰不抢卡片 */
   .cap__foot {
     margin-top: 1.5rem;
     color: var(--ink-38);
@@ -152,6 +186,7 @@ const c = t.capability;
     line-height: 1.7;
   }
 
+  /* 720px 起两列，1180px 起四列 —— 四块能力在宽屏上正好排成一行 */
   @media (min-width: 720px) {
     .cap__grid {
       grid-template-columns: repeat(2, 1fr);

@@ -1,39 +1,62 @@
 ---
-import type { Dict } from '../../i18n';
-import SectionField from '../ui/SectionField.astro';
+/*
+第二屏「主张」：深色底的一屏，先说结论 —— 不是软硬结合，是同一家公司。
+左边两段话解释「all in one」具体指什么，右边两张小词条解释标志本身（M 的两个峰是猫耳，谷是中缝）。
+
+本文件只有排版，没有逻辑：所有滚动动效都靠 data-* 交给 src/scripts/motion.ts。
+
+在哪被调用：src/components/pages/HomePage.astro，<Hero/> 之后的第一屏
+调用示例：
+  <Claim t={t} />    // t 是整份文案字典，本屏只读其中的 claim 段
+
+和别处的关系：
+  - id="claim"：叙事轴 NarrativeRail 靠它定位这一屏（第二根刻度、点它滚到这里），
+    首页的深色屏名单 DARK_SECTIONS 里也有 'claim'，叙事轴据此把刻度文字翻成浅色。这个 id 不许改。
+  - on-dark 这个类表示「整屏深色底」，全站深色屏共用同一套浅色文字规则。
+  - 文案在 src/i18n/{zh,en,ja,yue}.ts 的 claim 段：no / label / lines / body / notes。
+  - SectionField 是底下那层「图纸底纹」（巨型章节号 + 竖向弧线），tone="dark" 让它用深色版。
+*/
+import type { Dict } from '../../i18n';                        // 文案字典的类型
+import SectionField from '../ui/SectionField.astro';           // 深色底的图纸底纹层
 
 interface Props {
-  t: Dict;
+  t: Dict;      // 整份文案
 }
 const { t } = Astro.props;
-const c = t.claim;
+const claim = t.claim;   // 本屏文案：no 章节号 / label 小标题 / lines 主标题两行 / body 两段话 / notes 两张词条
 ---
 
 <section class="claim on-dark" id="claim">
-  <SectionField no={c.no} tone="dark" align="left" />
+  <!-- 底纹层：巨型「02」加几道弧线，随滚动慢移；纯装饰，aria-hidden -->
+  <SectionField no={claim.no} tone="dark" align="left" />
+
   <div class="shell claim__inner">
+    <!-- 顶部小字行：章节号 + 一根短横杠 + 「主张 / ALL IN ONE」 -->
     <div class="claim__meta" data-anim="fade">
-      <span class="mono claim__no">{c.no}</span>
+      <span class="mono claim__no">{claim.no}</span>
       <span class="claim__rule" aria-hidden="true"></span>
-      <span class="mono">{c.label}</span>
+      <span class="mono">{claim.label}</span>
     </div>
 
     <div class="claim__body">
+      <!-- 主标题：「不是软硬结合，」「是同一家公司。」两行，入场时一行一行往上推 -->
       <h2 class="claim__title display" data-anim="lines">
-        {c.lines.map((line) => <span class="line-mask"><span>{line}</span></span>)}
+        {claim.lines.map((line) => <span class="line-mask"><span>{line}</span></span>)}
       </h2>
 
       <div class="claim__cols">
+        <!-- 左边两段话：第一段加 .lead（更亮的墨色），先立结论；第二段解释标志 -->
         <div class="claim__text" data-anim="fade" data-delay="0.1">
-          {c.body.map((p, i) => <p class:list={['body-text', { lead: i === 0 }]}>{p}</p>)}
+          {claim.body.map((para, index) => <p class:list={['body-text', { lead: index === 0 }]}>{para}</p>)}
         </div>
 
+        <!-- 右边两张词条（dt 词 / dd 解释）：「M」和「all in one」各一张，逐条错开淡入 -->
         <dl class="claim__notes" data-anim="stagger">
           {
-            c.notes.map((n) => (
+            claim.notes.map((note) => (
               <div class="note">
-                <dt class="mono">{n.k}</dt>
-                <dd>{n.v}</dd>
+                <dt class="mono">{note.k}</dt>
+                <dd>{note.v}</dd>
               </div>
             ))
           }
@@ -41,51 +64,60 @@ const c = t.claim;
       </div>
     </div>
 
+    <!-- 背景里那个大写的「M」轮廓：随滚动上移 90px 并微转 7°，让这一屏有点纵深 -->
     <div class="claim__mark" aria-hidden="true" data-scrub data-scrub-y="90" data-scrub-rotate="7">
       <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+        <!-- 一笔画出的 M：两根立柱、两个峰、中间那个谷就是猫头标志的中缝 -->
         <path d="M6 94 L6 18 L30 44 L50 50 L70 44 L94 18 L94 94" fill="none" stroke="currentColor" stroke-width="0.5" vector-effect="non-scaling-stroke" />
       </svg>
     </div>
 
+    <!-- 印刷裁切线：左上、右下两个小直角，营造「这是一张稿件」的感觉 -->
     <span class="cropmark cropmark--tl" aria-hidden="true"></span>
     <span class="cropmark cropmark--br" aria-hidden="true"></span>
   </div>
 </section>
 
 <style>
+  /* 整屏外壳：深色底（#141210 是比正文墨色更暖的黑，纯黑会显得廉价），上下留出大段呼吸 */
   .claim {
     position: relative;
-    background: #141210;
-    color: var(--cream);
+    background: #141210;                          /* 深色屏统一的底色 */
+    color: var(--cream);                          /* 深色屏文字统一用米色，不用纯白 */
     padding-block: clamp(5rem, 12vw, 11rem);
-    overflow: clip;
+    overflow: clip;                               /* 抠掉底纹和裁切线溢出的部分 */
   }
 
+  /* 内容层：一列竖排（小字行 / 标题 / 两栏），块之间按屏幕宽度拉开 */
   .claim__inner {
     position: relative;
     display: grid;
     gap: clamp(1.5rem, 4vw, 3rem);
   }
 
+  /* 顶部小字行：章节号 + 短横杠 + 小标题，横向排一行 */
   .claim__meta {
     display: flex;
     align-items: center;
     gap: 0.9rem;
-    color: rgba(255, 249, 241, 0.5);
+    color: rgba(255, 249, 241, 0.5);   /* 深色屏上的次级文字：米色降到半透明 */
     position: relative;
-    z-index: 2;
+    z-index: 2;                        /* 压在底纹层之上 */
   }
 
+  /* 章节号用橙色，和小标题区分开 */
   .claim__no {
     color: var(--orange);
   }
 
+  /* 章节号和小标题之间那根短横杠：宽度随屏幕走，最宽 64px */
   .claim__rule {
     width: clamp(28px, 5vw, 64px);
     height: 1px;
     background: rgba(255, 249, 241, 0.24);
   }
 
+  /* 主体：标题在上、两栏在下，间隔比外面那层更大，把「标题」和「解释」分开 */
   .claim__body {
     display: grid;
     gap: clamp(2rem, 5vw, 4rem);
@@ -93,23 +125,27 @@ const c = t.claim;
     z-index: 2;
   }
 
+  /* 主标题：用 display-s 一档（比首屏小一号），最多 16 个字一行就换行 */
   .claim__title {
     font-size: var(--fs-display-s);
     max-width: 16ch;
   }
 
+  /* 两栏容器：窄屏堆成一列，900px 起才分左右（见文件末尾的 media query） */
   .claim__cols {
     display: grid;
     gap: clamp(1.5rem, 4vw, 4rem);
-    align-items: start;
+    align-items: start;   /* 两栏顶对齐，别被右边较矮的词条拉偏 */
   }
 
+  /* 左栏正文：两段话，段间 1.1rem；一行最长 52 个字 */
   .claim__text {
     display: grid;
     gap: 1.1rem;
     max-width: 52ch;
   }
 
+  /* 正文默认是 68% 的米色，够读但不抢；第一段 .lead 提到 86%，先声夺人 */
   .claim__text .body-text {
     color: rgba(255, 249, 241, 0.68);
   }
@@ -118,6 +154,7 @@ const c = t.claim;
     color: rgba(255, 249, 241, 0.86);
   }
 
+  /* 右栏词条：顶上一条细线把它和标题区隔开，词条之间 1.25rem */
   .claim__notes {
     display: grid;
     gap: 1.25rem;
@@ -126,17 +163,20 @@ const c = t.claim;
     padding-top: 1.25rem;
   }
 
+  /* 词条的「词」：橙色等宽体，一眼就能扫到 */
   .note dt {
     color: var(--orange);
     margin-bottom: 0.35rem;
   }
 
+  /* 词条的「解释」：小一号、60% 米色，压暗一档好让词跳出来 */
   .note dd {
     font-size: var(--fs-small);
     color: rgba(255, 249, 241, 0.6);
     line-height: 1.6;
   }
 
+  /* 背景那个大 M：从右上角探出屏外（-8% / -6%），只留 6% 的米色当水印 */
   .claim__mark {
     position: absolute;
     right: -8%;
@@ -153,6 +193,7 @@ const c = t.claim;
     height: 100%;
   }
 
+  /* 裁切线：18px 见方的直角，先设 border-width: 0，再由 --tl / --br 各自补两条边 */
   .cropmark {
     position: absolute;
     width: 18px;
@@ -162,6 +203,7 @@ const c = t.claim;
     pointer-events: none;
   }
 
+  /* 左上角：只要上边和左边 */
   .cropmark--tl {
     top: 0;
     left: 0;
@@ -169,6 +211,7 @@ const c = t.claim;
     border-left-width: 1px;
   }
 
+  /* 右下角：只要下边和右边 */
   .cropmark--br {
     bottom: 0;
     right: 0;
@@ -176,6 +219,7 @@ const c = t.claim;
     border-right-width: 1px;
   }
 
+  /* 900px 起两栏：左边正文占 1.5 份、右边词条占 0.72 份；minmax(0, …) 防止长词把栏撑破 */
   @media (min-width: 900px) {
     .claim__cols {
       grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.72fr);

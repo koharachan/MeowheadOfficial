@@ -1,62 +1,97 @@
 ---
-import type { Dict } from '../../i18n';
-import Button from '../ui/Button.astro';
-import SectionField from '../ui/SectionField.astro';
-import MascotStage from '../mascot/MascotStage.tsx';
+/*
+吉祥物屏：介绍「寻美」（HIROMI）—— 左边一段文字讲她是什么、六个状态标签、一个去她专页的按钮；
+右边是她的舞台：她会从框底升上来、跟着滚动换表情、鼠标移过去会歪头、点一下切下一个表情，
+脚边还蹲着一只叫 tible 的小同伴。
+
+本文件负责：
+  - 左边文案的版式；
+  - 舞台（.stage* 系列样式）的所有外观 —— 这些类名是给 src/components/mascot/MascotStage.tsx 用的，
+    因为组件是别的 .tsx，样式必须写成 <style is:global>，否则 Astro 的 scoped 样式选不中它。
+    注意：.stage 下的规矩不要挪到上面的 scoped 块里，挪了就全失效。
+
+在哪被调用：src/components/pages/HomePage.astro，方法屏之后
+调用示例：
+  <Mascot t={t} />    // t 是整份文案字典，本屏读 mascot 段和 t.ux.close
+
+和别处的关系：
+  - id="mascot"：叙事轴 NarrativeRail 靠它定位这一屏（第五根刻度、点它滚到这里）。这个 id 不许改。
+  - MascotStage 是客户端组件（client:visible：滚到附近才加载），它的行为都在 .tsx 里：
+    滚动进度换表情、鼠标视差、点击切换、prefers-reduced-motion 处理。本文件只给外观。
+  - 文案在 src/i18n/{zh,en,ja,yue}.ts 的 mascot 段：no / label / title / body / cta / alt / states[6] / companion。
+  - reduceLabel 传的是 t.ux.close（「关闭动效」按钮的文字），组件里显示在舞台角上。
+*/
+import type { Dict } from '../../i18n';                    // 文案字典的类型
+import Button from '../ui/Button.astro';                    // 站内统一按钮
+import SectionField from '../ui/SectionField.astro';        // 底下的图纸底纹层（浅色版）
+import MascotStage from '../mascot/MascotStage.tsx';        // 右边的舞台组件（会喘气的那块）
 
 interface Props {
-  t: Dict;
+  t: Dict;      // 整份文案
 }
 const { t } = Astro.props;
-const m = t.mascot;
+const mascot = t.mascot;   // 本屏文案：标题 / 两段正文 / 六个状态 / 按钮 / 同伴信息
 ---
 
 <section class="mascot" id="mascot">
-  <SectionField no={m.no} />
+  <!-- 底纹层：巨型「05」和竖线 -->
+  <SectionField no={mascot.no} />
+  <!-- 右上方一团很淡的橙光（radial-gradient），暗示光从标志那边打过来 -->
   <div class="mascot__bg" aria-hidden="true"></div>
 
   <div class="shell mascot__grid">
+    <!-- 左半：文字列 -->
     <div class="mascot__copy">
+      <!-- 小字行：章节号 05 + 「吉祥物 / HIROMI」 -->
       <div class="mascot__meta" data-anim="fade">
-        <span class="mono mascot__no">{m.no}</span>
+        <span class="mono mascot__no">{mascot.no}</span>
         <span class="mascot__rule" aria-hidden="true"></span>
-        <span class="mono">{m.label}</span>
+        <span class="mono">{mascot.label}</span>
       </div>
 
-      <h2 class="h2 mascot__title" data-stream data-anim="fade" data-delay="0.05">{m.title}</h2>
+      <!-- 标题带 data-stream：按字逐个从模糊变清晰（motion.ts 的 initTextStream）；
+           加载完它会自己摘掉 data-anim，避免和淡入动画打架 -->
+      <h2 class="h2 mascot__title" data-stream data-anim="fade" data-delay="0.05">{mascot.title}</h2>
 
+      <!-- 两段正文，每段一段话 -->
       <div class="mascot__text" data-anim="fade" data-delay="0.1">
-        {m.body.map((p) => <p class="body-text">{p}</p>)}
+        {mascot.body.map((para) => <p class="body-text">{para}</p>)}
       </div>
 
+      <!-- 六个状态的小标签（待机 / 打招呼 / 思考 / 开心 / 困了 / 出错），做成一排胶囊，
+           告诉读者右边那个角色有这些表情 -->
       <ul class="mascot__states" data-anim="fade" data-delay="0.16">
-        {m.states.map((s) => <li>{s.label}</li>)}
+        {mascot.states.map((state) => <li>{state.label}</li>)}
       </ul>
 
+      <!-- 去她专页的按钮 -->
       <div class="mascot__cta" data-anim="fade" data-delay="0.2">
-        <Button href={m.cta.href} label={m.cta.label} variant="solid" />
+        <Button href={mascot.cta.href} label={mascot.cta.label} variant="solid" />
       </div>
     </div>
 
+    <!-- 右半：舞台。client:visible = 滚到附近才加载这份组件（它不参与首屏，别拖慢打开速度） -->
     <div class="mascot__stage">
       <MascotStage
         client:visible
-        states={m.states.map((s) => ({ id: s.id, label: s.label, image: s.image, note: s.note }))}
-        alt={m.alt}
+        states={mascot.states.map((state) => ({ id: state.id, label: state.label, image: state.image, note: state.note }))}
+        alt={mascot.alt}
         reduceLabel={t.ux.close}
-        companion={{ image: m.companion.image, alt: m.companion.alt, name: m.companion.name }}
+        companion={{ image: mascot.companion.image, alt: mascot.companion.alt, name: mascot.companion.name }}
       />
     </div>
   </div>
 </section>
 
 <style>
+  /* 整屏外壳：不设底色，用页面本身的 --cream；上下留白和「为什么」屏一致 */
   .mascot {
     position: relative;
     padding-block: clamp(4.5rem, 10vw, 9rem);
     overflow: clip;
   }
 
+  /* 背景层：右上方一团 7% 的橙光，底色仍是 --cream —— 让舞台那边显得被照亮 */
   .mascot__bg {
     position: absolute;
     inset: 0;
@@ -66,6 +101,7 @@ const m = t.mascot;
     pointer-events: none;
   }
 
+  /* 左右两栏：窄屏一列（文字在上、舞台在下），900px 起分两栏 */
   .mascot__grid {
     position: relative;
     display: grid;
@@ -73,6 +109,7 @@ const m = t.mascot;
     align-items: center;
   }
 
+  /* 小字行：章节号 + 短横杠 + 小标题，横向排一行 */
   .mascot__meta {
     display: flex;
     align-items: center;
@@ -81,27 +118,32 @@ const m = t.mascot;
     margin-bottom: 1.25rem;
   }
 
+  /* 章节号橙色 */
   .mascot__no {
     color: var(--orange);
   }
 
+  /* 章节号和小标题之间那根短横杠 */
   .mascot__rule {
     width: clamp(28px, 5vw, 64px);
     height: 1px;
     background: var(--ink-20);
   }
 
+  /* 标题：最多 16 个字换行，离正文 1.5rem */
   .mascot__title {
     max-width: 16ch;
     margin-bottom: 1.5rem;
   }
 
+  /* 正文：两段，段间 1rem，一行最长 46 个字 */
   .mascot__text {
     display: grid;
     gap: 1rem;
     max-width: 46ch;
   }
 
+  /* 六个状态标签：允许换行，挤不下就落第二排 */
   .mascot__states {
     display: flex;
     flex-wrap: wrap;
@@ -109,6 +151,7 @@ const m = t.mascot;
     margin-top: 1.5rem;
   }
 
+  /* 单个状态标签：等宽小字 + 1px 描边的胶囊；不用实心底，免得抢按钮 */
   .mascot__states li {
     font-family: var(--font-mono);
     font-size: 0.625rem;
@@ -123,10 +166,12 @@ const m = t.mascot;
     margin-top: 1.75rem;
   }
 
+  /* 舞台容器：min-width: 0 是必须的 —— 否则 grid 子项的最小宽度取内容宽度，舞台会把栏撑破 */
   .mascot__stage {
     min-width: 0;
   }
 
+  /* 900px 起分两栏：文字略窄（0.85 份）、舞台 1 份 */
   @media (min-width: 900px) {
     .mascot__grid {
       grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
@@ -135,11 +180,15 @@ const m = t.mascot;
   }
 </style>
 
+<!-- 舞台样式：给 MascotStage.tsx 用，所以必须全局（scoped 样式选不中别的组件里的元素） -->
 <style is:global>
+  /* 舞台整体：占满右半栏 */
   .stage {
     width: 100%;
   }
 
+  /* 舞台框：正方形、1px 描边，底上是 25% 一格的纸纹网格 + --cream-2 底色；
+     overflow: hidden 是「她站在框里」的关键 —— 升起的过程会被框边裁掉 */
   .stage__frame {
     position: relative;
     aspect-ratio: 1 / 1;
@@ -185,6 +234,7 @@ const m = t.mascot;
     opacity: 0;
   }
 
+  /* 系统里开了「减少动态效果」：不飞入，直接站在台上（transform: none + opacity: 1） */
   @media (prefers-reduced-motion: reduce) {
     .stage__rise {
       transform: none;
@@ -192,6 +242,7 @@ const m = t.mascot;
     }
   }
 
+  /* 歪头层：鼠标在里面移动时，这一层跟着转一点（transform 由组件实时写），420ms 缓动回来 */
   .stage__tilt {
     position: relative;
     width: 100%;
@@ -200,6 +251,7 @@ const m = t.mascot;
     will-change: transform;
   }
 
+  /* 点击热区：铺满整块的无样式按钮（去掉默认底色、描边、内边距），点一下切表情 */
   .stage__hit {
     position: relative;
     width: 100%;
@@ -211,11 +263,14 @@ const m = t.mascot;
     display: block;
   }
 
+  /* 键盘聚焦时给一圈橙色描边，偏移 6px；鼠标点击不显示（:focus-visible 只认键盘） */
   .stage__hit:focus-visible {
     outline: 2px solid var(--orange);
     outline-offset: 6px;
   }
 
+  /* 表情图：六张叠在同一个位置，只有 data-active="true" 那张不透明；
+     入场时从下方 12px、98.5% 大小浮上来 —— 透明度 480ms、位移 620ms，两者错开才有层次 */
   .stage__img {
     position: absolute;
     inset: 0;
@@ -230,11 +285,13 @@ const m = t.mascot;
     pointer-events: none;
   }
 
+  /* 当前表情 */
   .stage__img[data-active='true'] {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 
+  /* 脚下的影子：46% 宽、22px 高的椭圆径向渐变，blur(2px) 让边缘软掉，人就不会飘着 */
   .stage__shadow {
     position: absolute;
     left: 50%;
@@ -247,6 +304,7 @@ const m = t.mascot;
     pointer-events: none;
   }
 
+  /* 左下角的小同伴 tible：站在舞台前沿上，上下轻轻浮动（tibleBob 5.5s 一循环） */
   .stage__companion {
     position: absolute;
     left: clamp(0.75rem, 2vw, 1.5rem);
@@ -265,12 +323,14 @@ const m = t.mascot;
     animation: tibleBob 5.5s var(--ease-inout) infinite;
   }
 
+  /* 同伴小图：40~64px 跟着屏幕走 */
   .stage__companion img {
     width: clamp(40px, 6vw, 64px);
     height: auto;
     display: block;
   }
 
+  /* 浮动动画：只动 5px，幅度再大就像在跳，不像在呼吸 */
   @keyframes tibleBob {
     0%,
     100% {
@@ -281,6 +341,7 @@ const m = t.mascot;
     }
   }
 
+  /* 舞台左上角的说明行：左边是当前状态名，右边是那句状态注释 */
   .stage__caption {
     position: absolute;
     left: clamp(0.75rem, 2vw, 1.5rem);
@@ -292,17 +353,20 @@ const m = t.mascot;
     gap: 0.5rem 0.9rem;
   }
 
+  /* 当前状态名：9px 橙色等宽字 */
   .stage__state {
     color: var(--orange);
     font-size: 0.5625rem;
   }
 
+  /* 状态注释：小一号、56% 灰，行距 1.5 */
   .stage__note {
     font-size: var(--fs-small);
     color: var(--ink-56);
     line-height: 1.5;
   }
 
+  /* 减少动态效果：同伴停止浮动，表情切换只留 200ms 的纯淡入淡出（不做位移缩放） */
   @media (prefers-reduced-motion: reduce) {
     .stage__companion {
       animation: none;

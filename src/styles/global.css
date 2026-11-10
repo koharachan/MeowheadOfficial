@@ -1,7 +1,35 @@
+/* ============================================================================
+   global.css —— 全站样式入口（唯一一份被 layout 引入的全局 CSS）
+   ----------------------------------------------------------------------------
+   管什么：
+     - reset、全站共用的排版类（.display/.h1/.h2/.h3/.lead/.body-text/.mono…）、
+       布局工具类（.shell/.section/.hair-t/.hair-b/.rule/.cropmarks）、小工具
+       （.sr-only/.no-scroll/.line-mask/.copy-btn）、以及流式打字的隐藏规则。
+     - 只放「无作用域、全站共享」的规则。组件专属样式写在组件自己的 <style>
+       或 islands.css 里，不要往这里加。
+   怎么调用：
+     - 只由 src/layouts/Base.astro 顶部 import 一次；页面/组件不需要再引。
+     - 用类名挂到元素上即可，例如 <div class="shell section hair-t">。
+     - 可复制的示例：
+         <section class="section hair-t">
+           <div class="shell">
+             <h2 class="h2">标题</h2>
+             <p class="body-text">正文，颜色自动比标题浅一档。</p>
+           </div>
+         </section>
+     - token（颜色/字号/间距/缓动）一律用 var(--…)，定义在 tokens.css，别在这里写死。
+
+   @import 顺序不能动：tailwindcss 先建立图层与工具类，tokens.css 提供变量，
+   islands.css 是滚动叙事岛的样式（依赖上面的变量）。调换顺序会改变层叠结果。
+   ============================================================================ */
 @import "tailwindcss";
 @import "./tokens.css";
 @import "./islands.css";
 
+/* @theme 是 Tailwind v4 的 token 出口：这里声明一次，才能生成 bg-ink / text-ink /
+   font-mono / max-w-text 这类工具类。实际取值仍以 tokens.css 为准，两边要保持一致；
+   字体栈必须写字面字体名，不能写 var(--font-sans)（Tailwind 要拿它拼工具类）。
+   --breakpoint-xs = 30rem 不是 Tailwind 默认档，项目自带的第一个断点。 */
 @theme {
   --color-ink: #141210;
   --color-cream: #fff9f1;
@@ -29,6 +57,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: auto; /* Lenis 接管；reduced-motion 下用 auto */
+  /* clip 而不是 hidden：hidden 会把这个元素变成滚动容器，sticky/100vh 都会算错 */
   overflow-x: clip;
 }
 body {
@@ -44,6 +73,7 @@ body {
   font-kerning: normal;
   overflow-x: clip;
   text-rendering: optimizeLegibility;
+  /* 上面 antialiased + grayscale：中文小字在 macOS 上不这样做会显得发黑糊成一团 */
 }
 img,
 svg,
@@ -82,8 +112,10 @@ ol {
 :focus-visible {
   outline: 2px solid var(--orange);
   outline-offset: 3px;
+  /* 给元素本身 2px 圆角，outline 才会跟着圆；纯直角元素上聚焦框是个硬方框 */
   border-radius: 2px;
 }
+/* 深色底上 #ff5a1a 偏暗，换亮一档的橙（写死值：这是深色专用的补偿色） */
 .on-dark :focus-visible {
   outline-color: #ff7a3d;
 }
@@ -92,6 +124,7 @@ ol {
 .font-cjk {
   font-family: var(--font-cjk);
 }
+/* 标签体：等宽 + 全大写 + 疏字距 = 仪表读数感，整站的小字标签都用它 */
 .mono {
   font-family: var(--font-mono);
   font-size: var(--fs-label);
@@ -100,12 +133,15 @@ ol {
   font-weight: 500;
   font-feature-settings: "tnum" 1;
 }
+/* 更小的标签（图注、角标）。字号更小，所以字距要更大，否则一串小字会粘成黑线 */
 .mono-sm {
   font-family: var(--font-mono);
   font-size: 0.625rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
 }
+/* 数字防抖：任何数字块都用等宽数字，滚动计数时不会左右跳。
+   .counter 只有下面第一条里声明过，别把它并到第二条去（那会改变哪些元素受影响）。 */
 .tabular,
 time,
 .counter {
@@ -113,7 +149,7 @@ time,
   font-feature-settings: "tnum" 1;
 }
 
-/* 数字防抖：任何数字块都用等宽数字，滚动计数时不会左右跳 */
+/* 补上 .mono/.mono-sm 的等宽数字：上面那条只给了 .counter，两条叠起来才全覆盖 */
 .tabular,
 time,
 .mono,
@@ -153,6 +189,9 @@ form .field:focus-visible {
   background: #fff;
 }
 
+/* 标题阶梯：只用字重和字号拉差距，颜色统一墨黑。
+   display/h1 用 900，h2 用 800，h3 用 700——中文笔画多，超大字号下不到 900 会显得
+   骨架软；到 h3 这个尺寸再用 900 就糊了，所以逐级回落。行高和字距都抄自 tokens.css。 */
 .display {
   font-family: var(--font-cjk);
   font-size: var(--fs-display);
@@ -181,6 +220,8 @@ form .field:focus-visible {
   letter-spacing: -0.01em;
   font-weight: 700;
 }
+/* 导语和正文都比标题低一档对比（--ink-70），版面才有主次；line-height 1.55/1.85
+   是中文长段的呼吸区间，别压到 1.4 以下 */
 .lead {
   font-size: var(--fs-lead);
   line-height: 1.55;
@@ -198,12 +239,15 @@ form .field:focus-visible {
 }
 
 /* ---------------- layout helpers ---------------- */
+/* .shell 管「多宽」：居中 + 左右安全边距。页面骨架永远  section(.shell) > 内容 */
 .shell {
   width: 100%;
   max-width: var(--maxw);
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
+/* .section 管「多高」：上下留白随视口缩放，手机 4.5rem、桌面 10rem。
+   position: relative 是给 .cropmarks 的绝对定位角标做参照 */
 .section {
   position: relative;
   padding-block: clamp(4.5rem, 11vw, 10rem);
@@ -220,7 +264,9 @@ form .field:focus-visible {
   background: var(--ink-12);
 }
 
-/* 工程图纸感：四角裁切标记 */
+/* 工程图纸感：四角裁切标记。
+   ::before 画左上、::after 画右下，只画对角两个——四角全画在密集版面上太吵。
+   要求父元素是定位元素（.section 已经是），且父元素有 padding，否则压到内容 */
 .cropmarks::before,
 .cropmarks::after {
   content: "";
@@ -247,7 +293,9 @@ form .field:focus-visible {
 }
 
 /* ---------------- responsive chrome ---------------- */
-/* CTA 由 Button 组件渲染，样式规则必须放在无作用域的地方 */
+/* CTA 由 Button 组件渲染，样式规则必须放在无作用域的地方。
+   !important 是必要的：Button 自带 Tailwind 工具类（display: inline-flex），
+   同优先级下会盖掉这里的 display: none */
 @media (max-width: 640px) {
   .nav__cta {
     display: none !important;
@@ -255,6 +303,8 @@ form .field:focus-visible {
 }
 
 /* ---------------- text reveal ---------------- */
+/* 逐行揭示：外层裁切，内层 span 由 JS 上下平移，视觉上就是「字从缝里升上来」。
+   内层必须有 will-change，否则每帧重新提升图层会闪。 */
 .line-mask {
   display: block;
   overflow: hidden;
@@ -276,10 +326,14 @@ form .field:focus-visible {
   white-space: nowrap;
   border: 0;
 }
+/* 抽屉/菜单打开时锁 body 滚动。
+   用 overflow: hidden 而不是 position: fixed——后者会丢掉滚动位置，关掉时会跳回页首 */
 .no-scroll {
   overflow: hidden;
 }
 
+/* 降级动效：时长压到 0.001ms 而不是 0。
+   0 不会触发 transitionend/animationend，靠事件推进的 JS 会卡住这一步。 */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -294,7 +348,10 @@ form .field:focus-visible {
   }
 }
 
-/* ---------------- 复制按钮：微弹一下，2.5s 后自熄 ---------------- */
+/* ---------------- 复制按钮：微弹一下，2.5s 后自熄 ----------------
+   标记结构写在 components/sections/Contact.astro:39（.copy-btn 里两个 span：
+   __idle 常态、__done 已复制）。2.5s 后自动复原是 JS 定时器干的，不是 CSS——
+   这里只负责「已复制」状态的配色和那一下弹动。 */
 .copy-btn {
   display: inline-flex;
   align-items: center;
@@ -337,6 +394,7 @@ form .field:focus-visible {
   animation: copy-pop 620ms var(--spring-pop) both;
 }
 
+/* 弹出用的是 --spring-pop（欠阻尼），所以会略微过冲再收回，不是简单放大 */
 @keyframes copy-pop {
   from {
     transform: scale(0.82);

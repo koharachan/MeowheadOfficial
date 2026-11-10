@@ -1,9 +1,27 @@
-/* React islands 的样式（全局，避免 scoped 失效） */
+/* ============================================================================
+   islands.css —— 交互岛的样式（叙事轴 / 首屏 3D / 角落探头 / 玩具台 / 错误页的诗）
+   ----------------------------------------------------------------------------
+   管什么：
+     被 React island（NarrativeRail / HeroMark / MascotPeek / MascotPlayground /
+     TypedPoem）和少数 Astro 页面用到的「浮在内容之上」的部件。正文排版不在这里。
+   为什么放在全局文件：
+     这些 island 是 client:* 水合的 React 组件，Astro 的 scoped style 管不到它们
+     运行时插入的节点，所以类名只能写在全局 CSS 里。
+   怎么调用：
+     由 global.css 第 3 行 @import 进来，不需要页面单独引；组件里写死对应类名即可。
+     可复制的示例：<div class="peek" data-open="true">…（data-* 属性是开合开关）
+     所有开合/进度都用 data-* 属性驱动（data-ready / data-skin / data-active /
+     data-open / data-show / data-typing），JS 只改属性，不直接写 style。
+   全站层级（从小到大）：内容 1~5 < 角落探头 90 < 叙事轴 95 < 顶栏 110 <
+     手机菜单 130 < 首屏帘幕 200 < Loader 300。加新层级前先对着这串数排一遍。
+   ============================================================================ */
 
 /* ---------------------------------------------------------------- */
 /* 叙事轴：贯穿全站的章节刻度 + 进度 + tible 领读                       */
 /* 布局要点：静止宽度只有 14px（刻度），文字用绝对定位，绝不压正文        */
 /* ---------------------------------------------------------------- */
+/* 整条轴默认透明，等 NarrativeRail 量完章节位置、把 data-ready 置 true 才显形——
+   否则首帧会在错误的高度闪一下 */
 .rail {
   position: fixed;
   left: clamp(10px, 1.4vw, 20px);
@@ -21,6 +39,8 @@
   pointer-events: auto;
 }
 
+/* gap 21px 不是排版节奏值：9 个章节 × 21px 刚好在常见视口高度里铺满竖轴，
+   改它会改变轴的总高度（.rail 是 fixed 居中的，高度变了位置就变） */
 .rail__list {
   position: relative;
   display: grid;
@@ -28,6 +48,8 @@
   padding: 10px 0;
 }
 
+/* 轨道就是那条 1px 竖线：上下各让 10px，和 .rail__list 的 padding 对齐，
+   这样线只落在首尾刻度之间，不会伸出去一截 */
 .rail__track {
   position: absolute;
   left: 0;
@@ -87,16 +109,12 @@
   background-clip: padding-box;
 }
 
-/* 橙线末端就是当前章的那根刻度：把刻度柱本身染成橙的（不再另画一颗点去对位，
-   免得和刻度错开半像素看起来像两个东西） */
-.rail__item[data-active='true'] .rail__tick {
-  background: var(--orange);
-}
-
 .rail__tible {
   position: absolute;
+  /* 左移出轴外 14px，让领读的小旗子压在刻度左侧、不挡刻度本身 */
   left: -14px;
-  /* 站在橙线端点上，跟着章内进度往下走（--tip 是端点相对轨道顶的像素） */
+  /* 站在橙线端点上，跟着章内进度往下走（--tip 是端点相对轨道顶的像素，
+     由 NarrativeRail.tsx 每帧写进 style） */
   top: calc(10px + var(--tip, 7px));
   width: 34px;
   height: auto;
@@ -108,6 +126,8 @@
 }
 
 /* 刻度在轴上，不在字里 */
+/* no-op：上一条 .rail__list 已经写了 padding: 10px 0，这里再写 0 不产生任何效果。
+   留着只是为了说明「刻度在轴上、不在文字里」这个意图，删掉也不影响渲染 */
 .rail__list {
   padding-left: 0;
 }
@@ -189,6 +209,10 @@
   transform: translateY(-50%) translateX(0);
 }
 
+/* 橙线末端就是当前章的那根刻度：把刻度柱本身染成橙的，不再另画一颗点去对位
+   （另画会和刻度错开半像素，看起来像两个东西）。scale(1.3) 让它在 7px 的刻度里
+   也是唯一被放大的那颗。注意这条必须留在 .rail__tick 的默认规则之后：
+   同选择器同优先级，靠书写顺序取胜 */
 .rail__item[data-active='true'] .rail__tick {
   background: var(--orange);
   border-color: var(--orange);
@@ -205,10 +229,6 @@
   outline: 2px solid var(--orange);
   outline-offset: 8px;
   border-radius: 2px;
-}
-
-.rail__tible {
-  transition: top 220ms linear;
 }
 
 /* 深色屏上的刻度：黑填充 + 白描边（不用反相，也不用 --cream——.on-dark 里它会被重映射成白） */
@@ -240,6 +260,7 @@
 }
 
 /* 移动端：贴左边一条细轴，只保留刻度与 tible */
+/* 移动端：轴改成贴满屏高的左边缘一条，--tip 的基准也从轨道顶换成 12vh */
 @media (max-width: 860px) {
   .rail {
     left: 0;
@@ -298,8 +319,10 @@
 }
 
 /* ---------------------------------------------------------------- */
-/* 首屏 3D：海报 → 实时 canvas 的接力                                  */
-/* ---------------------------------------------------------------- */
+/* 首屏 3D：海报 → 实时 canvas 的接力（标记在 components/three/HeroMark.tsx）   */
+/* ----------------------------------------------------------------
+   顺序：先铺一张静态海报，WebGL 就绪后 canvas 淡入、海报淡出。
+   两个元素都绝对定位叠在同一格，交接时只改 data-hidden / data-visible。 */
 .hero-mark {
   position: relative;
   width: 100%;
@@ -333,6 +356,9 @@
   opacity: 1;
 }
 
+/* 下面两个 !important 是必需的：three.js 在 canvas 上写内联 style，
+   不加 !important 会被内联样式盖掉，渲染尺寸和盒子对不上就会糊。
+   touch-action: pan-y 让手指竖划仍能滚页面（不然拖动模型会吃掉滚动） */
 .hero-canvas canvas {
   display: block;
   width: 100% !important;
@@ -350,8 +376,10 @@
 }
 
 /* ---------------------------------------------------------------- */
-/* 角落探头                                                            */
-/* ---------------------------------------------------------------- */
+/* 角落探头（components/mascot/MascotPeek.tsx）：右下角探出的吉祥物 + 气泡  */
+/* ----------------------------------------------------------------
+   收起时整体 translateY(115%) 推出屏外（>100% 是为了把 drop-shadow 也藏掉，
+   100% 时阴影还会露出一条）。visibility 也参与 transition，用来延后隐藏时机。 */
 .peek {
   position: fixed;
   right: clamp(0.75rem, 2vw, 1.75rem);
@@ -400,6 +428,7 @@
   position: relative;
 }
 
+/* 气泡的小尾巴：一个旋转 45° 的方块，只留右下两条边，看起来就是气泡的尖角 */
 .peek__bubble::after {
   content: '';
   position: absolute;
@@ -451,6 +480,7 @@
   color: var(--cream);
 }
 
+/* 窄屏放不下气泡，只留吉祥物本体；关闭按钮跟着上移 0.5rem，避开屏边 */
 @media (max-width: 700px) {
   .peek__bubble {
     display: none;
@@ -467,8 +497,9 @@
 }
 
 /* ---------------------------------------------------------------- */
-/* 吉祥物互动台（/mascot/ 页）                                        */
-/* ---------------------------------------------------------------- */
+/* 吉祥物互动台（/mascot/ 页，components/mascot/MascotPlayground.tsx）        */
+/* ----------------------------------------------------------------
+   .play__img 换图时先 data-fading 让旧图淡出、再换 src 淡入，避免直接闪图。 */
 .play {
   display: grid;
   gap: clamp(1rem, 3vw, 2rem);
@@ -596,8 +627,11 @@
   outline-offset: 8px;
 }
 /* ---------------------------------------------------------------- */
-/* 错误页的 token 诗（404 / 403 / 418 共用）                          */
-/* ---------------------------------------------------------------- */
+/* 错误页的 token 诗（404 / 403 / 418 共用，components/sys/TypedPoem.tsx）   */
+/* ----------------------------------------------------------------
+   每个 token 是一个 .poem__tok，靠 data-on 一位一位点亮。
+   注意下面这一段整体缩进 2 空格，是历史遗留（原本嵌在一个已删掉的选择器里），
+   不影响渲染；要动它请整段一起动，别只改一半。 */
   .poem {
     display: grid;
     gap: clamp(0.5rem, 1.4vw, 0.9rem);

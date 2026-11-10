@@ -1,4 +1,23 @@
 ---
+/* ============================================================================
+   Base.astro —— 全站唯一的 HTML 骨架
+   ----------------------------------------------------------------------------
+   管什么：
+     每个页面都套这一层：<head> 里的 meta/hreflang/OG/字体预载、<body> 里的
+     跳转链接 + 加载层 + <slot /> + 动效脚本，以及 body 上唯一的全局样式引入点。
+   怎么调用：
+     页面自己不用写 html/head/body，直接套：
+       ---
+       import Base from '../layouts/Base.astro';
+       ---
+       <Base lang="zh" title="关于我们" altPath="/about/">
+         <main id="main">…页面内容…</main>
+       </Base>
+     - lang 必填（zh / yue / en / ja），决定 <html lang>、词典、OG locale；
+     - title / description 不写就走词典里的站点默认值；
+     - altPath 是「另一语言下的同一页面」，用于 hreflang 与切换按钮；
+     - bodyClass 只是往 <body> 上挂类名（加载层／首屏动画的开关靠它）。
+   ============================================================================ */
 import '../styles/global.css';
 import type { Lang } from '../i18n';
 import { getDict, LANGS, basePath, pathFor } from '../i18n';
@@ -8,9 +27,9 @@ interface Props {
   lang: Lang;
   title?: string;
   description?: string;
-  /** 用于 hreflang 与语言切换：另一语言下的同一页面路径 */
+  /** 另一语言下同一页面的路径；不传则按 lang 推出对向语言首页 */
   altPath?: string;
-  /** 首屏是否隐藏加载层（子页面仍需要） */
+  /** 追加到 <body> 的类名，页面用它开关自己的首屏动画，不影响骨架结构 */
   bodyClass?: string;
 }
 
@@ -57,6 +76,9 @@ const jsonLd = {
 <html lang={t.htmlLang} class="no-js">
   <head>
     <meta charset="utf-8" />
+    {/* no-js 先挂上，head 末尾的内联脚本在解析时立刻换掉：
+        这样 CSS 可以按 .js / .no-js 分流，无 JS 时不会出现「内容永远隐身」 */}
+    {/* viewport-fit=cover：让页面铺到刘海/圆角屏的物理边缘，安全距离由 CSS 的 env() 补 */}
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDesc} />
@@ -67,8 +89,12 @@ const jsonLd = {
         <link rel="alternate" hreflang={hreflangOf[l]} href={altHrefs[l]} />
       ))
     }
+    {/* x-default 指向中文首页：搜索引擎找不到匹配语言时的兜底 */}
     <link rel="alternate" hreflang="x-default" href={new URL('/', site).href} />
 
+    {/* 只给浏览器 UI（地址栏、滚动条）上色：light 用奶白、dark 用墨黑，
+        和首屏底色同一对，切换时不会出现一截突兀的色带。
+        color-scheme 固定 light——站点本身不跟随系统深色，只有 .on-dark 段落会变深 */}
     <meta name="theme-color" content="#FFF9F1" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light" />
@@ -91,6 +117,9 @@ const jsonLd = {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
+    {/* 字体：全站只用两族，所以只预载这两个子集——
+        中文字体是「关键字符子集」（首屏会用到的那几百字），整族 before-swap 太慢；
+        拉丁族只有 Archivo 一份。crossorigin 必加，字体请求是 CORS 模式，不加会重复下载 */}
     <link rel="stylesheet" href="/fonts/fonts.css" />
     <link rel="preload" href="/fonts/noto-sans-sc-critical.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
@@ -103,9 +132,12 @@ const jsonLd = {
   </head>
 
   <body class={bodyClass} data-lang={lang}>
+    {/* 键盘用户的第一个 Tab 位：直接跳到正文，样式见文件末尾的 .skip */}
     <a class="skip" href="#main">{t.ux.skip}</a>
     <Loader t={t} />
     <slot />
+    {/* 动效总入口放在 body 末尾，等 DOM 就绪才 import；
+        里面按 data-anim / data-stream 等属性接管全站动画，顺序见 scripts/motion.ts */}
     <script>
       import '../scripts/motion';
     </script>
@@ -113,6 +145,9 @@ const jsonLd = {
 </html>
 
 <style>
+  /* 跳转链接：平时藏在屏幕上方（-140% 确保连边框都出画），聚焦时滑下来。
+     z-index 200 是为了压住顶栏（110）和进度线，但仍在 Loader（300）之下——
+     首屏加载期间它不该被看见 */
   .skip {
     position: fixed;
     top: 0;

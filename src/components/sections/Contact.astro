@@ -1,58 +1,97 @@
 ---
-import type { Dict } from '../../i18n';
-import ContactForm from '../forms/ContactForm.tsx';
-import SectionField from '../ui/SectionField.astro';
+/*
+首页第 10 屏「联系」——左边说怎么找到我们，右边直接给一张表单。
+
+管什么：
+  左栏：编号 · 标签 · 大标题 · 导语 + 四条联系信息（地址 / 统一社会信用代码 / 邮箱 / 注册资本）。
+        邮箱和信用代码后面挂一个「复制」按钮，点一下把值复制走（值写在 data-copy 上，
+        点击处理在别处的全局脚本里，本文件只负责把按钮和值摆出来）。
+  右栏：ContactForm（React 岛，client:visible = 滚到这一屏才开始加载它的 JS，首屏不为它买单）。
+  排法：手机上下摞，960px 以上左右两栏（文案那栏 0.9 份，表单那栏 1 份）。
+
+怎么调用（HomePage.astro 里已经这么写，改布局时照抄）：
+  <Contact t={t} />
+  t 是整份文案字典（四份语言结构一样，字段见 i18n/types.ts 的 contact 段）。
+
+本屏的 id 是 "contact"：左边叙事轴 NarrativeRail 靠它找到这一屏、点亮轴上「联系」那一格
+  （章节表里 id: 'contact'），改 id 会让那一格点不动，别动。
+*/
+import type { Dict } from '../../i18n';                              // 整站文案的类型：四种语言共用这一份结构
+import ContactForm from '../forms/ContactForm.tsx';                 // 右栏那张表单：React 岛，浏览器里跑
+import SectionField from '../ui/SectionField.astro';                // 贯穿全屏的图纸底纹：竖线 + 巨大的「10」
 
 interface Props {
-  t: Dict;
+  t: Dict;                                                          // 整份文案字典，由页面在构建期传进来
 }
 const { t } = Astro.props;
-const c = t.contact;
-const isEn = t.lang === 'en';
+const copy = t.contact;                                             // 这一屏自己的那段文案，模板里只读它
+
+// --- 把四条联系信息整理成「屏幕上要怎么画」 ---
+
+/** 真正能复制走的那部分：去掉括号及其中的补充说明。
+ *  比如地址尾巴上的「（仅限办公使用）」——复制地址时不该把这句话一起带走。
+ *  只认中文全角括号：英文文案里写的是破折号，本来就没括号，原样保留也不影响后面判不过 */
+const copyValueOf = (text: string) => text.split('（')[0].trim();
+
+/** 这条值给不给「复制」按钮：带 @ 的当邮箱，18 位大写字母数字的当统一社会信用代码。
+ *  地址、注册资本这类一条长句，复制了也没地方粘，就不给按钮 */
+const canCopy = (raw: string) => raw.includes('@') || /^[0-9A-Z]{18}$/.test(raw);
+
+// 构建期一次算好，模板里不再逐条现算：文案是静态的，这几行值不会变
+const facts = copy.facts.map((fact) => {
+  const raw = copyValueOf(fact.v);                                  // 真正进剪贴板的那串
+  return { k: fact.k, v: fact.v, raw, copyable: canCopy(raw) };     // 原来怎么显示还怎么显示
+});
 ---
 
 <section class="contact" id="contact">
-  <SectionField no={c.no} align="left" />
+  {/* 底纹：竖线 + 巨大的「10」。align="left" 让它落在左下角，和右侧的表单错开 */}
+  <SectionField no={copy.no} align="left" />
+
   <div class="shell">
     <div class="contact__grid">
+      {/* --- 左栏：说清楚怎么联系 --- */}
       <div class="contact__copy">
+        {/* 编号 · 短横线 · 标签 */}
         <div class="contact__meta" data-anim="fade">
-          <span class="mono contact__no">{c.no}</span>
+          <span class="mono contact__no">{copy.no}</span>
           <span class="contact__rule" aria-hidden="true"></span>
-          <span class="mono">{c.label}</span>
+          <span class="mono">{copy.label}</span>
         </div>
 
-        <h2 class="h2 contact__title" data-stream data-anim="fade" data-delay="0.05">{c.title}</h2>
-        <p class="lead contact__lede" data-anim="fade" data-delay="0.1">{c.lede}</p>
+        {/* 大标题 + 导语：滚到这儿时标题逐字浮现、导语随后淡入（data-stream / data-anim 的约定） */}
+        <h2 class="h2 contact__title" data-stream data-anim="fade" data-delay="0.05">{copy.title}</h2>
+        <p class="lead contact__lede" data-anim="fade" data-delay="0.1">{copy.lede}</p>
 
+        {/* 四条联系信息：一行一个「标签 + 值」。能复制的值后面挂按钮 */}
         <dl class="contact__facts" data-anim="stagger">
           {
-            c.facts.map((f) => {
-              const raw = f.v.split('（')[0].trim();
-              const copyable = raw.includes('@') || /^[0-9A-Z]{18}$/.test(raw);
-              return (
-                <div class="fact">
-                  <dt class="mono">{f.k}</dt>
-                  <dd>
-                    {f.v}
-                    {copyable && (
-                      <button class="copy-btn" type="button" data-copy={raw} aria-label={'复制 ' + raw}>
-                        <span class="copy-btn__idle" aria-hidden="true">复制</span>
-                        <span class="copy-btn__done" aria-hidden="true">已复制</span>
-                      </button>
-                    )}
-                  </dd>
-                </div>
-              );
-            })
+            facts.map((fact) => (
+              <div class="fact">
+                <dt class="mono">{fact.k}</dt>
+                <dd>
+                  {fact.v}
+                  {/* 注意：按钮里和 aria-label 里的中文是写死的，不跟语言切（英文页上也是「复制」）。
+                      要翻译的话三处一起改：aria-label、.copy-btn__idle、.copy-btn__done */}
+                  {fact.copyable && (
+                    <button class="copy-btn" type="button" data-copy={fact.raw} aria-label={'复制 ' + fact.raw}>
+                      <span class="copy-btn__idle" aria-hidden="true">复制</span>
+                      <span class="copy-btn__done" aria-hidden="true">已复制</span>
+                    </button>
+                  )}
+                </dd>
+              </div>
+            ))
           }
         </dl>
       </div>
 
+      {/* --- 右栏：表单 --- */}
+      {/* data-scrub-y="-34"：滚到这一屏时表单相对视差往上错 34px，和左栏错开一点不会显得死板 */}
       <div class="contact__form" data-anim="fade" data-delay="0.08" data-scrub data-scrub-y="-34">
         <ContactForm
           client:visible
-          copy={c.form}
+          copy={copy.form}
           happyImage="/img/mascot/hiromi-happy.webp"
           happyAlt={t.mascot.alt}
           companionImage="/img/mascot/tible-happy.webp"
@@ -63,102 +102,118 @@ const isEn = t.lang === 'en';
 </section>
 
 <style>
+  /* 本文件有两块样式：
+     这一块是「Astro 模板自己渲染出来的 DOM」，作用域由 Astro 自动加（不会漏到别处）；
+     文件末尾 is:global 那块是「React 岛在浏览器里自己渲染出来的 DOM」——
+     岛里的元素拿不到 Astro 的作用域标记，所以表单的样式只能写成全局的。 */
+
   .contact {
-    position: relative;
-    padding-block: clamp(4.5rem, 10vw, 9rem);
-    background: var(--cream-2);
-    border-top: var(--hair);
-    overflow: clip;
+    position: relative;                                  /* 给绝对定位的底纹当锚 */
+    padding-block: clamp(4.5rem, 10vw, 9rem);            /* 上下留 72~144px：这是全站最后一屏，要喘得开 */
+    background: var(--cream-2);                          /* 比页面底色暗一档，和上一屏的深色收尾拉开 */
+    border-top: var(--hair);                             /* 顶上一条发丝线，和上一屏的分界 */
+    overflow: clip;                                      /* 底纹和巨大编号不许撑出横向滚动条 */
   }
 
+  /* --- 两栏骨架 --- */
   .contact__grid {
     display: grid;
-    gap: clamp(2.5rem, 5vw, 5rem);
-    align-items: start;
+    gap: clamp(2.5rem, 5vw, 5rem);                       /* 上下摞的时候是栏间距，并排时是左右间距 */
+    align-items: start;                                  /* 两栏各自从顶上开始，不互相拉齐 */
   }
 
+  /* --- 左栏：编号行 --- */
   .contact__meta {
     display: flex;
     align-items: center;
     gap: 0.9rem;
     color: var(--ink-56);
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.25rem;                              /* 和标题留 20px */
   }
 
   .contact__no {
-    color: var(--orange);
+    color: var(--orange);                                /* 编号是这一屏的橙色锚点 */
   }
 
   .contact__rule {
-    width: clamp(28px, 5vw, 64px);
+    width: clamp(28px, 5vw, 64px);                       /* 编号和标签之间的短横线，随屏宽 28~64px */
     height: 1px;
     background: var(--ink-20);
   }
 
   .contact__title {
-    max-width: 18ch;
+    max-width: 18ch;                                     /* 大标题最多 18 字折行，别拉成一长条 */
     margin-bottom: 1.25rem;
   }
 
   .contact__lede {
-    max-width: 44ch;
-    margin-bottom: 2rem;
+    max-width: 44ch;                                     /* 导语一行最多 44 字 */
+    margin-bottom: 2rem;                                 /* 和下面四条信息拉开 32px */
   }
 
+  /* --- 左栏：四条联系信息 --- */
   .contact__facts {
     display: grid;
-    gap: 1.15rem;
-    border-top: var(--hair);
-    padding-top: 1.5rem;
+    gap: 1.15rem;                                        /* 条与条之间 18px */
+    border-top: var(--hair);                             /* 顶上一条线，把信息区和导语分开 */
+    padding-top: 1.5rem;                                 /* 别贴着那条线 */
   }
 
   .fact {
-    display: grid;
+    display: grid;                                       /* 标签一行、值一行 */
     gap: 0.35rem;
   }
 
   .fact dt {
-    color: var(--ink-38);
-    font-size: 0.5rem;
+    color: var(--ink-38);                                /* 标签用最浅一档：它只是标题 */
+    font-size: 0.5rem;                                   /* 8px，压到像一枚小印章 */
   }
 
   .fact dd {
     font-size: var(--fs-small);
     line-height: 1.7;
-    color: var(--ink-70);
+    color: var(--ink-70);                                /* 值比标签深两档，主次分明 */
   }
 
+  /* --- 960px 以上：左右两栏 --- */
   @media (min-width: 960px) {
     .contact__grid {
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); /* 表单那栏略宽一点：里面是输入框，窄了难用 */
     }
   }
 </style>
 
 <style is:global>
+  /* 表单是 ContactForm.tsx 这个 React 岛画的：岛渲染出来的元素不带 Astro 的作用域标记，
+     所以下面这些类名必须写在 is:global 里，不然一条都命中不到。
+     类名（.form / .field / .form-done …）只在这个组件里用，不会和别处打架。 */
+
+  /* --- 表单外壳 --- */
   .form {
     display: grid;
     gap: 1.5rem;
-    background: var(--cream);
+    background: var(--cream);                            /* 比这一屏的底色又亮回去一档 */
     border: 1px solid var(--ink-12);
-    padding: clamp(1.25rem, 3vw, 2.25rem);
+    padding: clamp(1.25rem, 3vw, 2.25rem);               /* 内边距随机宽 20~36px */
   }
 
+  /* --- 表单里的栅格：手机一列，560px 以上两列 --- */
   .form__grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
 
+  /* --- 一个字段：标签在上、控件在下 --- */
   .field {
     display: grid;
     gap: 0.45rem;
-    min-width: 0;
+    min-width: 0;                                        /* 允许被栅格压缩：不加这行，长 placeholder 会把列撑宽 */
   }
 
   .field__label {
     color: var(--ink-38);
-    font-size: 0.5rem;
+    font-size: 0.5rem;                                   /* 8px，和别处的标签同一档 */
   }
 
   /* 无边框输入框：静止时 6% 的环，聚焦时内环收紧 + 外环橙色晕开，形成咬合 */
@@ -166,79 +221,83 @@ const isEn = t.lang === 'en';
   .field textarea,
   .field select {
     width: 100%;
-    background: var(--surface-0);
-    border: 0;
+    background: var(--surface-0);                        /* 输入区比表单底色亮一点，一眼看出能打字 */
+    border: 0;                                           /* 不用边框，层次全靠下面的环（box-shadow） */
     padding: 0.7rem 0.85rem;
     font-size: var(--fs-small);
     color: var(--ink);
     border-radius: 10px;
-    box-shadow: var(--ring-rest);
-    font-variant-numeric: tabular-nums;
+    box-shadow: var(--ring-rest);                        /* 静止态那圈 12% 的环，见 tokens.css */
+    font-variant-numeric: tabular-nums;                  /* 数字等宽，输入时不左右跳 */
     transition:
       box-shadow 220ms var(--ease-out),
       background-color 220ms var(--ease-out);
   }
 
+  /* 下拉框：去掉系统箭头（样式太旧），自己在下面用 ::after 画一个 */
   .field select {
     appearance: none;
     cursor: pointer;
   }
 
   .field__select {
-    position: relative;
+    position: relative;                                  /* 给自画的箭头当锚 */
   }
 
+  /* 自画的下拉箭头：一个转过 45° 的直角，看起来就是 ˅ */
   .field__select::after {
     content: '';
     position: absolute;
-    right: 2px;
+    right: 2px;                                          /* 贴右边一点点，留出内边距的呼吸 */
     top: 50%;
     width: 6px;
     height: 6px;
-    border-right: 1px solid var(--ink-56);
+    border-right: 1px solid var(--ink-56);               /* 只留两条边，拼成一个折角 */
     border-bottom: 1px solid var(--ink-56);
-    transform: translateY(-70%) rotate(45deg);
-    pointer-events: none;
+    transform: translateY(-70%) rotate(45deg);           /* 上移 70% 再转 45°，视觉上压在输入框的垂直中线 */
+    pointer-events: none;                                /* 箭头不吃点击，点它等于点下拉框 */
   }
 
   .field input::placeholder,
   .field textarea::placeholder {
-    color: var(--ink-38);
+    color: var(--ink-38);                                /* 提示文字用最浅一档，不跟真实输入抢 */
   }
 
   .field input:focus,
   .field textarea:focus,
   .field select:focus {
-    outline: none;
+    outline: none;                                       /* 去掉浏览器默认焦点框，改用下面那圈橙环 */
     background: var(--surface-0);
-    box-shadow: var(--ring-focus);
+    box-shadow: var(--ring-focus);                       /* 聚焦：外环橙色晕开，见 tokens.css */
   }
 
   .field textarea {
-    resize: vertical;
-    min-height: 4.5rem;
+    resize: vertical;                                    /* 只许上下拉：横着拉会把两列栅格搞乱 */
+    min-height: 4.5rem;                                  /* 至少四行半的高度，写一句话不至于挤成一条 */
     line-height: 1.6;
   }
 
+  /* --- 读屏播报区：校验失败、提交结果都写在这儿 --- */
   .form__live {
     font-size: 0.75rem;
     line-height: 1.7;
     color: var(--ink-38);
-    min-height: 1.2em;
+    min-height: 1.2em;                                   /* 先占住一行高度，出提示时不会把下面的按钮顶下去 */
   }
 
   .form__live[data-status='error'] {
-    color: var(--orange);
+    color: var(--orange);                                /* 出错才变橙：唯一的警示色 */
   }
 
+  /* --- 提交按钮 --- */
   .form__submit {
-    justify-self: start;
+    justify-self: start;                                 /* 靠左，只有按钮那么宽 */
     display: inline-flex;
     align-items: center;
     gap: 0.7em;
-    padding: 0.95em 1.6em;
-    border-radius: 999px;
-    border: 1px solid var(--ink);
+    padding: 0.95em 1.6em;                               /* 用 em：字号变了按钮跟着变，不会走形 */
+    border-radius: 999px;                                /* 胶囊形 */
+    border: 1px solid var(--ink);                        /* 深底浅字的主按钮 */
     background: var(--ink);
     color: var(--cream);
     font-size: var(--fs-small);
@@ -250,44 +309,47 @@ const isEn = t.lang === 'en';
   }
 
   .form__submit:hover {
-    background: var(--orange);
+    background: var(--orange);                           /* hover 整颗变橙 */
     border-color: var(--orange);
   }
 
+  /* --- 提交成功后的替换面板 --- */
   .form-done {
     display: grid;
     gap: 1rem;
     background: var(--cream);
     border: 1px solid var(--ink-12);
     padding: clamp(1.25rem, 3vw, 2.25rem);
-    justify-items: start;
+    justify-items: start;                                /* 里面的东西一律靠左 */
   }
 
+  /* 两只吉祥物并排：大的站左边，小的靠右下 */
   .form-done__figures {
     position: relative;
     display: flex;
-    align-items: flex-end;
+    align-items: flex-end;                               /* 底边对齐：一大一小才像站在同一条地面上 */
     gap: 0.5rem;
   }
 
   .form-done__hero {
-    width: clamp(110px, 22vw, 170px);
-    height: auto;
+    width: clamp(110px, 22vw, 170px);                    /* 主吉祥物 110~170px */
+    height: auto;                                        /* 高度跟着宽度走，别压扁 */
   }
 
   .form-done__tible {
-    width: clamp(44px, 8vw, 64px);
+    width: clamp(44px, 8vw, 64px);                       /* 副吉祥物 44~64px，明显矮一截 */
     height: auto;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5rem;                               /* 抬 8px：不跟主吉祥物贴得太死 */
   }
 
+  /* --- 「再写一封」的复位按钮：做成一行带下划线的文字链接 --- */
   .form-reset {
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
-    background: none;
+    background: none;                                    /* 去掉按钮默认底色，只留一行字 */
     border: 0;
-    border-bottom: 1px solid var(--ink-20);
+    border-bottom: 1px solid var(--ink-20);              /* 下划线当链接的默认态 */
     padding: 0 0 0.15em;
     font-size: var(--fs-small);
     cursor: pointer;
@@ -298,12 +360,13 @@ const isEn = t.lang === 'en';
     border-color: var(--orange);
   }
 
+  /* --- 560px 以上：字段排两列，「留言」那种横跨整行 —— */
   @media (min-width: 560px) {
     .form__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));  /* minmax(0,1fr)：长 placeholder 不会把列撑宽 */
     }
     .field--wide {
-      grid-column: 1 / -1;
+      grid-column: 1 / -1;                               /* 带 --wide 的字段（留言、大块内容）横跨两列 */
     }
   }
 </style>

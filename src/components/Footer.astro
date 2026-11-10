@@ -1,24 +1,43 @@
 ---
-import type { Dict } from '../i18n';
-import { LANGS, basePath, pathFor } from '../i18n';
+/*
+全站页脚（<Footer />）：深色收尾那一块。
+  - 上半：反白品牌图标 + 中文全名 + 罗马字，右边一句标语
+  - 中间：几列链接（由 t.footer.columns 决定，加一列只改文案，不动这里）+ 一列备案信息
+  - 下半：版权 + 语言切换
+  - 背后那个巨大的空心「M」是纯装饰，随页面滚动轻轻上下走（data-scrub 由 scripts/motion.ts 读）
+
+每个页面从外层引一次（首页由 pages/HomePage 引，其余页各引一次）：
+
+  <Footer t={t} />                  // 首页：页内 #锚点直接用
+  <Footer t={t} isHome={false} />   // 子页面：给 #锚点补上首页路径
+
+t（i18n 的 Dict）里用到的字段：t.footer.*（tagline / columns / icp / icpHref / police /
+policeHref / note / copyright）、t.brand.nameFull / roman / logoAlt、t.langs、t.path.home。
+
+#footer 这个 id、foot__* 这些类名、data-scrub / data-scrub-y 都是样式和脚本的钩子，别改名。
+*/
+import type { Dict } from '../i18n';                 // 整份文案的类型
+import { LANGS, basePath, pathFor } from '../i18n';  // 四种语言、当前页的公共路径、切语言后的地址
 
 interface Props {
-  t: Dict;
-  isHome?: boolean;
+  t: Dict;              // 当前语言的整份文案
+  isHome?: boolean;     // 默认当首页；子页面传 false，页内锚点才补首页路径
 }
-const { t, isHome = true } = Astro.props;
-const f = t.footer;
-const isEn = t.lang === 'en';
-const base = isHome ? '' : t.path.home;
-const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
+const { t, isHome = true } = Astro.props;                     // 取出文案和「是不是首页」
+const footer = t.footer;                                      // 页脚文案都在这里，下面少打几个字
+const isEn = t.lang === 'en';                                 // 英文站上「备案」那格叫 Filing
+const homePrefix = isHome ? '' : t.path.home;                 // 不在首页时，锚点前面要补的首页路径
+const linkHref = (link: string) => (link.startsWith('#') ? `${homePrefix}${link}` : link); // 只有页内锚点要补路径
 ---
 
 <footer class="foot" id="footer">
+  {/* 装饰：游标跟着滚动上下漂的大号空心 M，aria-hidden 让读屏跳过 */}
   <div class="foot__field" aria-hidden="true" data-scrub data-scrub-y="-48">
     <span class="foot__field-no">M</span>
   </div>
 
   <div class="shell">
+    {/* ---- 上半：品牌 + 标语 ---- */}
     <div class="foot__top">
       <div class="foot__brand">
         <img src="/brand/mark_reverse.svg" alt={t.brand.logoAlt} width="44" height="44" loading="lazy" decoding="async" data-scrub data-scrub-y="22" />
@@ -28,18 +47,19 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
         </div>
       </div>
 
-      <p class="foot__tagline">{f.tagline}</p>
+      <p class="foot__tagline">{footer.tagline}</p>
     </div>
 
+    {/* ---- 中间：几列链接 + 一列备案 ---- */}
     <div class="foot__mid">
       {
-        f.columns.map((col) => (
+        footer.columns.map((col) => (
           <nav class="foot__col" aria-label={col.title}>
             <p class="mono foot__col-title">{col.title}</p>
             <ul>
               {col.links.map((l) => (
                 <li>
-                  <a href={href(l.href)}>{l.label}</a>
+                  <a href={linkHref(l.href)}>{l.label}</a>
                 </li>
               ))}
             </ul>
@@ -47,25 +67,27 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
         ))
       }
 
+      {/* 备案信息单独一列：站外链接，新开标签页，跳出去也不丢当前页 */}
       <div class="foot__col foot__col--legal">
         <p class="mono foot__col-title">{isEn ? 'Filing' : '备案'}</p>
         <ul>
           <li>
-            <a href={f.icpHref} target="_blank" rel="noopener noreferrer">{f.icp}</a>
+            <a href={footer.icpHref} target="_blank" rel="noopener noreferrer">{footer.icp}</a>
           </li>
           <li>
-            <a class="foot__police" href={f.policeHref} target="_blank" rel="noopener noreferrer">
+            <a class="foot__police" href={footer.policeHref} target="_blank" rel="noopener noreferrer">
               <img src="/brand/beian.png" alt="" width="20" height="20" loading="lazy" decoding="async" />
-              <span>{f.police}</span>
+              <span>{footer.police}</span>
             </a>
           </li>
-          <li class="foot__note">{f.note}</li>
+          <li class="foot__note">{footer.note}</li>
         </ul>
       </div>
     </div>
 
+    {/* ---- 下半：版权 + 语言切换 ---- */}
     <div class="foot__bottom">
-      <span class="mono-sm">{f.copyright}</span>
+      <span class="mono-sm">{footer.copyright}</span>
       <div class="foot__langs">
         {
           LANGS.map((l) => (
@@ -84,14 +106,16 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
 </footer>
 
 <style>
+  /* ---- 整块底色：比正文更深一点的暖黑，白字在上面 ---- */
   .foot {
-    position: relative;
+    position: relative;   /* 给背后那个装饰字定位 */
     background: #141210;
     color: var(--cream);
-    padding-block: clamp(3rem, 6vw, 5rem) clamp(2rem, 4vw, 3rem);
-    overflow: clip;
+    padding-block: clamp(3rem, 6vw, 5rem) clamp(2rem, 4vw, 3rem);   /* 上宽下窄，收尾不拖沓 */
+    overflow: clip;       /* 装饰字被放大到出血，别让它撑出滚动条 */
   }
 
+  /* ---- 备案那条带警徽图标的链接 ---- */
   .foot__police {
     display: inline-flex;
     align-items: center;
@@ -101,15 +125,16 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
   .foot__police img {
     width: 20px;
     height: 20px;
-    flex-shrink: 0;
+    flex-shrink: 0;   /* 文字换行时图标别被压扁 */
     border-radius: 2px;
-    opacity: 0.9;
+    opacity: 0.9;     /* 深底上纯白太扎眼，压一点点 */
   }
 
+  /* ---- 背后的装饰层：上下各多出 10%，滚动时漂一点也露不出边 ---- */
   .foot__field {
     position: absolute;
     inset: -10% 0;
-    pointer-events: none;
+    pointer-events: none;   /* 纯装饰，别挡住上面的链接 */
   }
 
   .foot__field-no {
@@ -123,15 +148,17 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     line-height: 1;
     letter-spacing: -0.06em;
     color: transparent;
-    -webkit-text-stroke: 1px rgba(255, 249, 241, 0.07);
+    -webkit-text-stroke: 1px rgba(255, 249, 241, 0.07);   /* 只有 0.07 的白色描边：看着像刻在背景上 */
     user-select: none;
   }
 
+  /* 正文都盖在装饰层上面 */
   .foot .shell {
     position: relative;
     z-index: 1;
   }
 
+  /* ---- 上半：品牌在左、标语在右，窄屏自动折行 ---- */
   .foot__top {
     display: flex;
     align-items: flex-start;
@@ -168,10 +195,11 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
   .foot__tagline {
     color: rgba(255, 249, 241, 0.55);
     font-size: var(--fs-small);
-    max-width: 24ch;
+    max-width: 24ch;    /* 一行别拉太长，读起来才顺 */
     line-height: 1.7;
   }
 
+  /* ---- 中间：默认一列，760px 以上铺成三列 ---- */
   .foot__mid {
     display: grid;
     grid-template-columns: 1fr;
@@ -181,7 +209,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
   }
 
   .foot__col-title {
-    color: rgba(255, 249, 241, 0.35);
+    color: rgba(255, 249, 241, 0.35);   /* 列标题压暗，让链接更显眼 */
     margin-bottom: 1rem;
     font-size: 0.5rem;
   }
@@ -208,6 +236,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     max-width: 30ch;
   }
 
+  /* ---- 下半：版权在左、语言在右 ---- */
   .foot__bottom {
     display: flex;
     align-items: center;
@@ -229,7 +258,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
     font-size: 0.6875rem;
     letter-spacing: 0.14em;
     color: rgba(255, 249, 241, 0.62);
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid transparent;   /* 先占住下划线位置，悬停时不变高 */
     padding-bottom: 0.1em;
     transition:
       color 200ms var(--ease-out),
@@ -238,7 +267,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
 
   .foot__lang.is-active {
     color: var(--cream);
-    border-color: rgba(255, 249, 241, 0.55);
+    border-color: rgba(255, 249, 241, 0.55);   /* 当前语言用一条下划线标出来 */
   }
 
   .foot__lang:hover {
@@ -248,7 +277,7 @@ const href = (h: string) => (h.startsWith('#') ? `${base}${h}` : h);
 
   @media (min-width: 760px) {
     .foot__mid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));   /* minmax(0,…) 防止长链接把格子撑破 */
     }
   }
 </style>

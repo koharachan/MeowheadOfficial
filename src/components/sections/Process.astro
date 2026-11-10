@@ -1,32 +1,65 @@
 ---
-import type { Dict } from '../../i18n';
-import SectionHead from '../ui/SectionHead.astro';
-import SectionField from '../ui/SectionField.astro';
+/*
+首页第 07 屏「流程」——把「我们怎么干活」拆成五步，一步一格摆出来。
+
+管什么：
+  读文案里的 t.process.steps（五步：编号、标题、说明、这一步交付什么），
+  手机竖着排一列、每格一道下边线；900px 以上变成五列并排，
+  每格顶上一根横轴 + 一颗圆点，鼠标移上去圆点变橙、放大一圈，
+  五根横轴在视觉上把五步连成一条时间线。
+
+怎么调用（HomePage.astro 里已经这么写，改布局时照抄）：
+  <Process t={t} />
+  t 是整份文案字典（i18n/zh.ts、en.ts、yue.ts、ja.ts 四份结构完全一样，
+  字段见 i18n/types.ts 的 process 段）。组件不接别的参数，也不读全局状态：
+  给什么文案就画什么。
+
+本屏的 id 是 "process"：左边那根叙事轴 NarrativeRail 靠它找到这一屏、
+  点亮轴上「流程」那一格（四份语言的章节表里都写着 id: 'process'，
+  见 i18n/zh.ts 的 chapters），改 id 会让那一格点不动，别动。
+*/
+import type { Dict } from '../../i18n';                              // 整站文案的类型：四种语言共用这一份结构
+import SectionHead from '../ui/SectionHead.astro';                  // 屏头：编号 · 标签 · 大标题 · 导语，排版它自带
+import SectionField from '../ui/SectionField.astro';                // 贯穿全屏的图纸底纹：竖线 + 右下角巨大的「07」
 
 interface Props {
-  t: Dict;
+  t: Dict;                                                          // 整份文案字典，由页面在构建期传进来
 }
 const { t } = Astro.props;
-const p = t.process;
+const copy = t.process;                                             // 这一屏自己的那段文案，模板里只读它
 ---
 
 <section class="proc section" id="process">
-  <SectionField no={p.no} lines={4} />
-  <div class="shell">
-    <SectionHead no={p.no} label={p.label} title={p.title} lede={p.lede} />
+  {/* 底纹：四条竖线 + 右下角巨大的「07」，随滚动反向平移，撑满整屏；aria-hidden 所以读屏不念 */}
+  <SectionField no={copy.no} lines={4} />
 
+  <div class="shell">
+    {/* 屏头：编号 07 · 标签 · 大标题 · 导语。怎么排（左右两栏还是上下）由 SectionHead 自己决定 */}
+    <SectionHead no={copy.no} label={copy.label} title={copy.title} lede={copy.lede} />
+
+    {/* 五步工序。data-anim="stagger" = 滚进视口时五格依次淡入，不是一起冒出来 */}
     <ol class="proc__steps" data-anim="stagger">
       {
-        p.steps.map((step) => (
+        copy.steps.map((step) => (
           <li class="step">
+            {/* 桌面端每格顶上那根横轴和圆点；手机端整块藏掉（样式见 .step__rail）。
+                data-scrub 让横轴随滚动轻微平移、圆点随滚动转 90°，给静止的格子一点手工感 */}
             <div class="step__rail" aria-hidden="true" data-scrub data-scrub-y="14">
               <span class="step__dot" data-scrub data-scrub-rotate="90"></span>
             </div>
+
+            {/* 编号（橙色）：这一格是第几步 */}
             <span class="step__no mono">{step.no}</span>
+
+            {/* 这一步叫什么，一句话 */}
             <h3 class="step__title">{step.title}</h3>
+
+            {/* 这一步具体怎么做：两三句说明 */}
             <p class="step__body">{step.body}</p>
+
+            {/* 交付物：左边小标签（文案里给，四份语言各自翻译），右边是这一步真正交出去的东西 */}
             <div class="step__out">
-              <span class="mono step__out-label">{p.deliverableLabel}</span>
+              <span class="mono step__out-label">{copy.deliverableLabel}</span>
               <span class="step__out-value">{step.deliverable}</span>
             </div>
           </li>
@@ -37,135 +70,148 @@ const p = t.process;
 </section>
 
 <style>
+  /* 两套排法共用一个 HTML：手机是一条竖着的表格，900px 以上是五列并排的工序带。
+     下面的样式先按手机写，900px 的媒体查询再把它整体改一遍。 */
+
+  /* --- 五步列表 --- */
   .proc__steps {
-    display: grid;
-    gap: 0;
-    border-top: 1px solid var(--ink-12);
+    display: grid;                                       /* 一格一行 */
+    gap: 0;                                              /* 分隔线自己画，格子之间不留缝 */
+    border-top: 1px solid var(--ink-12);                 /* 首格上方也来一道，五步读起来像一张连续的表 */
   }
 
+  /* --- 一格 --- */
   .step {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: 1rem;
-    row-gap: 0.65rem;
-    padding-block: clamp(1.5rem, 3vw, 2.25rem);
-    border-bottom: 1px solid var(--ink-12);
-    position: relative;
+    display: grid;                                       /* 编号一列、内容一列 */
+    grid-template-columns: auto 1fr;                     /* 左边窄窄一列放编号，其余全给文字 */
+    column-gap: 1rem;                                    /* 编号和文字之间留一指宽 */
+    row-gap: 0.65rem;                                    /* 标题、说明、交付物之间的行距 */
+    padding-block: clamp(1.5rem, 3vw, 2.25rem);          /* 上下呼吸位，随屏宽 24~36px */
+    border-bottom: 1px solid var(--ink-12);              /* 每格一道下边线，首尾接成连续的表 */
+    position: relative;                                  /* 桌面端的横轴、圆点都相对这一格定位 */
   }
 
+  /* --- 桌面端格里那根横轴（手机端 hidden，见下面 900px 的规则） --- */
   .step__rail {
-    grid-column: 1 / -1;
-    display: none;
+    grid-column: 1 / -1;                                 /* 横轴要跨满整格，所以占掉全部列 */
+    display: none;                                       /* 手机不画：竖排时一根横轴没有意义 */
   }
 
+  /* --- 编号 --- */
   .step__no {
-    color: var(--orange);
-    font-size: 0.6875rem;
-    padding-top: 0.4em;
+    color: var(--orange);                                /* 全屏唯一的橙色锚点，眼睛先落在这儿 */
+    font-size: 0.6875rem;                                /* 11px，跟全站 mono 小字同一档 */
+    padding-top: 0.4em;                                  /* 往下压一点，和标题第一行的基线对齐 */
   }
 
+  /* --- 这一步的标题 --- */
   .step__title {
-    font-size: clamp(1.25rem, 2vw, 1.625rem);
-    font-weight: 800;
-    letter-spacing: -0.01em;
+    font-size: clamp(1.25rem, 2vw, 1.625rem);            /* 20~26px：比正文大一档，压得住一整格 */
+    font-weight: 800;                                    /* 重字重，窄屏上也一眼看得出层级 */
+    letter-spacing: -0.01em;                             /* 800 字重容易显松散，收 1% 让标题更紧实 */
   }
 
+  /* --- 这一步的说明 --- */
   .step__body {
-    grid-column: 2;
-    color: var(--ink-56);
+    grid-column: 2;                                      /* 跳过编号列，和标题左对齐 */
+    color: var(--ink-56);                                /* 次级文字色：能读，但不跟标题抢 */
     font-size: var(--fs-small);
-    line-height: 1.8;
-    max-width: 40ch;
+    line-height: 1.8;                                    /* 成段的说明，行高放大才不挤 */
+    max-width: 40ch;                                     /* 一行最多 40 字：再长眼睛就跳行 */
   }
 
+  /* --- 交付物一行 --- */
   .step__out {
-    grid-column: 2;
-    display: flex;
-    align-items: baseline;
+    grid-column: 2;                                      /* 同样避开编号列 */
+    display: flex;                                       /* 标签和值并排，放不下时换行 */
+    align-items: baseline;                               /* 按文字基线对齐，大小字不会一高一低 */
     gap: 0.6rem;
-    flex-wrap: wrap;
-    padding-top: 0.35rem;
+    flex-wrap: wrap;                                     /* 窄屏放不下就让值掉到下一行 */
+    padding-top: 0.35rem;                                /* 和说明拉开一点，别黏在一起 */
   }
 
+  /* --- 交付物的小标签「交付」 --- */
   .step__out-label {
-    color: var(--ink-38);
-    font-size: 0.5rem;
+    color: var(--ink-38);                                /* 最浅一档：只是提示这是标签 */
+    font-size: 0.5rem;                                   /* 8px，缩小到快像一枚印章 */
   }
 
+  /* --- 交付物本身 --- */
   .step__out-value {
     font-size: var(--fs-small);
-    font-weight: 600;
-    border-bottom: 1px solid var(--ink-20);
-    padding-bottom: 0.1em;
+    font-weight: 600;                                    /* 半粗，和上面那枚印章区分开 */
+    border-bottom: 1px solid var(--ink-20);              /* 下划线像填空横线，暗示「这一步的产出」 */
+    padding-bottom: 0.1em;                               /* 字和横线之间留一毫米，横线别贴着字 */
   }
 
+  /* --- 900px 以上：竖表变五列工序带 --- */
   @media (min-width: 900px) {
     .proc__steps {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      border-top: 0;
-      column-gap: clamp(1rem, 2vw, 2rem);
+      grid-template-columns: repeat(5, minmax(0, 1fr));  /* 正好五列，对应五步；minmax(0,1fr) 防止长单词把列撑宽 */
+      border-top: 0;                                     /* 改成列排之后，顶上那道表格线不要了 */
+      column-gap: clamp(1rem, 2vw, 2rem);                /* 格与格之间留空隙，五根横轴不连成一根 */
     }
 
     .step {
-      grid-template-columns: 1fr;
-      border-bottom: 0;
-      padding-top: 0;
+      grid-template-columns: 1fr;                        /* 每格内部改单列：横轴、编号、标题从上往下摞 */
+      border-bottom: 0;                                  /* 列排不需要行分隔线 */
+      padding-top: 0;                                    /* 顶上是横轴，留白会把它推得太低 */
       row-gap: 0.8rem;
     }
 
     .step__rail {
-      display: block;
-      position: relative;
-      height: 1px;
-      background: var(--ink-12);
-      margin-bottom: 1.25rem;
+      display: block;                                    /* 手机藏起来的那根横轴，到这里才出场 */
+      position: relative;                                /* 圆点相对它定位 */
+      height: 1px;                                       /* 横轴本身就是一条发丝线 */
+      background: var(--ink-12);                         /* 和表格线同一档灰度 */
+      margin-bottom: 1.25rem;                            /* 和标题拉开距离，读起来像时间线的刻度 */
     }
 
     .step__dot {
-      position: absolute;
-      left: 0;
-      top: 50%;
+      position: absolute;                                /* 贴在横轴上，不占位 */
+      left: 0;                                           /* 从这一格的左端出发：五颗点各在格首，连起来就是时间线 */
+      top: 50%;                                          /* 纵向压在横轴正中 */
       width: 7px;
       height: 7px;
-      border-radius: 999px;
-      border: 1px solid var(--ink-38);
-      background: var(--cream);
-      transform: translateY(-50%);
-      transition:
+      border-radius: 999px;                              /* 直接拉成圆 */
+      border: 1px solid var(--ink-38);                   /* 空心圆：未激活时只是刻度 */
+      background: var(--cream);                          /* 和底色同色，把横轴在圆里挖断 */
+      transform: translateY(-50%);                        /* 上移一半自身高度，才真的居中 */
+      transition:                                       /* hover 时三样一起变，时长统一 300ms */
         background-color 300ms var(--ease-out),
         border-color 300ms var(--ease-out),
         transform 300ms var(--ease-out);
     }
 
     .step:hover .step__dot {
-      background: var(--orange);
+      background: var(--orange);                         /* 变成实心橙点 */
       border-color: var(--orange);
-      transform: translateY(-50%) scale(1.35);
+      transform: translateY(-50%) scale(1.35);           /* 1.35 倍：看得出放大，又不会撞到相邻的格 */
     }
 
     .step__no {
       font-size: 0.6875rem;
-      padding-top: 0;
+      padding-top: 0;                                    /* 列排时编号独占一行，不用再压基线 */
     }
 
     .step__title {
-      font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+      font-size: clamp(1.125rem, 1.5vw, 1.375rem);       /* 五列并排空间变窄，标题降一档（18~22px） */
     }
 
     .step__body,
     .step__out {
-      grid-column: 1;
+      grid-column: 1;                                    /* 单列布局，这两块不再需要跳过编号列 */
     }
 
     .step__body {
-      font-size: 0.8125rem;
+      font-size: 0.8125rem;                              /* 13px：列窄了，靠缩字号保证一行还能读 */
       line-height: 1.75;
     }
 
     .step__out {
-      margin-top: auto;
-      padding-top: 1rem;
-      flex-direction: column;
+      margin-top: auto;                                  /* 五格的交付物都贴到格子底部，横向对齐成一条线 */
+      padding-top: 1rem;                                 /* 离说明再远一点 */
+      flex-direction: column;                            /* 标签在上、值在下，竖着摞 */
       gap: 0.3rem;
     }
   }

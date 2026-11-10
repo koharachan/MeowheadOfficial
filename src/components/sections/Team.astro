@@ -1,98 +1,134 @@
 ---
-import type { Dict } from '../../i18n';
-import SectionField from '../ui/SectionField.astro';
+/*
+首页第 08 屏「团队」——把对外露出的几位成员摆成一张名片板，一格一个人。
+
+管什么：
+  读文案里的 t.team.members（每人：编号、角色、籍贯、名字、联系邮箱、主页链接、一句职责），
+  一格一个人：头像 + 编号/角色/籍贯一行，下面是名字、邮箱、主页链接、职责。
+  手机一格一行；760px 以上两列。鼠标移到某一格：底色变暗、格子顶上那条橙线从左扫到右、
+  头像微微放大、外框抬一下、籍贯标签变橙——整套反馈只是让「这一格能点」变得明显，
+  真正能点的只有邮箱（mailto）和主页链接（新窗口打开）。
+
+怎么调用（HomePage.astro 里已经这么写，改布局时照抄）：
+  <Team t={t} />
+  t 是整份文案字典（四份语言结构一样，字段见 i18n/types.ts 的 team 段）。
+  成员表只有数据，没有 Markdown；头像路径写在 i18n 里（/team/*.png）。
+
+本屏的 id 是 "team"：左边叙事轴 NarrativeRail 靠它找这一屏、点亮「团队」那一格，别动。
+*/
+import type { Dict } from '../../i18n';                              // 整站文案的类型：四种语言共用这一份结构
+import SectionField from '../ui/SectionField.astro';                // 贯穿全屏的图纸底纹：竖线 + 右下角巨大的「08」
 
 interface Props {
-  t: Dict;
+  t: Dict;                                                          // 整份文案字典，由页面在构建期传进来
 }
 const { t } = Astro.props;
-const tm = t.team;
+const copy = t.team;                                                // 这一屏自己的那段文案，模板里只读它
 ---
 
 <section class="team section" id="team">
-  <SectionField no={tm.no} align="right" />
+  {/* 底纹：竖线 + 巨大的「08」。align="right" 让巨大编号落在右下角，和上一屏的左边错开 */}
+  <SectionField no={copy.no} align="right" />
 
   <div class="shell">
+    {/* 屏头这里没走 SectionHead：右侧要让出位置给团队说明，所以手写一份结构相同的编号行 */}
     <header class="team__head">
+      {/* 编号 · 短横线 · 标签：和别的屏同一套视觉，只是这里自己拼 */}
       <div class="team__meta" data-anim="fade">
-        <span class="mono team__no">{tm.no}</span>
+        <span class="mono team__no">{copy.no}</span>
         <span class="team__rule" aria-hidden="true"></span>
-        <span class="mono">{tm.label}</span>
+        <span class="mono">{copy.label}</span>
       </div>
 
+      {/* 大标题 + 导语；760px 以上这两块并排（标题左、导语右，底部对齐） */}
       <div class="team__intro">
-        <h2 class="h2 team__title" data-stream data-anim="fade" data-delay="0.05">{tm.title}</h2>
-        <p class="lead team__lede" data-anim="fade" data-delay="0.1">{tm.lede}</p>
+        <h2 class="h2 team__title" data-stream data-anim="fade" data-delay="0.05">{copy.title}</h2>
+        <p class="lead team__lede" data-anim="fade" data-delay="0.1">{copy.lede}</p>
       </div>
     </header>
 
+    {/* 名片板：data-anim="stagger" 让每格依次淡入 */}
     <ul class="team__grid" data-anim="stagger">
       {
-        tm.members.map((m) => (
+        copy.members.map((member) => (
           <li class="member">
+            {/* 第一行：头像 + 编号/角色/籍贯 */}
             <div class="member__top">
+              {/* 头像是纯装饰：alt 留空，姓名就在下面一行，读屏不用念两遍 */}
               <span class="member__avatar">
-                <img src={m.avatar} alt="" width="96" height="96" loading="lazy" decoding="async" />
+                <img src={member.avatar} alt="" width="96" height="96" loading="lazy" decoding="async" />
               </span>
+
               <span class="member__id">
-                <span class="mono member__no">{m.no}</span>
-                <span class="mono member__role">{m.role}</span>
-                <span class="mono member__origin">{m.origin}</span>
+                <span class="mono member__no">{member.no}</span>
+                <span class="mono member__role">{member.role}</span>
+                <span class="mono member__origin">{member.origin}</span>
               </span>
             </div>
 
-            {m.name && <p class="member__name">{m.name}</p>}
-            {m.email && (
-              <a class="member__mail mono" href={'mailto:' + m.email}>
-                {m.email}
+            {/* 名字／邮箱都可能不公开：有才渲染，没有就连这一行都不出现 */}
+            {member.name && <p class="member__name">{member.name}</p>}
+            {member.email && (
+              // mailto 是本屏两个可点项之一（另一个是下面的主页链接）
+              <a class="member__mail mono" href={'mailto:' + member.email}>
+                {member.email}
               </a>
             )}
 
-            <a class="member__link" href={m.href} target="_blank" rel="noopener noreferrer">
-              <span class="member__handle">{m.handle}</span>
+            {/* 主页链接：外部站点，一律新窗口 + noopener noreferrer（别让对方页面能操作我们这一页） */}
+            <a class="member__link" href={member.href} target="_blank" rel="noopener noreferrer">
+              <span class="member__handle">{member.handle}</span>
+              {/* 右上角的箭头：提示「会离开本站」 */}
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
                 <path d="M7 17L17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </a>
 
-            {m.duty ? <p class="member__duty">{m.duty}</p> : <p class="member__duty" aria-hidden="true">&nbsp;</p>}
+            {/* 职责那一行：没有职责的人也补一个不换行空格，保证每张卡最后都有一行字，
+                高度一致、鼠标扫过去时格子不会一跳一跳 */}
+            {member.duty ? <p class="member__duty">{member.duty}</p> : <p class="member__duty" aria-hidden="true">&nbsp;</p>}
           </li>
         ))
       }
     </ul>
 
-    <p class="team__note mono-sm" data-anim="fade">{tm.note}</p>
+    {/* 脚下的小字说明（比如「只列对外公开的角色」）：mono-sm 是那套最小的等宽字 */}
+    <p class="team__note mono-sm" data-anim="fade">{copy.note}</p>
   </div>
 </section>
 
 <style>
+  /* 手机一格一行 → 760px 以上两列（见文件末尾的媒体查询）。
+     所有 hover 反馈都只做「显得可点」，不改变布局，所以移动端不启用也不可惜。 */
+
   .team {
-    position: relative;
-    background: var(--cream);
-    overflow: clip;
+    position: relative;                                  /* 给绝对定位的底纹当锚 */
+    background: var(--cream);                            /* 回到奶白底：上一屏是深色，这一屏换回亮面 */
+    overflow: clip;                                      /* 巨大的「08」和底纹不许把页面撑出横向滚动条 */
   }
 
+  /* --- 屏头 --- */
   .team__head {
-    display: grid;
-    gap: clamp(1.25rem, 3vw, 2rem);
-    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    display: grid;                                       /* 编号行一行，标题/导语另一行，上下摞 */
+    gap: clamp(1.25rem, 3vw, 2rem);                      /* 两行之间 20~32px */
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);             /* 和下面名片板拉开 40~64px */
   }
 
   .team__meta {
     display: flex;
-    align-items: center;
+    align-items: center;                                 /* 编号、横线、标签横向居中对齐 */
     gap: 0.9rem;
-    color: var(--ink-56);
+    color: var(--ink-56);                                /* 次级文字色：编号行不是重点 */
   }
 
   .team__no {
-    color: var(--orange);
+    color: var(--orange);                                /* 只有编号是橙的 */
   }
 
   .team__rule {
-    width: clamp(28px, 5vw, 64px);
+    width: clamp(28px, 5vw, 64px);                       /* 编号和标签之间那根短横线，随屏宽 28~64px */
     height: 1px;
-    background: var(--ink-20);
+    background: var(--ink-20);                           /* 比正文浅一档，像一根铅笔线 */
   }
 
   .team__intro {
@@ -101,69 +137,73 @@ const tm = t.team;
   }
 
   .team__title {
-    max-width: 18ch;
+    max-width: 18ch;                                     /* 大标题最多 18 字就折行，避免拉成一长条 */
   }
 
   .team__lede {
-    max-width: 46ch;
+    max-width: 46ch;                                     /* 导语一行最多 46 字，再长读着累 */
   }
 
+  /* --- 名片板本体 --- */
   .team__grid {
     display: grid;
-    gap: 0;
-    border-top: var(--hair);
+    gap: 0;                                              /* 格子之间不留缝：整块像一张拼起来的名片板 */
+    border-top: var(--hair);                             /* 板子的上边和左边各一道发丝线（--hair = 1px 浅灰） */
     border-left: var(--hair);
   }
 
+  /* --- 一格：一个人的名片 --- */
   .member {
-    position: relative;
+    position: relative;                                  /* 顶上那条橙线靠它定位 */
     display: flex;
-    flex-direction: column;
+    flex-direction: column;                              /* 头像行、名字、邮箱、链接、职责从上往下摞 */
     gap: 0.75rem;
-    padding: clamp(1.25rem, 2.4vw, 2rem);
-    background: var(--surface-0);
-    transition: background-color 380ms var(--ease-out);
-    min-height: clamp(11rem, 18vw, 14rem);
+    padding: clamp(1.25rem, 2.4vw, 2rem);                /* 内边距随屏宽 20~32px */
+    background: var(--surface-0);                        /* 比页面底色再亮一点，格子自己立起来 */
+    transition: background-color 380ms var(--ease-out);  /* 底色渐变 380ms，慢一点显得稳 */
+    min-height: clamp(11rem, 18vw, 14rem);               /* 最矮 176~224px：三张卡的底边能落在同一条线 */
   }
 
+  /* 顶上那条橙线：静态时宽 0，鼠标移进来从左往右扫满 */
   .member::after {
     content: '';
     position: absolute;
-    inset: 0 0 auto 0;
-    height: 2px;
+    inset: 0 0 auto 0;                                   /* 只贴在格子顶上，左右拉满 */
+    height: 2px;                                         /* 2px：比发丝线粗，扫过去才看得见 */
     background: var(--orange);
-    transform: scaleX(0);
-    transform-origin: left;
+    transform: scaleX(0);                                /* 平时整条缩成 0 宽 */
+    transform-origin: left;                              /* 从左边开始长，不是从中间 */
     transition: transform 480ms var(--ease-out);
   }
 
   .member:hover {
-    background: var(--cream-2);
+    background: var(--cream-2);                          /* 比静态时暗一档，浅色块之间的层级差 */
   }
 
   .member:hover::after {
-    transform: scaleX(1);
+    transform: scaleX(1);                                /* 扫满整格顶边 */
   }
 
+  /* --- 第一行：头像 + 编号/角色/籍贯 --- */
   .member__top {
     display: flex;
-    align-items: center;
+    align-items: center;                                 /* 头像和右边三行小字居中对齐 */
     gap: 0.85rem;
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.15rem;                              /* 和下面的名字拉开一点点 */
   }
 
   .member__avatar {
     position: relative;
-    flex-shrink: 0;
+    flex-shrink: 0;                                      /* 头像固定 56px，不许被旁边的字挤扁 */
     display: grid;
-    place-items: center;
+    place-items: center;                                 /* 图在框里正中 */
     width: 56px;
     height: 56px;
-    padding: 5px;
-    border: 1px solid var(--ink-12);
-    border-radius: 12px;
-    background: var(--cream-2);
-    transition:
+    padding: 5px;                                        /* 图比框小 5px，四周留一圈底，像一张贴纸 */
+    border: 1px solid var(--ink-12);                     /* 一道发丝线外框 */
+    border-radius: 12px;                                 /* 小圆角，跟全站其它卡片一致 */
+    background: var(--cream-2);                          /* 框里垫一层奶白，头像底色再透也压得住 */
+    transition:                                          /* hover 时外框变色、整块上浮，时长不同步才有层次 */
       border-color 320ms var(--ease-out),
       transform 420ms var(--ease-out);
   }
@@ -171,59 +211,64 @@ const tm = t.team;
   .member__avatar img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    image-rendering: -webkit-optimize-contrast;
+    object-fit: contain;                                 /* 整张脸都要看全，不裁 */
+    image-rendering: -webkit-optimize-contrast;          /* 原图放大时别用默认平滑糊掉边缘；这行只有 WebKit 认，其它浏览器忽略 */
     /* 是真人/本人的头像，就别压灰度了，直接用原色 */
     border-radius: 8px;
     transition: transform 420ms var(--ease-out);
   }
 
   .member:hover .member__avatar img {
-    transform: scale(1.04);
+    transform: scale(1.04);                              /* 1.04 倍：动一下，但别把图顶出框 */
   }
 
   .member:hover .member__avatar {
-    border-color: var(--ink-20);
-    transform: translateY(-2px);
+    border-color: var(--ink-20);                         /* 外框深一档，像被点亮 */
+    transform: translateY(-2px);                         /* 整块抬 2px，跟着鼠标往上浮 */
   }
 
+  /* --- 编号/角色/籍贯三行小字 --- */
   .member__id {
     display: grid;
     gap: 0.25rem;
-    justify-items: start;
+    justify-items: start;                                /* 三行都从左边起，不跟着宽度居中 */
   }
 
-  /* 籍贯标签：小圆角，明度分层不用描边 */
+  /* 名字（第一条）。文件下面还有一条同名的 .member__name：
+     两条特异性相同、会合并生效——字体族取自这里，字号/字重取下面那条，
+     改名字样式时两处一起看，别只改一处以为没生效 */
   .member__name {
-    font-family: var(--font-cjk);
+    font-family: var(--font-cjk);                        /* 名字用中文那套字族，和行内 mono 区分开 */
     font-size: var(--fs-h3);
     font-weight: 800;
     letter-spacing: -0.01em;
     line-height: 1.2;
   }
 
+  /* --- 邮箱 --- */
   .member__mail {
-    align-self: start;
-    color: var(--orange);
-    font-size: 0.5625rem;
+    align-self: start;                                   /* flex 列里别被拉满一整行，只占文字宽 */
+    color: var(--orange);                                /* 橙色 = 可点 */
+    font-size: 0.5625rem;                                /* 9px：邮箱只是辅助信息，不喧宾夺主 */
     letter-spacing: 0.06em;
-    text-transform: none;
-    border-bottom: 1px solid transparent;
+    text-transform: none;                                /* 覆盖 mono 默认的大写，邮箱大小写有意义 */
+    border-bottom: 1px solid transparent;                /* 先留一条透明下划线，hover 时只是换颜色，不会跳动 */
     transition: border-color 200ms var(--ease-out);
   }
 
   .member__mail:hover {
-    border-color: var(--orange);
+    border-color: var(--orange);                         /* hover 时下划线亮起来 */
   }
 
+  /* --- 籍贯标签 --- */
   .member__origin {
     display: inline-flex;
     align-items: center;
-    padding: 0.15em 0.45em;
-    border-radius: 4px;
-    background: var(--surface-2);
+    padding: 0.15em 0.45em;                              /* 上下窄、左右略宽，像一枚小印章 */
+    border-radius: 4px;                                  /* 4px 小圆角 */
+    background: var(--surface-2);                        /* 比卡片底色再深一点，标出「这是标签」 */
     color: var(--ink-70);
-    font-size: 0.6875rem;
+    font-size: 0.6875rem;                                /* 11px */
     letter-spacing: 0.06em;
     text-transform: none;
     transition:
@@ -232,39 +277,41 @@ const tm = t.team;
   }
 
   .member:hover .member__origin {
-    background: var(--orange-soft);
+    background: var(--orange-soft);                      /* 卡片被 hover 时，籍贯标签跟着变橙 */
     color: var(--orange);
   }
 
   .member__no {
     color: var(--ink-56);
-    font-size: 0.625rem;
+    font-size: 0.625rem;                                 /* 10px */
   }
 
   .member__role {
     color: var(--ink-70);
-    font-size: 0.625rem;
+    font-size: 0.625rem;                                 /* 10px：角色和编号同一档 */
   }
 
+  /* 名字（第二条）：字号、字重在这条里定，覆盖上面那条同名规则 */
   .member__name {
-    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);            /* 20~24px */
     font-weight: 800;
     letter-spacing: -0.01em;
     line-height: 1.2;
   }
 
+  /* --- 主页链接 --- */
   .member__link {
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
-    font-family: var(--font-mono);
-    font-size: clamp(0.875rem, 1.2vw, 1.0625rem);
+    font-family: var(--font-mono);                       /* 主页地址用等宽，一眼看出是「网址」 */
+    font-size: clamp(0.875rem, 1.2vw, 1.0625rem);        /* 14~17px：名片上最想让人点的一行 */
     font-weight: 500;
     letter-spacing: -0.01em;
     color: var(--ink);
-    border-bottom: 1px solid var(--ink-20);
+    border-bottom: 1px solid var(--ink-20);              /* 下划线当链接的默认态 */
     padding-bottom: 0.15em;
-    align-self: flex-start;
+    align-self: flex-start;                              /* 只占文字宽，不拉满整行 */
     transition:
       color 220ms var(--ease-out),
       border-color 220ms var(--ease-out);
@@ -275,39 +322,43 @@ const tm = t.team;
   }
 
   .member__link:hover {
-    color: var(--orange);
+    color: var(--orange);                                /* 换成橙色 = 可点 */
     border-color: var(--orange);
   }
 
   .member__link:hover svg {
-    transform: translate(2px, -2px);
+    transform: translate(2px, -2px);                     /* 箭头往右上挪 2px，强化「出去」的方向 */
   }
 
+  /* --- 职责一行 --- */
   .member__duty {
-    margin-top: auto;
+    margin-top: auto;                                    /* 顶到卡片底部：各卡职责无论长短都贴底对齐 */
     font-size: var(--fs-small);
     color: var(--ink-56);
     line-height: 1.75;
-    max-width: 30ch;
+    max-width: 30ch;                                     /* 一行最多 30 字，职责不宜拉成整行 */
   }
 
+  /* --- 脚下的小字 --- */
   .team__note {
-    margin-top: 1.25rem;
-    color: var(--ink-38);
+    margin-top: 1.25rem;                                 /* 和名片板留 20px */
+    color: var(--ink-38);                                /* 最浅一档：脚注 */
     text-transform: none;
     letter-spacing: 0.05em;
-    font-size: 0.625rem;
+    font-size: 0.625rem;                                 /* 10px */
   }
 
+  /* --- 760px 以上：名片板改成两列 --- */
   @media (min-width: 760px) {
-    /* 成员的列数跟着人数走：建站时是 3 人一列到底，加人后会单出一个空格子 */
+    /* 固定两列：建站时 3 位成员，第二行只剩左边一格，右边那块空着由页面底色透出来 */
     .team__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));  /* minmax(0,1fr)：长邮箱也不会把列撑宽 */
     }
 
+    /* 标题和导语并排：标题占左边 1.1 份，导语占右边 1 份 */
     .team__intro {
       grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      align-items: end;
+      align-items: end;                                  /* 两块底部对齐，导语贴住标题的最后一行 */
       gap: 2rem;
     }
   }

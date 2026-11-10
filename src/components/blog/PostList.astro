@@ -1,26 +1,41 @@
 ---
+/*
+博客列表（<PostList />）：博客索引页里那一条一条的文章，一篇文章一行。
+  - 一行三段：左边日期 / 分类 / 几分钟读完，中间标题 + 摘要，右边一个箭头
+  - 鼠标划过整行淡底、左侧竖一条橙色线、标题变橙、箭头右移 5px
+  - 宽屏（≥900px）三段横排；窄屏三段竖着堆
+  - data-anim="stagger" 让每行依次淡入（由 scripts/motion.ts 接管，不是本文件的 JS）
+
+调用（复制即用，四份博客索引页各调一次；posts 由页面从 data/posts 里筛好再传）：
+
+  <PostList t={t} posts={posts} />
+
+注意：文案里除了本组件的空壳，其余都来自 t 与 post 数据，本组件不写死任何中文。
+*/
 import type { Dict } from '../../i18n';
 import type { Post } from '../../data/posts';
 
 interface Props {
-  t: Dict;
-  posts: Post[];
+  t: Dict;         // 当前语言的整份文案（只用到 t.path.blog 列表页路径、t.blog.readUnit「分钟」）
+  posts: Post[];   // 这一页要显示的文章，顺序由调用方决定，本组件不再排序
 }
 const { t, posts } = Astro.props;
-const lang = t.lang;
+const lang = t.lang;   // 当前语言，用来挑标题摘要和分类名
 ---
 
 <ul class="plist" data-anim="stagger">
   {
     posts.map((post) => {
+      // 标题和摘要只有中文、英文两版，日文和粤语站也拿英文稿（现有数据就是这样，不是笔误）
       const copy = lang === 'zh' ? post.zh : post.en;
-      const href = `${t.path.blog}${post.slug}/`;
+      const href = `${t.path.blog}${post.slug}/`;   // 详情页地址：博客目录 + slug + 斜杠
       return (
         <li class="plist__item">
           <a class="plist__link" href={href}>
+            {/* 左栏：日期 / 分类 / 阅读时长，都是小号等宽字 */}
             <div class="plist__side">
               <time class="mono plist__date" datetime={post.date}>
-                {post.date.replace(/-/g, '.')}
+                {post.date.replace(/-/g, '.')}   {/* 显示成 2026.11.06，比 2026-11-06 更像排版过的日期 */}
               </time>
               <span class="mono plist__tag">{post.tag[lang]}</span>
               <span class="mono plist__read">
@@ -28,11 +43,13 @@ const lang = t.lang;
               </span>
             </div>
 
+            {/* 中栏：标题 + 一句摘要 */}
             <div class="plist__main">
               <h2 class="plist__title">{copy.title}</h2>
               <p class="plist__excerpt">{copy.excerpt}</p>
             </div>
 
+            {/* 右栏：一个静态箭头，位置和颜色全由 CSS 的 hover 控制 */}
             <span class="plist__arrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M4 12h15M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
@@ -46,6 +63,7 @@ const lang = t.lang;
 </ul>
 
 <style>
+  /* 整张列表：只有上边框，下边框交给每一行，行与行之间自然出现分隔线 */
   .plist {
     display: grid;
     border-top: 1px solid var(--ink-12);
@@ -55,13 +73,14 @@ const lang = t.lang;
     border-bottom: 1px solid var(--ink-12);
   }
 
+  /* 一行三段。窄屏先竖着堆：间距 0.75rem，上下留白跟着视口缩放 */
   .plist__link {
     position: relative;
     display: grid;
     gap: 0.75rem;
     padding-block: clamp(1.5rem, 3vw, 2.25rem);
-    padding-inline: clamp(0rem, 1.6vw, 1.5rem);
-    transition: background-color 380ms var(--ease-out);
+    padding-inline: clamp(0rem, 1.6vw, 1.5rem);   /* 窄屏贴边，宽屏才留出左右内缩 */
+    transition: background-color 380ms var(--ease-out);   /* 铺底色比标题变色(260ms)慢，像纸被照亮 */
   }
 
   .plist__side {
@@ -76,6 +95,7 @@ const lang = t.lang;
     gap: 0.65rem;
   }
 
+  /* 左侧那条橙线：平时 scaleY(0) 藏着，悬停从上往下长出来 */
   .plist__link::before {
     content: '';
     position: absolute;
@@ -89,6 +109,7 @@ const lang = t.lang;
     transition: transform 420ms var(--ease-out);
   }
 
+  /* 悬停：整行铺一层很浅的米色，让「这一行可以点」比文字变色更早被看到 */
   .plist__link:hover {
     background: var(--cream-2);
   }
@@ -97,25 +118,21 @@ const lang = t.lang;
     transform: scaleY(1);
   }
 
-  .plist__meta {
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    color: var(--ink-38);
-  }
-
+  /* 阅读时长：0.5rem 是很小的字，大写字母间拉开 0.1em 才不至于糊成一团 */
   .plist__read {
     font-size: 0.5rem;
     color: var(--ink-38);
     letter-spacing: 0.1em;
   }
 
+  /* 日期：tabular-nums 让每个数字等宽，多行日期的点在一条竖线上 */
   .plist__date {
     font-size: 0.5625rem;
     letter-spacing: 0.1em;
     font-variant-numeric: tabular-nums;
   }
 
+  /* 分类：胶囊小标签，1px 细描边，颜色比正文浅 */
   .plist__tag {
     font-size: 0.5rem;
     padding: 0.28em 0.55em;
@@ -124,10 +141,11 @@ const lang = t.lang;
     color: var(--ink-56);
   }
 
+  /* 标题：26ch 上限——再长就换行，避免一行字横穿整屏 */
   .plist__title {
     font-size: clamp(1.25rem, 2.1vw, 1.75rem);
     font-weight: 800;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.015em;   /* 大字号要略微收紧字距，不然显得松 */
     line-height: 1.35;
     max-width: 26ch;
     transition: color 260ms var(--ease-out);
@@ -137,6 +155,7 @@ const lang = t.lang;
     color: var(--orange);
   }
 
+  /* 摘要：56ch 大约是一行中文读起来不累的长度 */
   .plist__excerpt {
     font-size: var(--fs-small);
     color: var(--ink-56);
@@ -144,6 +163,7 @@ const lang = t.lang;
     max-width: 56ch;
   }
 
+  /* 箭头：贴右边缘、垂直居中；两个过渡一个管位移一个管变色 */
   .plist__arrow {
     display: inline-flex;
     align-self: center;
@@ -154,26 +174,30 @@ const lang = t.lang;
       color 260ms var(--ease-out);
   }
 
+  /* 悬停时箭头右移 5px 并变橙，和整行的橙线呼应 */
   .plist__link:hover .plist__arrow {
     transform: translateX(5px);
     color: var(--orange);
   }
 
+  /* 900px 起三段横排：左栏固定 172px（最长日期 + 分类装得下就够），中栏吃掉剩余宽度 */
   @media (min-width: 900px) {
     .plist__link {
-      grid-template-columns: 172px minmax(0, 1fr) 32px;
+      grid-template-columns: 172px minmax(0, 1fr) 32px;   /* minmax(0,1fr) 防止长英文标题把中栏撑破 */
       align-items: start;
       column-gap: clamp(1.5rem, 3vw, 2.75rem);
-      padding-block: clamp(1.75rem, 2.6vw, 2.5rem);
+      padding-block: clamp(1.75rem, 2.6vw, 2.5rem);       /* 横排时行更高一点，显得从容 */
     }
 
+    /* 左栏改成竖排：日期在上、分类居中、时长在下 */
     .plist__side {
       flex-direction: column;
       align-items: flex-start;
       gap: 0.5rem;
-      padding-top: 0.35rem;
+      padding-top: 0.35rem;   /* 让日期和标题的第一行视觉对齐 */
     }
 
+    /* 箭头跟着第一行标题走，不再垂直居中 */
     .plist__arrow {
       align-self: start;
       margin-top: 0.35rem;

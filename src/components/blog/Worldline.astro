@@ -1,12 +1,30 @@
 ---
+/*
+世界线（<Worldline />）：博客索引页中间那条横向时间线，把 2021 年到现在几站公司/团队变迁串起来。
+  - 上半是标题区：大号「自 2021」+ 一行小标签 + 标题 + 一句说明
+  - 中间是一张横向卡片条：一站一张卡（年 / 月.日 / 圆点 / 名字 / 标签 / 一段事），
+    宽屏时整块被钉住一屏，往下滚就向左推进；窄屏（<1024px）直接竖着排成普通列表
+  - 卡片条底下那条细线是进度轴，橙色部分跟着滚动走
+  - data-worldline / data-wl-track / data-wl-fill 是 scripts/motion.ts 的钩子，改名就断
+  - 卡上的名字有外链时是 <a>，会新开一个标签页；年份和圆点纯装饰
+
+调用（复制即用；四份博客索引页各调一次，数据自己从 data/worldline 读，不用传）：
+
+  <Worldline t={t} />
+
+注意：这一节的所有文案写在本文件里（copy 对象），不在 i18n 里 —— 它只出现在这一个页面。
+*/
 import type { Dict } from '../../i18n';
 import { worldline } from '../../data/worldline';
 
 interface Props {
-  t: Dict;
+  t: Dict;      // 当前语言的整份文案，本组件只取 t.lang 来挑下面 copy 里的哪一份
 }
 const { t } = Astro.props;
 const lang = t.lang;
+
+// 这一节的文案：同一条内容写四份（中 / 英 / 粤 / 日），按当前语言挑一份，
+// 模板里就是 copy.since、copy.title 这样直接取，不用到处写三元判断
 const copy = {
   zh: {
     since: '自 2021',
@@ -14,6 +32,7 @@ const copy = {
     title: '每篇日志都是一个坐标。',
     lede: '地表开发组 → 猫猫头开发组（备案挂靠三握云）→ 猫猫头网络科技（广东）有限公司。九站，每一站都真的发生过。',
     hint: '往下滑，世界线向左走',
+    note: '注：两家公司没有隶属关系。三握云由小原起名、朱柏霖直接领导；猫猫头由小原直接规划和领导。2025 至 2026 年期间，猫猫头的网站备案等资质挂在三握云名下；2026.11.04 广东公司成立后，以独立法人身份运营。',
   },
   en: {
     since: 'Since 2021',
@@ -21,6 +40,7 @@ const copy = {
     title: 'Every log is a coordinate.',
     lede: 'Surface dev group → the Meowhead dev group (filing held under Sanwoyun) → Maomaotou Network Technology (Guangdong). Nine stops, all real.',
     hint: 'Scroll to move the line',
+    note: 'Note: there is no parent-child relationship between the two. Sanwoyun was named by Koh and run day to day by Zhu Bolin; Meowhead was planned and led by Koh. From 2025 to 2026 Meowhead operated with its website filing and similar licences held under Sanwoyun, and began trading as its own legal entity once the Guangdong company was registered on 2026.11.04.',
   },
   yue: {
     since: '自 2021',
@@ -28,6 +48,7 @@ const copy = {
     title: '每篇日誌都係一個座標。',
     lede: '地表開發組 → 貓貓頭開發組（備案掛喺三握雲）→ 貓貓頭網絡科技（廣東）有限公司。九站，每一站都真係發生過。',
     hint: '向下滑，世界線向左行',
+    note: '註：兩間公司冇隸屬關係。三握雲由小原起名、朱柏霖直接領導；貓貓頭由小原直接規劃同領導。2025 至 2026 年期間，貓貓頭嘅網站備案等資質掛喺三握雲名下；2026.11.04 廣東公司成立後，以獨立法人身份營運。',
   },
   ja: {
     since: '2021 年から',
@@ -35,28 +56,40 @@ const copy = {
     title: '記事はすべて座標です。',
     lede: '地表開発チーム → 猫猫頭の開発チーム（届出は三握雲名義）→ 猫猫頭網絡科技（広東）有限公司。九つの停留所、すべて実際にあったことです。',
     hint: 'スクロールすると世界線が左へ進みます',
+    note: '注：両社に隷属関係はありません。三握雲は小原が名付け、日常の指揮を朱柏霖が執ります。猫猫頭は小原が直接、計画と指揮を担います。2025〜2026 年の間、猫猫頭のサイト届出などの資格は三握雲名義で、広東公司の設立（2026.11.04）以降は独立した法人として運営しています。',
   },
 }[lang];
+
+// 时间线要从早到晚排：worldline 数据在文件里是从新到旧写的，所以这里反过来
 const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
 ---
 
+{/* 整节：宽屏时被 scripts/motion.ts 钉住一屏做横向推进，data-worldline 是它的钩子 */}
 <section class="wl" data-worldline aria-labelledby="wl-title">
   <div class="wl__inner">
+    {/* 标题区：先是「自 2021」大字，再是小标签、标题、一句说明 */}
     <header class="wl__head">
       <p class="wl__since">{copy.since}</p>
       <p class="mono wl__label">{copy.label}</p>
+      {/* data-stream = 标题逐字浮现，由 scripts/motion.ts 接管 */}
       <h2 class="h3 wl__title" id="wl-title" data-stream>{copy.title}</h2>
       <p class="wl__lede">{copy.lede}</p>
     </header>
 
+    {/* 横向卡片条的窗口：overflow hidden 裁掉两边溢出的卡片，滚动推进靠 translate */}
     <div class="wl__viewport">
+      {/* 一站一张卡，顺序按日期从早到晚 */}
       <ol class="wl__track" data-wl-track>
         {
           items.map((m) => (
             <li class="wl__item">
+              {/* 年份只取日期前四位（2026-11-04 → 2026） */}
               <span class="wl__year">{m.date.slice(0, 4)}</span>
+              {/* 月.日：去掉年份后把连字符换成点，11-04 → 11.04 */}
               <span class="mono wl__date">{m.date.slice(5).replace('-', '.')}</span>
+              {/* 时间轴上的圆点；第一站由 CSS 单独标成橙色，表示起点 */}
               <span class="wl__node" aria-hidden="true" />
+              {/* 名字：有外链就做成 <a>，链接打开新标签页（rel=noopener 防止新页面反向控制本页） */}
               <h3 class="wl__name">
                 {m.href ? (
                   <a class="wl__link" href={m.href} target="_blank" rel="noopener noreferrer">
@@ -66,47 +99,46 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
                     </svg>
                   </a>
                 ) : (
+                  // 没有外链就只显示文字，不做成链接
                   m[lang].title
                 )}
               </h3>
+              {/* 标签：tag 不是「事实 / Fact / 事實」时加 is-set，颜色变成橙色（表示这是一次团队位置变更） */}
               <span class:list={['mono wl__tag', { 'is-set': m[lang].tag !== '事实' && m[lang].tag !== 'Fact' && m[lang].tag !== '事實' }]}>
                 {m[lang].tag}
               </span>
+              {/* 这一站发生了什么，一段话 */}
               <p class="wl__body">{m[lang].body}</p>
             </li>
           ))
         }
       </ol>
+      {/* 底部进度轴：灰色底线 + 橙色填充，宽度由 data-wl-fill 跟着滚动改 */}
       <span class="wl__axis" aria-hidden="true"><i class="wl__fill" data-wl-fill /></span>
     </div>
 
-    <p class="wl__rel">
-      {
-        lang === 'en'
-          ? 'Note: there is no parent-child relationship between the two. Sanwoyun was named by Koh and run day to day by Zhu Bolin; Meowhead was planned and led by Koh. From 2025 to 2026 Meowhead operated with its website filing and similar licences held under Sanwoyun, and began trading as its own legal entity once the Guangdong company was registered on 2026.11.04.'
-          : lang === 'yue'
-            ? '註：兩間公司冇隸屬關係。三握雲由小原起名、朱柏霖直接領導；貓貓頭由小原直接規劃同領導。2025 至 2026 年期間，貓貓頭嘅網站備案等資質掛喺三握雲名下；2026.11.04 廣東公司成立後，以獨立法人身份營運。'
-            : lang === 'ja'
-              ? '注：両社に隷属関係はありません。三握雲は小原が名付け、日常の指揮を朱柏霖が執ります。猫猫頭は小原が直接、計画と指揮を担います。2025〜2026 年の間、猫猫頭のサイト届出などの資格は三握雲名義で、広東公司の設立（2026.11.04）以降は独立した法人として運営しています。'
-              : '注：两家公司没有隶属关系。三握云由小原起名、朱柏霖直接领导；猫猫头由小原直接规划和领导。2025 至 2026 年期间，猫猫头的网站备案等资质挂在三握云名下；2026.11.04 广东公司成立后，以独立法人身份运营。'
-      }
-    </p>
+    {/* 底部说明：为什么这三家并列出现 —— 数据里 tag 写「事实 / Fact / 事實」的，
+        意思是这一站是纯事实记录；有隶属关系的那段专门写在这里，别挪进卡片 */}
+    <p class="wl__rel">{copy.note}</p>
 
+    {/* 「往下滑」提示，窄屏没有横向滚动，所以 <1024px 时由 CSS 藏掉 */}
     <p class="mono wl__hint">{copy.hint}</p>
-  </div>
 </section>
 
 <style>
+  /* 整节上下留白，和前后内容隔开 */
   .wl {
     margin: clamp(2.5rem, 5vw, 4rem) 0;
   }
 
+  /* 标题区竖排；下边距比上面的大，给卡片条让出空间 */
   .wl__head {
     display: grid;
     gap: 0.6rem;
     margin-bottom: clamp(1.75rem, 3.5vw, 2.75rem);
   }
 
+  /* 「自 2021」大字：5.5rem 是上限，再大就压过下面的标题了；line-height 0.95 让大字块更紧 */
   .wl__since {
     font-family: var(--font-cjk);
     font-size: clamp(2.5rem, 7vw, 5.5rem);
@@ -116,15 +148,18 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     color: var(--ink);
   }
 
+  /* 橙色标签，0.5rem 是这一片最小的字，只当刻度看 */
   .wl__label {
     color: var(--orange);
     font-size: 0.5rem;
   }
 
+  /* 和上面的标签拉开一点，别贴太近 */
   .wl__title {
     margin: 0.4rem 0 0;
   }
 
+  /* 54ch：一行读完不累的长度，再宽眼睛就找不到下一行开头 */
   .wl__lede {
     max-width: 54ch;
     color: var(--ink-56);
@@ -132,17 +167,20 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     line-height: 1.75;
   }
 
+  /* 窗口：裁掉左右溢出的卡片；position 是给底部那根进度轴当定位基准 */
   .wl__viewport {
     position: relative;
     overflow: hidden;
   }
 
+  /* 卡片条横向排；gap 1px 露出的底色就是卡片之间的分隔线，不用再画边框 */
   .wl__track {
     display: flex;
     gap: 1px;
     background: var(--cream);
   }
 
+  /* 一张卡：宽度 300–400px 跟着视口伸缩，九张正好铺满一屏多一点 */
   .wl__item {
     position: relative;
     flex: 0 0 clamp(300px, 30vw, 400px);
@@ -152,6 +190,7 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     background: var(--surface-0);
   }
 
+  /* 年份大字：tabular-nums 让四个数字等宽，卡片向左右滑时数字不会抖 */
   .wl__year {
     font-family: var(--font-latin);
     font-size: clamp(2rem, 3.6vw, 2.75rem);
@@ -162,12 +201,14 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     font-variant-numeric: tabular-nums;
   }
 
+  /* 月.日：浅灰、字距拉开，当刻度用 */
   .wl__date {
     color: var(--ink-38);
     font-size: 0.5rem;
     letter-spacing: 0.12em;
   }
 
+  /* 时间轴上的圆点：9px 大小；用 inset 阴影描边，不占尺寸，圆点不会比格子大 */
   .wl__node {
     width: 9px;
     height: 9px;
@@ -177,11 +218,13 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     margin: 0.15rem 0 0.35rem;
   }
 
+  /* 第一站（最早那一站）换成橙色实心 + 4px 淡橙光晕，标出「起点」 */
   .wl__item:first-child .wl__node {
     background: var(--orange);
     box-shadow: 0 0 0 4px var(--orange-soft);
   }
 
+  /* 名字里的外链：靠一条细下划线认出来，悬停整段变橙 */
   .wl__link {
     display: inline-flex;
     align-items: center;
@@ -197,6 +240,7 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     border-color: var(--orange);
   }
 
+  /* 名字用中文正文字体，比年份小一档 */
   .wl__name {
     font-family: var(--font-cjk);
     font-size: var(--fs-h4);
@@ -204,6 +248,7 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     line-height: 1.4;
   }
 
+  /* 小标签：默认灰底；is-set 时橙底，和「事实」类记录区分开 */
   .wl__tag {
     justify-self: start;
     padding: 0.15em 0.45em;
@@ -218,6 +263,7 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     color: var(--orange);
   }
 
+  /* 卡片正文：13px 比页面正文小一档，一屏里放得下 */
   .wl__body {
     color: var(--ink-56);
     font-size: 0.8125rem;
@@ -225,6 +271,7 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     text-wrap: pretty;
   }
 
+  /* 进度轴：绝对定位贴在窗口底边，1px 灰线 */
   .wl__axis {
     display: block;
     position: absolute;
@@ -235,6 +282,7 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     background: var(--ink-12);
   }
 
+  /* 橙色填充：120ms linear 紧跟滚动，慢一点就会「粘手」 */
   .wl__fill {
     display: block;
     height: 100%;
@@ -243,6 +291,7 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     transition: width 120ms linear;
   }
 
+  /* 公司关系说明：左边一道 2px 橙线当引文，68ch 限宽 */
   .wl__rel {
     margin-top: 1.1rem;
     max-width: 68ch;
@@ -254,6 +303,7 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     border-left: 2px solid var(--orange);
   }
 
+  /* 「往下滑」小提示：8px、字距 0.16em，像刻度不像句子 */
   .wl__hint {
     margin-top: 0.9rem;
     color: var(--ink-38);
@@ -261,6 +311,7 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     letter-spacing: 0.16em;
   }
 
+  /* 窄屏：不再横向推进，卡片竖着排成普通列表；也没有横向滚动，提示语藏掉 */
   @media (max-width: 1023px) {
     .wl__track {
       flex-direction: column;
@@ -275,3 +326,4 @@ const items = [...worldline].sort((a, b) => a.date.localeCompare(b.date));
     }
   }
 </style>
+

@@ -1,35 +1,61 @@
 ---
-/**
- * 千禧年兼容主题 · 真·IE6 可用版
- * 不用：flex / grid / CSS 变量 / border-radius / box-shadow / transform /
- *      > + ~ 选择器 / data URI / SVG / max-width / HTML5 DOCTYPE
- * 只用：表格布局、bgcolor、<font>、a:hover、GIF（IE6 不认 PNG alpha）
- */
+/*
+千禧年兼容主题的外壳（<LegacyShell />）：/ie/ 与 /en/ie/ 这两页的整体版式。
+  - 它本身就是一份完整的 HTML 4.01 文档（DOCTYPE / html / head / body 都写在这里），
+    不是嵌进别的页面的组件；正文由调用方塞进 <slot />
+  - 版式照 2000 年前后的企业站抄：780px 定宽的白底主表、左边一列导航、右边正文、
+    顶部蓝色状态条 + 滚动公告、底部访客计数器 + 88×88 徽章
+  - 刻意不用现代 CSS：flex / grid / 变量 / 圆角 / 阴影 / transform / 后代选择器 / data URI / SVG 全都不用；
+    图片一律 GIF，因为 IE6 不认 PNG 的透明通道
+  - 文案里只有少数几句是模板里就地判断语言（isZh 三元），其余全由调用方传进来
+
+调用（复制即用；两页各一份文案，一页只放一次）：
+
+  <LegacyShell
+    lang="zh"
+    title="猫猫头网络科技（广东）有限公司 · 兼容版"
+    description="猫猫头网络科技官网千禧年兼容版，IE 友好。"
+    siteName="猫猫头网络科技（广东）有限公司"
+    ticker="★ 欢迎光临……★"
+    navTitle="站内导航"
+    navItems={[{ label: '公司简介', href: '#about' }, { label: '团队', href: '#team', hot: true }]}
+    updatedLabel="最后更新" updated="2026-11-07"
+    counterLabel="您是本站第几位访客"
+    footerNote="本站内容仅用于介绍公司，不使用虚构的客户、案例与奖项。"
+    backLabel="进入新版网站 »" backHref="/"
+    webmasterLabel="管理员信箱"
+  >
+    <div class="panel">……正文……</div>
+  </LegacyShell>
+
+改这个文件时别顺手写现代 CSS —— 它在真的旧浏览器里也打得开才叫兼容版。
+*/
 interface Props {
-  lang: 'zh' | 'en';
-  title: string;
-  description: string;
-  siteName: string;
-  ticker: string;
-  navTitle: string;
-  navItems: { label: string; href: string; hot?: boolean }[];
-  updatedLabel: string;
-  updated: string;
-  counterLabel: string;
-  footerNote: string;
-  backLabel: string;
-  backHref: string;
-  webmasterLabel: string;
+  lang: 'zh' | 'en';      // 页面语言：兼容版只有中英两份
+  title: string;          // <title> 里的字
+  description: string;    // meta description
+  siteName: string;       // 顶部蓝条左边的站名
+  ticker: string;         // 滚动公告条里滚的那句话
+  navTitle: string;       // 左栏导航面板的标题
+  navItems: { label: string; href: string; hot?: boolean }[];   // 左栏链接；hot 的那条后面多挂一个红色 HOT!
+  updatedLabel: string;   // 「最后更新」这几个字
+  updated: string;        // 更新时间
+  counterLabel: string;   // 访客计数器前面的说明字
+  footerNote: string;     // 底部深蓝横条里的说明
+  backLabel: string;      // 回新版网站的链接文字
+  backHref: string;       // 回新版网站的地址
+  webmasterLabel: string; // 站长信箱的说明字。注意：模板里这句话目前是写死的，这个字段没接上，调用方仍在传
 }
 const p = Astro.props;
-const isZh = p.lang === 'zh';
-const digits = '000915'.split('');
+const isZh = p.lang === 'zh';        // 只有少数几句话要分语言，模板里就地判断，不另开文案表
+const digits = '000915'.split('');   // 访客计数器显示的数字，写死；拆成一位一个 <span> 是为了逐位排版
 ---
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang={isZh ? 'zh-CN' : 'en'}>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    {/* meta 全是当年原样：字符集、让 IE7 按自己的规则渲染、生成器写 Notepad */}
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
     <title>{p.title}</title>
     <meta name="description" content={p.description} />
@@ -37,7 +63,9 @@ const digits = '000915'.split('');
     <meta name="generator" content="Notepad" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
+    {/* 全页样式都在这里：老式 CSS 2.1 写法，不用变量、不用媒体查询 */}
     <style type="text/css">
+      /* 整页底色：米黄纸色 + 平铺的 GIF 小方块；当年只有 GIF 能做得又小又稳 */
       body {
         margin: 0;
         padding: 0;
@@ -49,14 +77,20 @@ const digits = '000915'.split('');
         line-height: 160%;
         text-align: center;
       }
+      /* 表格里的字统一宋体 12px —— 那时中文网页的默认字号组合 */
       td, th, p, li, div { font-family: 宋体, SimSun, serif; font-size: 12px; line-height: 160%; }
+      /* IE 会给加了链接的图片描一圈蓝框，这行把它去掉 */
       img { border: 0; }
+      /* 链接三态：蓝 / 紫 / 红。浏览器默认就是这套，写出来是为了在 IE6 里也一致 */
       a:link { color: #0000cc; text-decoration: underline; }
       a:visited { color: #800080; text-decoration: underline; }
       a:hover { color: #ff0000; text-decoration: underline; }
+      /* 780px 白底主表：在 800×600 的屏上左右各留一点边；2px 深灰边当纸边框 */
       .wrap { background-color: #ffffff; border: 2px solid #7b7166; }
+      /* 蓝色横条：站名、面板标题都用它 */
       .bar { background-color: #000080; color: #ffffff; }
       .panelhead { background-color: #000080; color: #ffffff; font-weight: bold; padding: 2px 6px; }
+      /* 导航格做成凸起的按钮：上、左亮白，下、右深灰，现在按下去之前的那点立体感 */
       .navcell {
         background-color: #d4d0c8;
         border-top: 2px solid #ffffff;
@@ -68,8 +102,10 @@ const digits = '000915'.split('');
       .navcell a:link { text-decoration: none; color: #0000cc; }
       .navcell a:visited { text-decoration: none; color: #800080; }
       .navcell a:hover { text-decoration: underline; color: #ff0000; }
+      /* 小字两级：11px 灰、10px 更浅灰，用在计数器和签名这类附注上 */
       .small { font-size: 11px; color: #666666; }
       .tiny { font-size: 10px; color: #888888; }
+      /* 访客计数器：黑底绿字 + 等宽字体 + 2px 字距，数字才不会左右跳 */
       .counter {
         background-color: #000000;
         color: #00ff00;
@@ -80,6 +116,7 @@ const digits = '000915'.split('');
         padding: 2px 6px;
         border: 1px inset #808080;
       }
+      /* 88×88 的徽章格：当年「本站由 XX 制作」的按钮广告标准尺寸 */
       .btn88 {
         width: 88px;
         height: 31px;
@@ -90,10 +127,12 @@ const digits = '000915'.split('');
         text-align: center;
         vertical-align: middle;
       }
+      /* 浅黄公告条：滚动字幕外面那一圈 */
       .stripe { background-image: url(/ie/stripe.gif); }
       .marquee-box { background-color: #ffffcc; border: 1px solid #b0a89c; padding: 2px 0; }
 
       /* ---- 正文块：老式分组框 ---- */
+      /* ---- 正文块：老式分组框（标题条 + 内容区） ---- */
       .section { margin: 0 0 14px 0; }
       .panel { border: 1px solid #7b7166; background-color: #ffffff; margin: 0 0 14px 0; }
       .panel-title {
@@ -104,13 +143,16 @@ const digits = '000915'.split('');
         font-size: 12px;
         border-bottom: 1px solid #7b7166;
       }
+      /* 面板内容区：表格里的行用点线分隔，跟当年的留言板一个样 */
       .panel-body { padding: 10px 12px; }
       .panel-body p { margin: 0 0 8px 0; }
       .panel-body ul { margin: 0 0 8px 0; padding-left: 18px; }
       .panel-body li { list-style: square; margin: 0 0 3px 0; }
       .panel-body td { border-bottom: 1px dotted #b0a89c; padding: 3px 6px; }
+      /* 重点数据深蓝加粗；dot 是一个小红点，当项目符号用 */
       .data { color: #000080; font-weight: bold; }
       .dot { color: #ff0000; font-weight: bold; }
+      /* 通用小按钮：和导航格同一套凸起边，只是内边距不同 */
       .btn {
         background-color: #d4d0c8;
         border-top: 2px solid #ffffff;
@@ -121,13 +163,18 @@ const digits = '000915'.split('');
         color: #000000;
         font-size: 12px;
       }
+      /* 公告条下面的提示小字 */
       .marquee-hint { color: #666666; font-size: 11px; }
     </style>
   </head>
 
+  {/* bgcolor / text / link 这些属性是老浏览器的全局配色，现代浏览器也还认 */}
   <body bgcolor="#e8ddcc" text="#000000" link="#0000cc" vlink="#800080" alink="#ff0000">
+  {/* center 居中是当年的老写法，比 margin auto 在 IE6 里更保险 */}
     <center>
+    {/* 主表：定宽 780、白底、2px 深灰边；只有一张，整个页面都装在里面 */}
       <table class="wrap" width="780" border="0" cellpadding="0" cellspacing="0" align="center">
+      {/* 第一行：左边站名，右边「建议用 800×600 浏览」 */}
         <tr>
           <td class="bar" height="24" align="left">
             <font color="#ffffff" face="宋体" size="2"><b>&nbsp;★ {p.siteName} ★</b></font>
@@ -139,6 +186,7 @@ const digits = '000915'.split('');
           </td>
         </tr>
 
+      {/* 第二行：滚动公告条（marquee 是真的 <marquee>，不是动画库） */}
         <tr>
           <td colspan="2" class="marquee-box">
             <marquee scrollamount="3" behavior="scroll" direction="left" width="100%">
@@ -147,14 +195,17 @@ const digits = '000915'.split('');
           </td>
         </tr>
 
+      {/* 第三行：8px 高的装饰条纹，隔开公告和正文区 */}
         <tr>
           <td colspan="2" class="stripe" height="8">
             <img src="/ie/stripe.gif" width="1" height="8" alt="" />
           </td>
         </tr>
 
+      {/* 第四行：左右两栏。左栏 150px 宽、浅色底；右栏白底、宽度吃满剩下 */}
         <tr>
           <td width="150" valign="top" bgcolor="#f2ece3">
+            {/* 左栏：导航面板（面板头 + 一列链接格） */}
             <table width="100%" border="0" cellpadding="3" cellspacing="0">
               <tr>
                 <td class="panelhead" align="center">
@@ -163,6 +214,7 @@ const digits = '000915'.split('');
               </tr>
               <tr>
                 <td>
+                  {/* 每条导航一个格子；hot 的后面再挂一个红色 HOT! */}
                   <table width="100%" border="0" cellpadding="2" cellspacing="3">
                     {
                       p.navItems.map((item) => (
@@ -183,11 +235,13 @@ const digits = '000915'.split('');
                   </table>
                 </td>
               </tr>
+              {/* 「正在建设中」的小动画图，当年几乎每个站都挂一个 */}
               <tr>
                 <td align="center">
                   <img src="/ie/building.gif" width="140" height="20" alt="正在建设中" />
                 </td>
               </tr>
+              {/* 图下面的那句说明，小一号的灰字 */}
               <tr>
                 <td align="center">
                   <font class="tiny" face="宋体" size="1">
@@ -198,6 +252,7 @@ const digits = '000915'.split('');
             </table>
           </td>
 
+          {/* 右栏：正文。调用方塞进来的内容全部落在 <slot /> 里 */}
           <td valign="top" bgcolor="#ffffff">
             <table width="100%" border="0" cellpadding="10" cellspacing="0">
               <tr>
@@ -209,16 +264,19 @@ const digits = '000915'.split('');
           </td>
         </tr>
 
+      {/* 第五行：又一条 8px 装饰条纹，收住正文区 */}
         <tr>
           <td colspan="2" class="stripe" height="8">
             <img src="/ie/stripe.gif" width="1" height="8" alt="" />
           </td>
         </tr>
 
+      {/* 第六行：底部两格 —— 左边访客计数器，右边更新时间和站长信箱 */}
         <tr>
           <td colspan="2" bgcolor="#f2ece3" align="center">
             <table width="100%" border="0" cellpadding="8" cellspacing="0">
               <tr>
+                {/* 计数器：说明字 + 黑底绿字的数字 */}
                 <td align="center" width="50%">
                   <font class="small" face="宋体" size="1">{p.counterLabel}</font><br />
                   <font class="counter" face="Courier New">
@@ -227,6 +285,7 @@ const digits = '000915'.split('');
                     ))}
                   </font>
                 </td>
+                {/* 更新时间 + 站长信箱（mailto 链接当年就是这么写的） */}
                 <td align="center" width="50%">
                   <font class="small" face="宋体" size="1">{p.updatedLabel}：{p.updated}</font><br />
                   <font class="small" face="宋体" size="1">
@@ -239,6 +298,7 @@ const digits = '000915'.split('');
           </td>
         </tr>
 
+      {/* 第七行：底部深蓝版权条，说明字由调用方传 */}
         <tr>
           <td colspan="2" bgcolor="#000080" align="center" height="22">
             <font color="#ffffff" face="宋体" size="1">&nbsp;{p.footerNote}&nbsp;</font>
@@ -246,9 +306,11 @@ const digits = '000915'.split('');
         </tr>
       </table>
 
+    {/* 主表下面另起一张 780 宽的表：88×88 徽章一排，加最底下那句兼容版说明 */}
       <table width="780" border="0" cellpadding="4" cellspacing="0" align="center">
         <tr>
           <td align="center">
+      {/* 徽章行：五枚 88×88 的按钮，纯装饰，不带链接 */}
             <table border="0" cellpadding="0" cellspacing="4">
               <tr>
                 <td class="btn88"><font face="宋体" size="1">猫猫头<br />MAOMAO</font></td>
@@ -260,6 +322,7 @@ const digits = '000915'.split('');
             </table>
           </td>
         </tr>
+      {/* 最底下一行：说明这是兼容版，并给一个回新版网站的出口 */}
         <tr>
           <td align="center">
             <font class="tiny" face="宋体" size="1">
@@ -272,3 +335,4 @@ const digits = '000915'.split('');
     </center>
   </body>
 </html>
+

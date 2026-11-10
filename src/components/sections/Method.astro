@@ -1,36 +1,66 @@
 ---
-import type { Dict } from '../../i18n';
-import SectionHead from '../ui/SectionHead.astro';
-import SectionField from '../ui/SectionField.astro';
+/*
+方法屏：「制造、软件、服务，三环相扣。」左边一张三环交叠图（三个圆两两相交，中间那块是共同区域），
+右边三条说明（RING 01 制造 / RING 02 软件 / RING 03 服务），底下收一句「三环交叠的那一块，才是我们真正的产品。」
+
+本文件只有排版和一份坐标表，没有逻辑：
+  - 图上的圆、字、十字标记全部由下面的 ringPositions 推出来，改坐标只改这张表；
+  - 入场时圆环描边一笔一笔画出来（data-anim="draw" + data-stroke / data-fill-fade）；
+  - 整张图随滚动上移 36px 并微转 4°。
+
+在哪被调用：src/components/pages/HomePage.astro，能力屏之后、吉祥物屏之前
+调用示例：
+  <Method t={t} />    // t 是整份文案字典，本屏只读其中的 method 段
+
+和别处的关系：
+  - id="method"：叙事轴 NarrativeRail 靠它定位这一屏（第四根刻度、点它滚到这里）。这个 id 不许改。
+  - 标题区交给 SectionHead；本屏 lede 有内容（「单点能力谁都有，难的是接缝处不脱节。」）。
+  - 文案在 src/i18n/{zh,en,ja,yue}.ts 的 method 段：no / label / title / lede / rings[3] / note。
+*/
+import type { Dict } from '../../i18n';               // 文案字典的类型
+import SectionHead from '../ui/SectionHead.astro';    // 统一的章节标题区
+import SectionField from '../ui/SectionField.astro';  // 底下的图纸底纹层（浅色版）
 
 interface Props {
-  t: Dict;
+  t: Dict;      // 整份文案
 }
 const { t } = Astro.props;
-const m = t.method;
-const positions = [
-  { cx: 280, cy: 176, labelY: 118, labelX: 280 },
-  { cx: 206, cy: 306, labelY: 336, labelX: 168 },
-  { cx: 354, cy: 306, labelY: 336, labelX: 392 },
+const method = t.method;   // 本屏文案：标题区 + 三个环（code / title / body）+ 一句收尾
+
+/* 三环图上的三个圆心和它们标签的落点，坐标是 SVG 的 viewBox 0 0 560 520 里的绝对像素：
+   cx / cy     圆心
+   labelX/Y    环名文字的锚点 —— 上面那个环的字在圆外上方，下面两个环的字在圆外下方，
+               所以标签并不等于圆心，得单独给坐标。
+   r 固定 118，三个圆心两两相距约 148~150，正好交叠出一块共同区域。 */
+const ringPositions = [
+  { cx: 280, cy: 176, labelY: 118, labelX: 280 },   // RING 01 制造：顶上那个环，字在上方
+  { cx: 206, cy: 306, labelY: 336, labelX: 168 },   // RING 02 软件：左下环，字在左下
+  { cx: 354, cy: 306, labelY: 336, labelX: 392 },   // RING 03 服务：右下环，字在右下
 ];
 ---
 
 <section class="method section" id="method">
-  <SectionField no={m.no} align="left" />
+  <!-- 底纹层：巨型「04」和竖线；浅色版 -->
+  <SectionField no={method.no} align="left" />
+  <!-- 整屏再加一层竖向浅格线（每 25% 一条），比 SectionField 的底纹更细更淡 -->
   <div class="method__bg" aria-hidden="true"></div>
 
   <div class="shell">
-    <SectionHead no={m.no} label={m.label} title={m.title} lede={m.lede} />
+    <SectionHead no={method.no} label={method.label} title={method.title} lede={method.lede} />
 
     <div class="method__body">
+      <!-- 三环图：data-anim="draw" 让描边按圆周长度一笔画出来；
+           aria-label 用的是收尾那句「三环交叠的那一块，才是我们真正的产品。」 -->
       <figure class="method__figure" data-anim="draw" data-scrub data-scrub-y="36" data-scrub-rotate="4">
-        <svg viewBox="0 0 560 520" role="img" aria-label={m.note}>
+        <svg viewBox="0 0 560 520" role="img" aria-label={method.note}>
           <g class="rings">
+            <!-- 第一遍：三个半透明橙色填充圆，入场时慢慢显出来（data-fill-fade），
+                 mix-blend-mode: multiply 让交叠处自然加深 —— 中间那块最深 -->
             {
-              positions.map((p) => (
+              ringPositions.map((spot) => (
                 <circle
-                  cx={p.cx}
-                  cy={p.cy}
+                  cx={spot.cx}
+                  cy={spot.cy}
                   r="118"
                   fill="rgba(255,90,26,0.09)"
                   stroke="currentColor"
@@ -39,21 +69,24 @@ const positions = [
                 />
               ))
             }
+            <!-- 第二遍：同样的三个圆叠一层实描边（data-stroke），这才是被「画」出来的那圈线 -->
             {
-              positions.map((p) => (
-                <circle cx={p.cx} cy={p.cy} r="118" fill="none" stroke="currentColor" stroke-width="1.25" data-stroke />
+              ringPositions.map((spot) => (
+                <circle cx={spot.cx} cy={spot.cy} r="118" fill="none" stroke="currentColor" stroke-width="1.25" data-stroke />
               ))
             }
           </g>
+          <!-- 环名：位置取自同一张坐标表，文字取自 method.rings[i].title（制造 / 软件 / 服务） -->
           <g class="labels">
             {
-              positions.map((p, i) => (
-                <text x={p.labelX} y={p.labelY} text-anchor="middle" class="label">
-                  {m.rings[i].title}
+              ringPositions.map((spot, index) => (
+                <text x={spot.labelX} y={spot.labelY} text-anchor="middle" class="label">
+                  {method.rings[index].title}
                 </text>
               ))
             }
           </g>
+          <!-- 每个圆心上的橙色小十字：像图纸上的定位标记 -->
           <g class="crosshair" aria-hidden="true">
             <path d="M280 176m-6 0h12M280 176m0-6v12" />
             <path d="M206 306m-6 0h12M206 306m0-6v12" />
@@ -62,9 +95,10 @@ const positions = [
         </svg>
       </figure>
 
+      <!-- 右边三条说明：逐条错开淡入，每条顶上一根细线 -->
       <ol class="method__rings" data-anim="stagger">
         {
-          m.rings.map((ring) => (
+          method.rings.map((ring) => (
             <li class="mring">
               <div class="mring__head">
                 <span class="mono mring__code">{ring.code}</span>
@@ -77,20 +111,24 @@ const positions = [
       </ol>
     </div>
 
+    <!-- 收尾一句：前面一个橙点 + 那句话，顶上一条细线和上面隔开 -->
     <p class="method__note" data-anim="fade">
       <span class="method__note-dot" aria-hidden="true"></span>
-      {m.note}
+      {method.note}
     </p>
   </div>
 </section>
 
 <style>
+  /* 整屏外壳：底色用 --cream-3（比正文纸色再深一档），和前后两屏拉开层次 */
   .method {
     position: relative;
     background: var(--cream-3);
     overflow: clip;
   }
 
+  /* 整屏竖向格线：1px 线画在每 25% 处（background-size: 25% 100%），
+     opacity 0.5 再压淡一层，只当纸的纹理，不参与构图 */
   .method__bg {
     position: absolute;
     inset: 0;
@@ -100,13 +138,15 @@ const positions = [
     pointer-events: none;
   }
 
+  /* 主体：图在左、说明在右；窄屏堆成一列，900px 起分两栏（见文件末尾） */
   .method__body {
     position: relative;
     display: grid;
     gap: clamp(2rem, 5vw, 4rem);
-    align-items: center;
+    align-items: center;   /* 图和右侧说明大致垂直居中 */
   }
 
+  /* 图：最宽 560px（和 viewBox 同宽，缩放刚好 1:1 不糊），在栏里居中 */
   .method__figure {
     margin: 0;
     color: var(--ink);
@@ -115,16 +155,19 @@ const positions = [
     justify-self: center;
   }
 
+  /* svg 不留内边距；overflow: visible 是为了让描边和标签落在 viewBox 边界外时也不被裁 */
   .method__figure svg {
     width: 100%;
     height: auto;
     overflow: visible;
   }
 
+  /* 三个填充圆用 multiply 叠色：只用 9% 的橙，但交叠处自然变成 18%、25%，中间那块最实 */
   .rings circle[data-fill-fade] {
     mix-blend-mode: multiply;
   }
 
+  /* 环名：22px 中文黑体加粗，字距 0.02em；因为画在 svg 里，颜色要用 fill 而不是 color */
   .label {
     font-family: var(--font-cjk);
     font-size: 22px;
@@ -133,40 +176,46 @@ const positions = [
     fill: var(--ink);
   }
 
+  /* 圆心上的十字标记：橙色 1px 线，fill: none 免得描出一条黑方块 */
   .crosshair path {
     stroke: var(--orange);
     stroke-width: 1;
     fill: none;
   }
 
+  /* 右边三条说明：竖排，条目之间按屏幕宽度拉开 */
   .method__rings {
     display: grid;
     gap: clamp(1.25rem, 2.4vw, 1.75rem);
   }
 
+  /* 单条说明：编号行 + 正文；顶上一条细线把它和上一条分开 */
   .mring {
     display: grid;
     gap: 0.5rem;
     padding-top: 1rem;
     border-top: 1px solid var(--ink-12);
-    box-shadow: none;
   }
 
+  /* 编号和环名横排，按基线对齐（大小差别大，按基线看着才不歪） */
   .mring__head {
     display: flex;
     align-items: baseline;
     gap: 1rem;
   }
 
+  /* RING 01…：9px 的橙色等宽小字，只当标签用 */
   .mring__code {
     color: var(--orange);
     font-size: 0.5625rem;
   }
 
+  /* 说明正文一行最长 42 个字，窄一点读着更顺 */
   .mring .body-text {
     max-width: 42ch;
   }
 
+  /* 收尾那句：橙色圆点 + 一句话，字号用 --fs-h4、600 字重，比正文重一档 */
   .method__note {
     display: flex;
     align-items: center;
@@ -179,6 +228,7 @@ const positions = [
     color: var(--ink-90);
   }
 
+  /* 句前那颗橙点：7px，flex-shrink: 0 保证窄屏不被压扁 */
   .method__note-dot {
     width: 7px;
     height: 7px;
@@ -187,6 +237,7 @@ const positions = [
     flex-shrink: 0;
   }
 
+  /* 900px 起分两栏：左图略窄（0.95 份）、右文 1 份；minmax(0, …) 防止 svg 撑破栏宽 */
   @media (min-width: 900px) {
     .method__body {
       grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);

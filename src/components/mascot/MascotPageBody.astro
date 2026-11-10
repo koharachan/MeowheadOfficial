@@ -1,17 +1,37 @@
 ---
-import type { Dict } from '../../i18n';
-import Button from '../ui/Button.astro';
-import MascotPlayground from './MascotPlayground.tsx';
-import NarrativeRail from '../nav/NarrativeRail.tsx';
+/*
+吉祥物独立页（/mascot）的整页内容：从左侧叙事轴到最后一屏 CTA，全收在这一个文件里。
+
+调用（页面文件只干一件事——把它塞进布局）：
+
+  // src/pages/mascot.astro
+  <BaseLayout ...>
+    <MascotPageBody t={t} />
+  </BaseLayout>
+
+自上而下：开场 → 第一人称自述 → 档案 → 性格 → 表情 → 使用说明 → 伙伴 tible → 设计笔记 →
+互动区 → 结尾 CTA。左边那根叙事轴的章节表是文案里的 p.chapters，章节 id 必须和下面各 section
+的 id 一一对上（top / file / personality / expressions / usage / tible / design / play），
+对不上那一章就点不过去。
+
+样式在文件末尾的 <style> 里，类名统一 mp- 开头（mascot page），Astro 会自动限定作用域。
+所有文案从字典 t 里取，本文件不写死任何一句中文。
+*/
+import type { Dict } from '../../i18n';              // 页面文案的字典类型，让 t 有类型提示
+import Button from '../ui/Button.astro';            // 站内那个统一按钮（实心 / 描边两版）
+import MascotPlayground from './MascotPlayground.tsx'; // 互动区那个能点着玩的 React 岛
+import NarrativeRail from '../nav/NarrativeRail.tsx';   // 左侧那根叙事轴（自己接管滚动，不用父级喂事件）
 
 interface Props {
   t: Dict;
 }
 const { t } = Astro.props;
-const p = t.mascotPage;
-const states = t.mascot.states;
+const p = t.mascotPage;        // 这一页的全部文案都在 p 里，下面模板只用 p.xxx
+const states = t.mascot.states; // 表情表（和首页舞台共用同一份），互动区要把它喂给 React 岛
 ---
 
+{/* 左侧叙事轴：client:idle = 页面空闲后自己接管；章节表就是 p.chapters，
+    bgOf 这一页没有深底章节所以全传 0（浅色），mascot 是轴末端跟着换表情的四张小图 */}
 <NarrativeRail
   client:idle
   chapters={p.chapters}
@@ -27,7 +47,10 @@ const states = t.mascot.states;
 />
 
 <main id="main" class="mp">
-  <!-- ---------------- hero ---------------- -->
+  <!-- ---------------- hero：开场 ---------------- -->
+  {/* 左边：小标 + 大名字 + 罗马字 + 一句 tagline + 三行自述 + 回首页按钮。
+      data-anim / data-delay 是全站入场动画的开关和出场间隔，动它只影响节奏；先出现的是名字。 */}
+  {/* 右边：立绘 + 右下角一行编号，图走 fetchpriority="high"，因为这是第一眼看到的东西 */}
   <section class="mp-hero" id="top">
     <div class="shell mp-hero__grid">
       <div class="mp-hero__copy">
@@ -51,6 +74,8 @@ const states = t.mascot.states;
   </section>
 
   <!-- ---------------- stanza：第一人称自述 ---------------- -->
+  {/* 左边一个竖排小标签，右边一行行大字；第一行加 is-first 加粗，当开场白。
+      句子本身在字典里写好换行，这里不拆句。 */}
   <section class="mp-stanza" aria-label={p.stanza.label}>
     <div class="shell mp-stanza__inner">
       <span class="mono mp-stanza__label">{p.stanza.label}</span>
@@ -60,7 +85,8 @@ const states = t.mascot.states;
     </div>
   </section>
 
-  <!-- ---------------- file ---------------- -->
+  <!-- ---------------- file：档案表 ---------------- -->
+  {/* 左边标题、右边一排「字段名 / 值」；用 dl 而不是 div，读屏能听出这是成对的档案项 */}
   <section class="mp-block" id="file">
     <div class="shell mp-split">
       <header class="mp-head">
@@ -81,7 +107,8 @@ const states = t.mascot.states;
     </div>
   </section>
 
-  <!-- ---------------- personality ---------------- -->
+  <!-- ---------------- personality：性格三条 ---------------- -->
+  {/* 用 ol：这一组是有先后的三条，编号 item.no 是文案里写死的「01/02/03」，不是自动生成 */}
   <section class="mp-block mp-block--tight" id="personality">
     <div class="shell">
       <header class="mp-head mp-head--wide" data-anim="fade">
@@ -103,7 +130,9 @@ const states = t.mascot.states;
     </div>
   </section>
 
-  <!-- ---------------- expressions ---------------- -->
+  <!-- ---------------- expressions：表情一览 ---------------- -->
+  {/* 一格一格的表情卡：图 + 编号 + 名字 + 一句说明。图按 item.id 拼路径，
+      所以新增表情只要往字典里加一项、把图按同名放进 /img/mascot/，这里不用改 */}
   <section class="mp-block mp-block--shade" id="expressions">
     <div class="shell">
       <header class="mp-head mp-head--wide" data-anim="fade">
@@ -131,7 +160,8 @@ const states = t.mascot.states;
     </div>
   </section>
 
-  <!-- ---------------- usage ---------------- -->
+  <!-- ---------------- usage：使用说明 ---------------- -->
+  {/* 两列的说明清单，拆成「什么场合 / 怎么用」；宽屏才分两列（见文件末尾的 760px 断点） */}
   <section class="mp-block" id="usage">
     <div class="shell">
       <header class="mp-head mp-head--wide" data-anim="fade">
@@ -155,6 +185,8 @@ const states = t.mascot.states;
   </section>
 
   <!-- ---------------- companion: tible ---------------- -->
+  {/* 这一屏故意用深底（mp-block--dark on-dark）：全页只有这一块是黑的，用来把伙伴单独拎出来。
+      四张图并排是装饰，所以整块 aria-hidden，真正的说明放在下面那行 sr-only 里 */}
   <section class="mp-block mp-block--dark on-dark" id="tible">
     <div class="shell mp-companion">
       <div class="mp-companion__copy">
@@ -184,7 +216,8 @@ const states = t.mascot.states;
     </div>
   </section>
 
-  <!-- ---------------- design notes ---------------- -->
+  <!-- ---------------- design notes：设计笔记 ---------------- -->
+  {/* 左边几段话、右边几条「术语 / 解释」；说明这只吉祥物为什么长这样，是给人看的过程记录 */}
   <section class="mp-block" id="design">
     <div class="shell mp-split">
       <header class="mp-head">
@@ -210,7 +243,9 @@ const states = t.mascot.states;
     </div>
   </section>
 
-  <!-- ---------------- play ---------------- -->
+  <!-- ---------------- play：互动区 ---------------- -->
+  {/* 点着玩的那块是 React 岛：client:visible = 滚到这一屏才开始下载 React，
+      省掉首屏的脚本。states 在这里就地转成 MascotPlayground 要的形状，只取它用得到的字段 */}
   <section class="mp-block mp-block--shade" id="play">
     <div class="shell mp-play">
       <div class="mp-play__copy">
@@ -232,7 +267,8 @@ const states = t.mascot.states;
     </div>
   </section>
 
-  <!-- ---------------- cta ---------------- -->
+  <!-- ---------------- cta：结尾 ---------------- -->
+  {/* 一句收尾 + 一个回首页的实心按钮，页到这儿结束 */}
   <section class="mp-cta">
     <div class="shell mp-cta__inner" data-anim="fade">
       <div>
@@ -245,7 +281,11 @@ const states = t.mascot.states;
 </main>
 
 <style>
+  /* 本页样式。.mp- 开头的是这一页私有的；.h2 / .body-text / .mono / .lead 是全局排版类，这里只做少量覆盖。
+     Astro 会把下面每条选择器都加上本组件的作用域，所以可以放心用 .dot、li 这种短名字。 */
+  /* ---------------- hero ---------------- */
   .mp-hero {
+    /* 顶上空出固定导航的高度（约 96px），大屏再按 14vh 多让一点，标题才不会顶着导航 */
     padding-top: clamp(96px, 14vh, 150px);
     padding-bottom: clamp(3rem, 7vw, 6rem);
     position: relative;
@@ -268,6 +308,7 @@ const states = t.mascot.states;
     font-size: 0.5625rem;
   }
 
+  /* 标题前那颗橙点。5px 是「看得见但不抢字」的大小，圆到极限就是正圆 */
   .dot {
     width: 5px;
     height: 5px;
@@ -276,6 +317,8 @@ const states = t.mascot.states;
   }
 
   .mp-hero__name {
+    /* 名字是全页最大的字：行距压到 0.95、字距收紧 0.04em，
+       中文大字的笔画之间本来就是空的，按默认行距会散成一团 */
     font-size: clamp(3rem, 9vw, 7rem);
     line-height: 0.95;
     letter-spacing: -0.04em;
@@ -288,6 +331,7 @@ const states = t.mascot.states;
   }
 
   .mp-hero__tagline {
+    /* 一句话 tagline 限宽 20ch：一句一行，别让它在宽屏上拉成一条长线 */
     margin-top: clamp(1.25rem, 3vw, 2rem);
     font-size: clamp(1.25rem, 2.4vw, 1.875rem);
     max-width: 20ch;
@@ -325,6 +369,7 @@ const states = t.mascot.states;
   }
 
   /* ---------------- stanza ---------------- */
+  /* 奶白偏灰的第二层底色，用来把这一屏和白色段落分开；全站的分层就靠 --cream-2 这一级 */
   .mp-stanza {
     background: var(--cream-2);
     border-bottom: 1px solid var(--ink-12);
@@ -346,6 +391,7 @@ const states = t.mascot.states;
   .mp-stanza__lines {
     display: grid;
     gap: 0.35rem;
+    /* 左边那道橙线就是「这是引用/自述」的记号；行距靠 lines 的 1.75 撑开，句间只留 0.35rem */
     border-left: 2px solid var(--orange);
     padding-left: clamp(1rem, 2.5vw, 1.75rem);
   }
@@ -384,6 +430,7 @@ const states = t.mascot.states;
   }
 
   .mp-block--dark {
+    /* 不用纯黑：偏暖的 #141210 跟奶白纸放一起不刺眼，也压得住下面的橙色 */
     background: #141210;
     color: var(--cream);
     border-bottom: 0;
@@ -479,6 +526,7 @@ const states = t.mascot.states;
     gap: clamp(1rem, 2vw, 1.5rem);
   }
 
+  /* 表情卡的框。aspect-ratio: 1 让每一格都是正方形，图片一律 contain 居中，不会把脸裁掉 */
   .mp-exp__frame {
     border: 1px solid var(--ink-12);
     background: var(--cream);
@@ -501,6 +549,7 @@ const states = t.mascot.states;
   }
 
   .mp-exp__item:hover .mp-exp__frame img {
+    /* 悬停只抬 4px、放大 2%：幅度再大就像在跳，这里只想给一点「被拿起来看」的手感 */
     transform: translateY(-4px) scale(1.02);
   }
 
@@ -594,6 +643,7 @@ const states = t.mascot.states;
     color: rgba(255, 249, 241, 0.8);
   }
 
+  /* 四张伙伴图排两行两列；背景和描边都比正文淡，让图自己浮出来 */
   .mp-companion__figures {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -652,7 +702,7 @@ const states = t.mascot.states;
     align-content: start;
   }
 
-  /* cta */
+  /* cta：最后一条细线分成左右两半，左边说话、右边按钮 */
   .mp-cta {
     padding-block: clamp(3rem, 7vw, 6rem);
   }
@@ -672,7 +722,10 @@ const states = t.mascot.states;
     max-width: 44ch;
   }
 
-  /* responsive */
+  /* ---------------- 断点 ----------------
+     760px：表情从一列变三列、使用说明从一列变两列（平板竖屏也够宽了）
+     900px：hero / 左右分栏 / 互动区 / 伙伴区 / 设计笔记全部改成两栏
+     两档之间留 140px 的间隔，是为了让「先变列数、再变分栏」有个先后，不至于同时跳 */
   @media (min-width: 760px) {
     .mp-exp {
       grid-template-columns: repeat(3, 1fr);

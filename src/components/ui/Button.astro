@@ -1,18 +1,34 @@
 ---
+/*
+胶囊按钮（<Button />）：全站点的行动按钮都长这一颗，改样式只改这个文件。
+  - 三种长相，只能选一种：solid 实心墨黑（主行动，默认）/ outline 描边透明（次行动）/
+    quiet 纯文字（像链接，只有文字变橙 + 下划线从左划出）
+  - 尾巴上默认带一个小箭头，鼠标移上去箭头往右挪 4px；不要箭头就传 arrow={false}
+  - 它就是个 <a>，跳转地址由外面给；不负责埋点、不负责弹窗，点了就跳
+
+调用（复制即用；label 传已经翻译好的文案，不是 i18n key）：
+
+  <Button href={t.nav.cta.href} label={t.nav.cta.label} />                                  // 主按钮
+  <Button href={t.hero.secondary.href} label={t.hero.secondary.label} variant="outline" />    // 次按钮
+  <Button href={'/'} label={'回首页'} class="nf-actions__item" />                             // 外面要调间距就补 class
+
+不要在按钮外面再包一层 <a>，这里已经是链接了。
+*/
 interface Props {
-  href: string;
-  label: string;
-  variant?: 'solid' | 'outline' | 'quiet';
-  arrow?: boolean;
-  class?: string;
-  dataAttr?: string;
+  href: string;                   // 点了去哪：站内路径（含语言前缀）或外链
+  label: string;                  // 按钮上的字，已翻译好的一段文案
+  variant?: 'solid' | 'outline' | 'quiet';   // 长相，默认 solid（主行动）
+  arrow?: boolean;                // 尾巴上要不要小箭头，默认要
+  class?: string;                 // 外面补的类名，用来调间距和对齐（不改按钮本身长相）
 }
 
-const { href, label, variant = 'solid', arrow = true, class: cls = '', dataAttr } = Astro.props;
+// 外面传的是 class，这里改名 cls，因为 class 在 JS 里是保留字
+const { href, label, variant = 'solid', arrow = true, class: cls = '' } = Astro.props;
 ---
 
-<a href={href} class:list={['btn', `btn--${variant}`, cls]} data-cta={dataAttr}>
+<a href={href} class:list={['btn', `btn--${variant}`, cls]}>
   <span class="btn__label">{label}</span>
+  {/* 箭头是装饰，读屏软件不用念，所以 aria-hidden；不要箭头就传 arrow={false} */}
   {
     arrow && (
       <span class="btn__arrow" aria-hidden="true">
@@ -25,32 +41,34 @@ const { href, label, variant = 'solid', arrow = true, class: cls = '', dataAttr 
 </a>
 
 <style>
+  /* 三种变体共用这一套：--btn-bg/--btn-fg/--btn-bd 三个变量，下面各变体只改变量，不改布局 */
   .btn {
-    --btn-bg: var(--ink);
-    --btn-fg: var(--cream);
-    --btn-bd: transparent;
+    --btn-bg: var(--ink);            /* 底色：墨黑（solid 的默认） */
+    --btn-fg: var(--cream);          /* 字色：米白 */
+    --btn-bd: transparent;           /* 边线：solid 不要边线 */
 
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.7em;
-    padding: 0.95em 1.6em;
-    border-radius: 999px;
+    gap: 0.7em;                      /* 文字和箭头之间留一点缝 */
+    padding: 0.95em 1.6em;           /* 用 em 跟着字号缩放，换字号不用改这里 */
+    border-radius: 999px;            /* 足够大就是胶囊头，不用算具体半径 */
     border: 1px solid var(--btn-bd);
     background: var(--btn-bg);
     color: var(--btn-fg);
     font-size: var(--fs-small);
     font-weight: 600;
     letter-spacing: 0.02em;
-    line-height: 1;
-    white-space: nowrap;
-    transition:
+    line-height: 1;                  /* 行高压到 1，按钮高度只由 padding 决定 */
+    white-space: nowrap;             /* 中文按钮别断成两行 */
+    transition:                      /* 四种颜色变化都是 260ms，和站里其它 hover 一致 */
       background-color 260ms var(--ease-out),
       color 260ms var(--ease-out),
       border-color 260ms var(--ease-out),
       transform 260ms var(--ease-out);
   }
 
+  /* 文字抬到 z-index 1：quiet 变体的下划线是 ::after 画的，别压住字 */
   .btn__label {
     position: relative;
     z-index: 1;
@@ -61,15 +79,18 @@ const { href, label, variant = 'solid', arrow = true, class: cls = '', dataAttr 
     transition: transform 300ms var(--ease-out);
   }
 
+  /* 鼠标移上去箭头往右挪 4px，暗示「往前走」 */
   .btn:hover .btn__arrow {
     transform: translateX(4px);
   }
 
+  /* solid：悬停从墨黑变橙，是最显眼的主行动 */
   .btn--solid:hover {
     background: var(--orange);
     color: var(--cream);
   }
 
+  /* outline：透明底 + 20% 墨色细描边；悬停直接反色成墨黑底 */
   .btn--outline {
     --btn-bg: transparent;
     --btn-fg: var(--ink);
@@ -82,6 +103,7 @@ const { href, label, variant = 'solid', arrow = true, class: cls = '', dataAttr 
     color: var(--cream);
   }
 
+  /* quiet：去掉内边距和圆角，长得像一段文字；只有文字变橙 + 一条下划线 */
   .btn--quiet {
     --btn-bg: transparent;
     --btn-fg: var(--ink);
@@ -94,6 +116,7 @@ const { href, label, variant = 'solid', arrow = true, class: cls = '', dataAttr 
     color: var(--orange);
   }
 
+  /* 下划线平时 scaleX(0) 藏着，悬停从左往右划满；1px 细线，离文字 0.35em */
   .btn--quiet .btn__label::after {
     content: '';
     position: absolute;

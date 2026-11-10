@@ -1,33 +1,59 @@
 ---
-import type { Dict } from '../../i18n';
-import Button from '../ui/Button.astro';
-import HeroMark from '../three/HeroMark.tsx';
+/*
+首屏（第一屏）：打开首页看到的第一屏 —— 左边一句主张 + 两个按钮，右边实时渲染的 3D 猫头标志，
+底下一排公司硬指标（成立 / 注册资本 / 注册地）和一条「往下滑」的提示。
+
+本文件没有自己的逻辑：入场、视差、滚动联动全部由 data-* 属性交给全站脚本 src/scripts/motion.ts，
+这里的注释说明「哪个属性归哪段动画管」，改数值时就知道还要去对一眼那个文件。
+
+在哪被调用：src/components/pages/HomePage.astro，作为首页主内容的第一屏
+调用示例：
+  <Hero t={t} />    // t 是整份文案字典；本屏文字都从 t.hero / t.ux 取，一个字都不写死在这里
+
+和别处的关系：
+  - id="hero"：叙事轴 NarrativeRail 靠它找这一屏（第一根刻度、点它滚回页首），
+    首页也靠它判断这一屏是不是深色底（不是）。这个 id 不许改。
+  - 改文案去 src/i18n/{zh,en,ja,yue}.ts 的 hero 段，不要改本文件。
+  - 动画属性速查（实现都在 motion.ts）：
+      data-anim="fade"    滚到可见处时淡入上移一次；data-delay 是错开几秒
+      data-anim="lines"   标题按 .line-mask 一行一行从下往上推
+      data-scrub-y="N"    随滚动上下平移 N 像素（真实位移是 ±N/2）
+      data-parallax="N"   视差，滚动区间取最近的 [data-parallax-scope]
+*/
+import type { Dict } from '../../i18n';        // 文案字典的类型，只用来约束下面的 Props
+import Button from '../ui/Button.astro';       // 站内统一按钮：solid = 实心橙，outline = 描边
+import HeroMark from '../three/HeroMark.tsx';  // 右侧 3D 标志；WebGL 跑不起来时它自己降级成海报图
 
 interface Props {
-  t: Dict;
+  t: Dict;      // 整份文案；本屏只读其中的 hero 段
 }
 const { t } = Astro.props;
-const h = t.hero;
+const hero = t.hero;   // 本屏文案（kicker / lines / lede / specs… 的结构见 src/i18n/types.ts）
 ---
 
 <section class="hero" id="hero" data-parallax-scope>
+  <!-- 工程图纸底纹：三条竖向发丝线，随滚动整体下移（52 是总幅度，实际走 ±26px） -->
   <div class="hero__rules" aria-hidden="true" data-scrub data-scrub-y="52">
     <span></span><span></span><span></span>
   </div>
 
   <div class="hero__grid shell">
+    <!-- 左半：一列纵向文字，每块错开一点淡入（data-delay 越大出现越晚，单位秒） -->
     <div class="hero__copy">
       <p class="hero__kicker mono" data-anim="fade">
         <span class="dot" aria-hidden="true"></span>
-        {h.kicker}
+        {hero.kicker}
       </p>
 
+      <!-- 主标题：hero.lines 一行一句，每句裹一层 .line-mask，入场时一行一行往上推 -->
       <h1 class="hero__title display">
-        {h.lines.map((line) => <span class="line-mask"><span>{line}</span></span>)}
+        {hero.lines.map((line) => <span class="line-mask"><span>{line}</span></span>)}
       </h1>
 
+      <!-- 副文案：文案里用破折号分成两段，前半是中文、后半是拉丁短语，两段各自排版（样式见下面的 .hero__lede-*）；
+           整体仍是一个 <p>，所以读屏读起来还是一句话 -->
       <p class="hero__lede" data-anim="fade" data-delay="0.05">
-        {h.lede.split('——').map((part, i) =>
+        {hero.lede.split('——').map((part, i) =>
           i === 0 ? (
             <span class="hero__lede-cjk">{part}</span>
           ) : (
@@ -39,46 +65,55 @@ const h = t.hero;
         )}
       </p>
 
+      <!-- 按钮上方那句自我描述：文案里可能是空字符串（中文目前就是空的），空了整段不出现，不留空档 -->
       {
-        h.tagline && (
+        hero.tagline && (
           <p class="hero__tagline mono-sm" data-anim="fade" data-delay="0.1">
-            {h.tagline}
+            {hero.tagline}
           </p>
         )
       }
 
+      <!-- 两个按钮：主按钮去能力屏 #capability，次按钮去联系屏 #contact。
+           站内锚点会被 motion.ts 的 initAnchors 接住，改成平滑滚动并让开顶部导航 -->
       <div class="hero__cta" data-anim="fade" data-delay="0.12">
-        <Button href={h.primary.href} label={h.primary.label} variant="solid" />
-        <Button href={h.secondary.href} label={h.secondary.label} variant="outline" />
+        <Button href={hero.primary.href} label={hero.primary.label} variant="solid" />
+        <Button href={hero.secondary.href} label={hero.secondary.label} variant="outline" />
       </div>
     </div>
 
+    <!-- 右半：3D 标志。data-parallax="-40" 是视差总幅度，负号让它滚动时往上浮，和文字差开速度 -->
     <figure class="hero__visual" data-parallax="-40">
+      <!-- client:idle：等页面空闲才加载这份 WebGL 代码，先把第一屏文字交出去（LCP）
+           poster 是 WebGL 不可用时显示的静态图，noteLive / noteStatic 是图上那行小字 -->
       <HeroMark
         client:idle
         poster="/img/logo-3d-1200.webp"
-        posterAlt={h.posterAlt}
-        noteLive={h.sceneNote}
-        noteStatic={h.sceneNoteFallback}
+        posterAlt={hero.posterAlt}
+        noteLive={hero.sceneNote}
+        noteStatic={hero.sceneNoteFallback}
       />
-      <figcaption class="sr-only">{h.caption}</figcaption>
+      <!-- 只给读屏和搜索用的说明，视觉上不显示（.sr-only） -->
+      <figcaption class="sr-only">{hero.caption}</figcaption>
     </figure>
   </div>
 
+  <!-- 页脚条：左边一排硬指标，中间一句说明，右边「往下滑」的提示 -->
   <div class="hero__foot shell">
     <ul class="hero__specs">
       {
-        h.specs.map((s) => (
+        hero.specs.map((spec) => (
           <li>
-            <span class="mono key">{s.k}</span>
-            <span class="val tabular">{s.v}</span>
+            <span class="mono key">{spec.k}</span>
+            <span class="val tabular">{spec.v}</span>
           </li>
         ))
       }
     </ul>
 
-    <p class="hero__caption mono-sm">{h.caption}</p>
+    <p class="hero__caption mono-sm">{hero.caption}</p>
 
+    <!-- 下滑提示：一根竖条里那段橙色在往下流（动画在下面的 scrollCue），点了跳到主张屏 -->
     <a class="hero__scroll" href="#claim">
       <span class="mono-sm">{t.ux.scroll}</span>
       <span class="hero__scroll-line" aria-hidden="true"><i></i></span>
@@ -87,51 +122,60 @@ const h = t.hero;
 </section>
 
 <style>
+  /* 首屏外壳：撑满一屏，内容按「导航 / 中间正文 / 页脚条」三段竖排。
+     手机地址栏收起时会改变视口高度，所以 min-height 给了两条，后一条盖前一条 */
   .hero {
     position: relative;
-    min-height: 100svh;
-    min-height: 100dvh;
+    min-height: 100svh;   /* 老浏览器不认 dvh 时的兜底：静态视口高度 */
+    min-height: 100dvh;   /* 动态视口高度：地址栏伸缩时不会上下各露一条白 */
     display: flex;
     flex-direction: column;
-    padding-top: clamp(84px, 11vh, 120px);
+    padding-top: clamp(84px, 11vh, 120px);      /* 让开固定在顶上的导航条，屏幕越高留得越松 */
     padding-bottom: clamp(1.5rem, 3vh, 2.5rem);
-    overflow: clip;
+    overflow: clip;   /* 抠掉装饰线溢出的部分；用 clip 不用 hidden，免得这里变成滚动容器 */
   }
 
   /* 工程图纸感的竖向细线 */
+  /* 图纸底纹：三条等宽竖线铺满整屏。这一层自己定宽和左右边距，和正文 .shell 对齐，
+     所以刻度线正好压在内容的左右边界上 */
   .hero__rules {
     position: absolute;
     inset: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    padding-inline: var(--gutter);
-    pointer-events: none;
+    padding-inline: var(--gutter);              /* 和正文同一条左边线 */
+    pointer-events: none;                       /* 纯装饰，别挡住按钮 */
     max-width: var(--maxw);
     margin-inline: auto;
     left: 0;
     right: 0;
   }
 
+  /* 每条线只画右边框，带 opacity 压淡：它只当底纹，抢标题就错了 */
   .hero__rules span {
     border-right: 1px solid var(--ink-08);
     opacity: 0.85;
   }
 
+  /* 最后一条去掉右边框，否则屏幕右边缘会多出一道 */
   .hero__rules span:last-child {
     border-right: 0;
   }
 
+  /* 12 栏网格：左 6 栏放文字、右 6 栏放标志。
+     flex: 1 让它吃掉导航以下、页脚条以上的整段高度，标志才能垂直居中 */
   .hero__grid {
     position: relative;
-    z-index: 2;
+    z-index: 2;        /* 压在底纹竖线之上 */
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-columns: repeat(12, minmax(0, 1fr));   /* minmax(0,1fr) 是关键：默认 1fr 的最小值取内容宽度，长标题会把栏撑破 */
     align-items: center;
-    column-gap: clamp(1rem, 2vw, 2rem);
+    column-gap: clamp(1rem, 2vw, 2rem);   /* 左右两半之间的中缝 */
     row-gap: 2rem;
   }
 
+  /* 左半：文字列。块与块之间用 clamp 拉开 —— 屏幕越宽越松，窄屏不至于散架 */
   .hero__copy {
     grid-column: 1 / span 6;
     display: flex;
@@ -140,6 +184,7 @@ const h = t.hero;
     padding-bottom: 1rem;
   }
 
+  /* 小标题：一颗橙点 + 公司全称，字距 0.2em 拉成像图纸右上角图签的排版 */
   .hero__kicker {
     display: inline-flex;
     align-items: center;
@@ -149,6 +194,7 @@ const h = t.hero;
     letter-spacing: 0.2em;
   }
 
+  /* 那颗橙点：5px，再大就抢标题了；flex-shrink: 0 保证窄屏不被挤成椭圆 */
   .dot {
     width: 5px;
     height: 5px;
@@ -158,11 +204,13 @@ const h = t.hero;
     flex-shrink: 0;
   }
 
+  /* 主标题：字号用全站 display 字号，两行分别是「看见太阳，」「看见明天。」 */
   .hero__title {
     font-size: var(--fs-display);
-    margin-top: -0.12em;
+    margin-top: -0.12em;   /* 抵掉大字号行高的上沿留白，否则离小标题太远 */
   }
 
+  /* 第二行上实心墨色、第一行保持淡色 —— 两句之间才有轻重对比 */
   .hero__title .line-mask:nth-child(2) > span {
     color: var(--ink);
   }
@@ -173,12 +221,13 @@ const h = t.hero;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.1em 0.5em;
-    max-width: 40ch;
+    max-width: 40ch;   /* 一行最多 40 个字，再长就不像一句话了 */
     margin-top: 0.5rem;
     font-size: clamp(0.9375rem, 1.15vw, 1.0625rem);
     color: var(--ink-56);
   }
 
+  /* 破折号前的中文：用中文字体、字重 500、字距略松 */
   .hero__lede-cjk {
     font-family: var(--font-cjk);
     font-weight: 500;
@@ -192,10 +241,12 @@ const h = t.hero;
     color: var(--ink-56);
   }
 
+  /* 破折号本身：用最淡的一档墨色，只当分隔，不让人读它 */
   .hero__lede-dash {
     color: var(--ink-20);
   }
 
+  /* 破折号后的拉丁短语：小一号、字距 0.22em、全小写，读起来像一句旁注 */
   .hero__lede-latin {
     font-family: var(--font-latin);
     font-size: 0.875em;
@@ -216,6 +267,7 @@ const h = t.hero;
     text-transform: none;
   }
 
+  /* 前面那道 18px 的橙横杠，代替项目符号 */
   .hero__tagline::before {
     content: '';
     width: 18px;
@@ -223,6 +275,7 @@ const h = t.hero;
     background: var(--orange);
   }
 
+  /* 两个按钮横排；窄屏放不下就自动换行 */
   .hero__cta {
     display: flex;
     flex-wrap: wrap;
@@ -230,18 +283,21 @@ const h = t.hero;
     margin-top: 0.6rem;
   }
 
+  /* 右半：3D 标志。高度跟着视口走，宽度由 1:1 的 aspect-ratio 推出来；
+     margin-right 的负值是让它往右顶出正文边距，视觉上更贴屏幕边 */
   .hero__visual {
     grid-column: 7 / -1;
     position: relative;
     align-self: center;
     justify-self: center;
-    height: min(64vh, 620px);
+    height: min(64vh, 620px);   /* 占视口六成高，但封顶 620px，别在超宽屏上撑成墙 */
     aspect-ratio: 1 / 1;
     width: auto;
-    margin-right: calc(var(--gutter) * -1.1);
+    margin-right: calc(var(--gutter) * -1.1);   /* 顶出去 1.1 个 gutter：少一点不够满，多一点会顶到滚动条 */
     z-index: 1;
   }
 
+  /* 页脚条：左边硬指标、中间一句说明、右边下滑提示；顶上一条细线把它和正文分开 */
   .hero__foot {
     position: relative;
     z-index: 2;
@@ -250,32 +306,37 @@ const h = t.hero;
     justify-content: space-between;
     gap: 1.5rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--ink-12);
+    border-top: 1px solid var(--ink-12);   /* 图纸上那种细分隔线，比正常分隔线淡 */
   }
 
+  /* 硬指标一排：成立 / 注册资本 / 注册地，各项之间按屏幕宽度拉开 */
   .hero__specs {
     display: flex;
     gap: clamp(1rem, 3vw, 2.5rem);
     flex-wrap: wrap;
   }
 
+  /* 单条指标：标签在上、数值在下 */
   .hero__specs li {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
   }
 
+  /* 标签比数值还小一号：眼睛先读到数值，再回来对标签 */
   .hero__specs .key {
     color: var(--ink-38);
     font-size: 0.5rem;
   }
 
+  /* 数值用 .tabular：数字等宽，几组数值上下才对得齐 */
   .hero__specs .val {
     font-size: 0.8125rem;
     font-weight: 500;
     letter-spacing: 0.02em;
   }
 
+  /* 中间那句说明：最多 32 个字、居中；flex: 1 吃掉两侧空档，把它挤在正中 */
   .hero__caption {
     color: var(--ink-38);
     max-width: 32ch;
@@ -287,6 +348,7 @@ const h = t.hero;
     flex: 1;
   }
 
+  /* 右下角下滑提示：一句「往下滑」加一根竖条 */
   .hero__scroll {
     display: inline-flex;
     align-items: center;
@@ -295,6 +357,7 @@ const h = t.hero;
     flex-shrink: 0;
   }
 
+  /* 竖条：1px 宽、34px 高；overflow: hidden 让里面那段橙色流出去时被裁掉 */
   .hero__scroll-line {
     display: block;
     width: 1px;
@@ -304,14 +367,16 @@ const h = t.hero;
     overflow: hidden;
   }
 
+  /* 橙色那段：高度占竖条的 40%，从上面流到下面，2.4 秒一轮 */
   .hero__scroll-line i {
     position: absolute;
     inset: 0 0 auto 0;
     height: 40%;
     background: var(--orange);
-    animation: scrollCue 2.4s var(--ease-inout) infinite;
+    animation: scrollCue 2.4s var(--ease-inout) infinite;   /* 2.4s：再快显得着急，再慢像卡住 */
   }
 
+  /* 0% 从竖条上方外面进来，55% 起就停在最下方外面；留一段空档再重来，节奏才不慌 */
   @keyframes scrollCue {
     0% {
       transform: translateY(-110%);
@@ -322,22 +387,24 @@ const h = t.hero;
     }
   }
 
-  /* ---------------- responsive ---------------- */
+  /* ---------------- 断点适配 ---------------- */
+  /* 1100px：标志缩一号，免得和文字抢地方 */
   @media (max-width: 1100px) {
     .hero__copy {
       grid-column: 1 / span 6;
     }
     .hero__visual {
       grid-column: 7 / -1;
-      height: min(58vh, 520px);
+      height: min(58vh, 520px);   /* 跟着收一档，仍封顶 520px */
       width: auto;
     }
   }
 
+  /* 860px 起：改单栏 —— 文字在上、标志在下，页脚条允许换行 */
   @media (max-width: 860px) {
     .hero {
-      min-height: auto;
-      padding-top: 96px;
+      min-height: auto;   /* 单栏后不再强求一屏高，内容多高就多高 */
+      padding-top: 96px;  /* 只让开导航条的 96px */
       padding-bottom: 2rem;
     }
 
@@ -357,8 +424,8 @@ const h = t.hero;
       height: auto;
       width: min(86vw, 460px);
       aspect-ratio: 1 / 1;
-      margin-right: 0;
-      margin-top: -1rem;
+      margin-right: 0;    /* 单栏后不再往右顶 */
+      margin-top: -1rem;  /* 往上收一点，别和文字之间空一大块 */
     }
 
     .hero__foot {
@@ -367,6 +434,7 @@ const h = t.hero;
       margin-top: 1.5rem;
     }
 
+    /* 说明文字挪到最后一行的整宽位置，左对齐 */
     .hero__caption {
       order: 3;
       text-align: left;
@@ -379,6 +447,7 @@ const h = t.hero;
     }
   }
 
+  /* 系统里开了「减少动态效果」：橙色那段直接停在下方，不做循环 */
   @media (prefers-reduced-motion: reduce) {
     .hero__scroll-line i {
       animation: none;
