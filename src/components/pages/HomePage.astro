@@ -19,6 +19,11 @@ interface Props {
   t: Dict;
 }
 const { t } = Astro.props;
+
+/** 每章底色的明暗：Astro 构建期读不到脚本算出来的 computed style，
+    所以这里把「哪几屏是深色」直接量出来传给轴（1 = 深底） */
+const DARK_SECTIONS = new Set(['claim', 'why', 'location']);
+const darkOf = (id: string) => (DARK_SECTIONS.has(id) ? 1 : 0);
 ---
 
 <Nav t={t} />
@@ -26,6 +31,7 @@ const { t } = Astro.props;
 <NarrativeRail
   client:idle
   chapters={t.chapters}
+  bgOf={t.chapters.map((c) => darkOf(c.id))}
   ariaLabel={t.ux.sectionNav}
   mascotAlt={t.mascot.companion.alt}
   mascot={{

@@ -28,31 +28,76 @@
   padding: 10px 0;
 }
 
-.rail__list::before {
-  content: '';
+.rail__track {
   position: absolute;
   left: 0;
   top: 10px;
   bottom: 10px;
   width: 1px;
+  pointer-events: none;
+}
+
+/* 轴按章分几段：奶白底上压一道淡墨线，深色屏上把这一截填成黑、只留一条白描边。
+   段的位置 = 章节在文档里的位置，所以橙线的末端永远落在刻度柱上 */
+.rail__seg {
+  position: absolute;
+  left: 0;
+  width: 1px;
   background: var(--ink-12);
 }
 
+/* 深色屏上这一截：只留白色描边、柱体填黑——白-黑-白三列，圆柱是空的，
+   不是一条实心白线，免得黑底上突兀、死板。中间 1px 的空芯由 background-clip 抠出来
+   （中间必须真黑：留透明会被身后的东西透出来，看着还是白的） */
+.rail__seg[data-skin='dark'] {
+  width: 3px;
+  left: -1px;
+  margin-left: -0.5px;
+  /* 白-黑-白三列：左右 1px 白描边，中间 1px 是黑的柱芯（不是实心白条） */
+  background: #141210;
+  border-left: 1px solid #fff9f1;
+  border-right: 1px solid #fff9f1;
+  box-sizing: border-box;
+  background-clip: content-box;
+}
+
+
+
+/* 橙线只往上长：整条轴（不分深浅）走过的部分都盖成橙的，末端就是当前进度。
+   盖在描边之上（z-index:2），否则深色段的左右白边会压在橙线上，末端看着像断了一截；
+   末端再顶一颗 7px 的圆头，压在刻度柱上（刻度本身是 7x7），橙线看起来是「走到这一格」而不是被截断 */
 .rail__fill {
   position: absolute;
+  z-index: 2;
   left: 0;
-  top: 10px;
-  height: calc(100% - 20px);
   width: 1px;
   background: var(--orange);
-  transform-origin: top center;
-  will-change: transform;
+  pointer-events: none;
+}
+
+/* 深色屏上的橙线同样带白描边，不然黑底上只剩一根血丝；
+   末端不另画圆头——当前章的刻度柱自己会染橙，橙线压在它中心 */
+.rail__fill[data-skin='dark'] {
+  width: 3px;
+  left: -1px;
+  margin-left: -0.5px;
+  box-sizing: border-box;
+  border-left: 0.5px solid #fff9f1;
+  border-right: 0.5px solid #fff9f1;
+  background-clip: padding-box;
+}
+
+/* 橙线末端就是当前章的那根刻度：把刻度柱本身染成橙的（不再另画一颗点去对位，
+   免得和刻度错开半像素看起来像两个东西） */
+.rail__item[data-active='true'] .rail__tick {
+  background: var(--orange);
 }
 
 .rail__tible {
   position: absolute;
-  left: -17px;
-  top: calc(10px + var(--p, 0) * (100% - 20px));
+  left: -14px;
+  /* 站在橙线端点上，跟着章内进度往下走（--tip 是端点相对轨道顶的像素） */
+  top: calc(10px + var(--tip, 7px));
   width: 34px;
   height: auto;
   transform: translateY(-50%) rotate(-4deg);
@@ -60,6 +105,11 @@
   filter: drop-shadow(0 3px 6px rgba(20, 18, 16, 0.14));
   pointer-events: none;
   z-index: 2;
+}
+
+/* 刻度在轴上，不在字里 */
+.rail__list {
+  padding-left: 0;
 }
 
 .rail__list li {
@@ -157,6 +207,38 @@
   border-radius: 2px;
 }
 
+.rail__tible {
+  transition: top 220ms linear;
+}
+
+/* 深色屏上的刻度：黑填充 + 白描边（不用反相，也不用 --cream——.on-dark 里它会被重映射成白） */
+.rail__item[data-skin='dark'] .rail__tick {
+  background: #141210;
+  border-color: rgba(255, 249, 241, 0.92);
+  /* 刻度是 7x7 居中在 1px 轴上；整数像素屏幕会把它推成 20..27，跟轴线错开半格。
+     左移 0.5px 让刻度落在 19..26：轴线（20..21）压在这根 7px 柱对称的中段，
+     -1px 会落到 18..25，反而偏左（左侧白边只剩 1px） */
+  margin-left: -0.5px;
+}
+
+.rail__item[data-skin='dark'][data-active='true'] .rail__tick {
+  background: var(--orange);
+  border-color: #fff9f1;
+}
+
+.rail__item[data-skin='dark'] .rail__no {
+  color: rgba(255, 249, 241, 0.72);
+}
+
+.rail__item[data-skin='dark'][data-active='true'] .rail__no {
+  color: #fff9f1;
+}
+
+.rail__item[data-skin='dark'] .rail__label {
+  color: #fff9f1;
+  background: color-mix(in srgb, #141210 80%, transparent);
+}
+
 /* 移动端：贴左边一条细轴，只保留刻度与 tible */
 @media (max-width: 860px) {
   .rail {
@@ -179,15 +261,9 @@
     align-items: flex-start;
   }
 
-  .rail__list::before {
+  .rail__track {
     top: 12vh;
     bottom: 12vh;
-  }
-
-  .rail__fill {
-    top: 12vh;
-    height: calc(76vh * var(--p, 0));
-    transition: none;
   }
 
   .rail__no,
@@ -198,7 +274,7 @@
   .rail__tible {
     left: -1px;
     width: 18px;
-    top: calc(12vh + var(--p, 0) * 76vh);
+    top: calc(12vh + var(--tip, 0px));
   }
 
   .rail__item {

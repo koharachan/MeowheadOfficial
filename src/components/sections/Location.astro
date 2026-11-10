@@ -159,11 +159,24 @@ const l = t.location;
     font-size: 0.625rem;
   }
 
-  @media (max-width: 720px) {
+  /* 手机端不再靠滚动驱动：没有 240vh 的长轨道，舞台也不再 sticky，
+     放大动画进视口就自己播一遍（见 GlobeToMap.tsx） */
+  @media (max-width: 720px), (hover: none) and (pointer: coarse) {
     .loc__track {
-      height: 200vh;
+      height: auto;
+    }
+    .loc__pin {
+      position: relative;
+      top: auto;
+      height: auto;
+      display: block;
+    }
+    .loc__frame {
+      flex: none;
+      height: min(66svh, 520px);
     }
     .loc__caption {
+      margin-top: 0.75rem;
       font-size: 0.5625rem;
       line-height: 1.6;
     }
@@ -271,6 +284,8 @@ const l = t.location;
     opacity: 1;
     pointer-events: auto;
   }
+
+
 
   .globe__mapmarker {
     position: absolute;
@@ -554,6 +569,29 @@ const l = t.location;
     .globe__globe,
     .globe__map {
       transition-duration: 1ms;
+    }
+  }
+
+  /* 手机端：地图只当画面用——不能点、不能拖，手指落在上面照常滚页面；
+     放大动画进视口就自己播（见 GlobeToMap.tsx），所以 ± 按钮和「上滑」提示都收掉。
+     唯一的可点项是右下角「打开大地图」 */
+  @media (max-width: 720px), (hover: none) and (pointer: coarse) {
+    .globe__stage canvas,
+    .globe__globe,
+    .globe__map,
+    .globe__poster,
+    .globe__mapmarker {
+      pointer-events: none !important;
+      touch-action: pan-y !important;
+    }
+
+    .globe__zoom,
+    .globe__hint {
+      display: none !important;
+    }
+
+    .globe__open {
+      z-index: 5;
     }
   }
 </style>

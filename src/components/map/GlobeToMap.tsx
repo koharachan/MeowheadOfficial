@@ -106,6 +106,12 @@ const ZOOM_END = 0.62;
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const zoomOf = (p: number) => clamp01(p / ZOOM_END);
 
+/** 手机/触屏：没有 hover、不能拖地图，这一屏就走「自动播放一遍放大」而不是滚动驱动 */
+const isMobileView = () =>
+  typeof window !== 'undefined' &&
+  (window.matchMedia('(max-width: 720px)').matches ||
+    window.matchMedia('(hover: none) and (pointer: coarse)').matches);
+
 export default function GlobeToMap({
   label,
   coordinates,
@@ -140,8 +146,9 @@ export default function GlobeToMap({
   const mapRef = useRef<any>(null);
   const viewerRef = useRef<any>(null);
 
-  /* ---------------- 滚动进度 ---------------- */
+  /* ---------------- 滚动进度（桌面） ---------------- */
   useEffect(() => {
+    if (isMobileView()) return;
     let raf = 0;
     const update = () => {
       const el = (wrap.current?.closest('.loc__track') as HTMLElement | null) ?? wrap.current;
@@ -166,6 +173,48 @@ export default function GlobeToMap({
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  /* ---------------- 手机端：进入视口后自动播一遍放大 ---------------- */
+  useEffect(() => {
+    if (!isMobileView()) return;
+    const host = wrap.current;
+    if (!host) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const DURATION = reduce ? 1 : 4200;
+    let raf = 0;
+    let t0 = 0;
+    let started = false;
+
+    const step = (now: number) => {
+      if (!t0) t0 = now;
+      const k = Math.min(1, (now - t0) / DURATION);
+      // ease-in-out：前段慢慢离开整颗地球，后段稳稳落到街区
+      const eased = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      progress.current = eased * ZOOM_END;
+      const q = zoomOf(progress.current);
+      if (Math.abs(q - pctRef.current) > 0.002) {
+        pctRef.current = q;
+        setPct(q);
+      }
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting || started) return;
+        started = true;
+        io.disconnect();
+        raf = requestAnimationFrame(step);
+      },
+      { threshold: 0.3 }
+    );
+    io.observe(host);
+
+    return () => {
+      io.disconnect();
       cancelAnimationFrame(raf);
     };
   }, []);
