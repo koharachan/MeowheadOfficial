@@ -408,8 +408,8 @@ export const zh: Dict = {
     tagline: '硬件、软件与安全，同一家公司交付。',
     icp: '粤ICP备2026188874号-1',
     icpHref: 'https://beian.miit.gov.cn/',
-    police: '粤公网安备（办理中）',
-    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',
+    police: '粤公网安备44020302000376号',
+    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=44020302000376',
     copyright: '© 2026 猫猫头网络科技（广东）有限公司',
     note: '本站不使用虚构的客户案例、奖项、营收或合作方。',
     columns: [

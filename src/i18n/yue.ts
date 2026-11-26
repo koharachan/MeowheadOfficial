@@ -412,8 +412,8 @@ export const yue: Dict = {
     tagline: '硬件、軟件同安全，同一間公司交付。',
     icp: '粤ICP备2026188874号-1',
     icpHref: 'https://beian.miit.gov.cn/',
-    police: '粵公網安備（辦理中）',
-    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',
+    police: '粤公网安备44020302000376号',
+    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=44020302000376',
     copyright: '© 2026 貓貓頭網絡科技（廣東）有限公司',
     note: '本站不使用虛構的客戶案例、獎項、營收或合作方。',
     columns: [

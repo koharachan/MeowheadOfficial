@@ -262,7 +262,7 @@ export interface Dict {
     tagline: string;
     icp: string;
     icpHref: string;
-    /** 公安备案（占位） */
+    /** 公安备案 */
     police: string;
     policeHref: string;
     copyright: string;

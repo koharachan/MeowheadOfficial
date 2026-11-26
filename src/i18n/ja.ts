@@ -411,8 +411,8 @@ export const ja: Dict = {
     tagline: 'ハードウェア、ソフトウェア、セキュリティを同じ一社が納めます。',
     icp: '粤ICP备2026188874号-1',
     icpHref: 'https://beian.miit.gov.cn/',
-    police: '粤公網安備（申請中）',
-    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',
+    police: '粤公网安备44020302000376号',
+    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=44020302000376',
     copyright: '© 2026 猫猫頭網絡科技（広東）有限公司',
     note: '当サイトは架空の導入事例、受賞歴、売上、取引先を掲載しません。',
     columns: [

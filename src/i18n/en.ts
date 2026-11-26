@@ -418,8 +418,8 @@ export const en: Dict = {
     tagline: 'Hardware, software and security from one company.',
     icp: '粤ICP备2026188874号-1',
     icpHref: 'https://beian.miit.gov.cn/',
-    police: 'Public security filing (in progress)',
-    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',
+    police: '粤公网安备44020302000376号',
+    policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=44020302000376',
     copyright: '© 2026 MAOMAOTOU NETWORK TECHNOLOGY (GUANGDONG) CO., LTD.',
     note: 'No invented clients, awards, revenue or partners on this site.',
     columns: [
