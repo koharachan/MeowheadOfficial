@@ -10,12 +10,12 @@ import LegacyShell from '../../components/legacy/LegacyShell.astro';
   ticker="★ 欢迎光临猫猫头网络科技（广东）有限公司官方网站！本公司成立于 2026 年，主营卫星终端与软件开发。本站推荐使用 800×600 分辨率浏览。留言板已开通，欢迎来信指正。感谢您的访问，请把本站加入收藏夹。★"
   navTitle="站内导航"
   navItems={[
+    { label: '公司新闻', href: '#news' },
+    { label: '领导动态', href: '#leaders' },
     { label: '公司简介', href: '#about' },
     { label: '主营业务', href: '#business' },
     { label: '团队', href: '#team', hot: true },
     { label: '联系方式', href: '#contact' },
-    { label: '资源下载', href: '/downloads/' },
-    { label: '吉祥物 寻美', href: '/mascot/' },
     { label: '企业日志', href: '/blog/' },
   ]}
   updatedLabel="最后更新"
@@ -25,6 +25,52 @@ import LegacyShell from '../../components/legacy/LegacyShell.astro';
   backHref="/"
   webmasterLabel="管理员信箱"
 >
+  <div class="panel" id="news">
+    <div class="panel-title">公司新闻</div>
+    <div class="panel-body">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="newslist">
+        <tr>
+          <td><a href="#about">公司完成工商登记，取得营业执照</a></td>
+          <td align="right" width="80"><font class="small">2026-11-04</font></td>
+        </tr>
+        <tr>
+          <td><a href="#about">公司官网改版上线，硬件、软件与安全统一对外</a></td>
+          <td align="right"><font class="small">2026-11-07</font></td>
+        </tr>
+        <tr>
+          <td><a href="#contact">官网完成 ICP 备案，备案号 粤ICP备2026188874号-1</a></td>
+          <td align="right"><font class="small">2026-11</font></td>
+        </tr>
+        <tr>
+          <td><a href="#business">卫星通信终端、软件与系统集成、人工智能、信息安全四条业务线对外开展</a></td>
+          <td align="right"><font class="small">2026-11</font></td>
+        </tr>
+      </table>
+      <p class="more"><a href="#about">更多 &gt;&gt;</a></p>
+    </div>
+  </div>
+
+  <div class="panel" id="leaders">
+    <div class="panel-title">领导动态</div>
+    <div class="panel-body">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="newslist">
+        <tr>
+          <td>负责人分工确定：法定代表人负责对外签署、工商与合规事务</td>
+          <td align="right" width="80"><font class="small">2026-11</font></td>
+        </tr>
+        <tr>
+          <td>股东 / CEO 负责经营与交付，对项目结果负责</td>
+          <td align="right"><font class="small">2026-11</font></td>
+        </tr>
+        <tr>
+          <td>算法顾问负责模型选型与算法方案的外部评审</td>
+          <td align="right"><font class="small">2026-11</font></td>
+        </tr>
+      </table>
+      <p class="more"><a href="#team">更多 &gt;&gt;</a></p>
+    </div>
+  </div>
+
   <div class="panel" id="about">
     <div class="panel-title">公司简介</div>
     <div class="panel-body">

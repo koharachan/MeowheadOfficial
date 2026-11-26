@@ -61,8 +61,10 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
     <meta name="generator" content="Notepad" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-    {/* 全页样式都在这里：老式 CSS 2.1 写法，不用变量、不用媒体查询 */}
-    <style type="text/css">
+    {/* 全页样式都在这里：老式 CSS 2.1 写法，不用变量、不用媒体查询。
+        is:inline 是关键 —— 不加的话 Astro 会把每条选择器改写成 [data-astro-cid-xxx] 的属性选择器，
+        IE6 完全不认属性选择器，整页样式会全部失效，看起来就像坏掉了 */}
+    <style type="text/css" is:inline>
       /* 整页底色：米黄纸色 + 平铺的 GIF 小方块；当年只有 GIF 能做得又小又稳 */
       body {
         margin: 0;
@@ -84,9 +86,12 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
       a:visited { color: #800080; text-decoration: underline; }
       a:hover { color: #ff0000; text-decoration: underline; }
       /* 780px 白底主表：在 800×600 的屏上左右各留一点边；2px 深灰边当纸边框 */
-      .wrap { background-color: #ffffff; border: 2px solid #7b7166; }
+      .wrap { background-color: #ffffff; border: 2px solid #808080; }
       /* 蓝色横条：站名、面板标题都用它 */
       .bar { background-color: #000080; color: #ffffff; }
+      /* 主导航条里的白字链接：老站的导航不画下划线，hover 才亮黄 */
+      a.navlink:link, a.navlink:visited { color: #ffffff; text-decoration: none; }
+      a.navlink:hover { color: #ffff00; text-decoration: underline; }
       .panelhead { background-color: #000080; color: #ffffff; font-weight: bold; padding: 2px 6px; }
       /* 导航格做成凸起的按钮：上、左亮白，下、右深灰，现在按下去之前的那点立体感 */
       .navcell {
@@ -114,7 +119,7 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
         padding: 2px 6px;
         border: 1px inset #808080;
       }
-      /* 88×88 的徽章格：当年「本站由 XX 制作」的按钮广告标准尺寸 */
+      /* 88×31 的徽章格：当年「本站由 XX 制作」的按钮广告标准尺寸 */
       .btn88 {
         width: 88px;
         height: 31px;
@@ -163,6 +168,10 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
       }
       /* 公告条下面的提示小字 */
       .marquee-hint { color: #666666; font-size: 11px; }
+      /* 新闻 / 动态列表：左边标题、右边日期、底边点线，当年政府站和企业站都这么排 */
+      .newslist td { border-bottom: 1px dotted #b0a89c; padding: 4px; }
+      .newslist .small { color: #666666; }
+      .more { text-align: right; margin: 6px 0 0 0; }
     </style>
   </head>
 
@@ -172,12 +181,31 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
     <center>
     {/* 主表：定宽 780、白底、2px 深灰边；只有一张，整个页面都装在里面 */}
       <table class="wrap" width="780" border="0" cellpadding="0" cellspacing="0" align="center">
-      {/* 第一行：左边站名，右边「建议用 800×600 浏览」 */}
+      {/* 第一行：横幅招牌。GIF 而不是 PNG，因为 IE6 的 PNG 透明通道是坏的 */}
         <tr>
-          <td class="bar" height="24" align="left">
-            <font color="#ffffff" face="宋体" size="2"><b>&nbsp;★ {p.siteName} ★</b></font>
+          <td colspan="2" align="center" bgcolor="#000080">
+            <img src={isZh ? '/ie/banner.gif' : '/ie/banner-en.gif'} width="776" height="72" alt={p.siteName} />
           </td>
-          <td class="bar" align="right">
+        </tr>
+
+      {/* 第二行：蓝底白字的主导航条，右边仍挂「建议 800×600 浏览」 */}
+        <tr>
+          <td class="bar" height="22" align="left">
+            <font face="宋体" size="2">
+              <b>
+                <a class="navlink" href="/">{isZh ? '首页' : 'Home'}</a>
+                {
+                  p.navItems.map((item) => (
+                    <span>
+                      <font color="#ffffff">&nbsp;|&nbsp;</font>
+                      <a class="navlink" href={item.href}>{item.label}</a>
+                    </span>
+                  ))
+                }
+              </b>
+            </font>
+          </td>
+          <td class="bar" align="right" width="168">
             <font color="#ffffff" face="宋体" size="1">
               &nbsp;{isZh ? '建议使用 800×600 分辨率浏览' : 'Best viewed at 800×600'}&nbsp;
             </font>
@@ -202,7 +230,7 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
 
       {/* 第四行：左右两栏。左栏 150px 宽、浅色底；右栏白底、宽度吃满剩下 */}
         <tr>
-          <td width="150" valign="top" bgcolor="#f2ece3">
+          <td width="160" valign="top" bgcolor="#f2ece3">
             {/* 左栏：导航面板（面板头 + 一列链接格） */}
             <table width="100%" border="0" cellpadding="3" cellspacing="0">
               <tr>
@@ -296,9 +324,12 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
           </td>
         </tr>
 
-      {/* 第七行：底部深蓝版权条（只留色带，不再挂说明文案） */}
+      {/* 第七行：底部深蓝版权条 —— 版权与备案号是法定要显示的，留空反而像坏了 */}
         <tr>
           <td colspan="2" bgcolor="#000080" align="center" height="22">
+            <font color="#ffffff" face="宋体" size="1">
+              &nbsp;© 2026 {p.siteName}　粤ICP备2026188874号-1&nbsp;
+            </font>
           </td>
         </tr>
       </table>

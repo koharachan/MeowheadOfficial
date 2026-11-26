@@ -10,12 +10,12 @@ import LegacyShell from '../../../components/legacy/LegacyShell.astro';
   ticker="★ Welcome to the official MAOMAOTOU NETWORK TECHNOLOGY website! Established in 2026, we build satellite terminals and software. This site is best viewed at 800×600. The guestbook is open. Thanks for visiting — please add us to your bookmarks. ★"
   navTitle="SITE MENU"
   navItems={[
+    { label: 'News', href: '#news' },
+    { label: 'Leadership', href: '#leaders' },
     { label: 'About', href: '#about' },
     { label: 'Business', href: '#business' },
     { label: 'Team', href: '#team', hot: true },
     { label: 'Contact', href: '#contact' },
-    { label: 'Downloads', href: '/en/downloads/' },
-    { label: 'Mascot', href: '/en/mascot/' },
     { label: 'Blog', href: '/en/blog/' },
   ]}
   updatedLabel="Last updated"
@@ -25,6 +25,52 @@ import LegacyShell from '../../../components/legacy/LegacyShell.astro';
   backHref="/en/"
   webmasterLabel="Webmaster"
 >
+  <div class="panel" id="news">
+    <div class="panel-title">News</div>
+    <div class="panel-body">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="newslist">
+        <tr>
+          <td><a href="#about">Company registered and business licence issued</a></td>
+          <td align="right" width="80"><font class="small">2026-11-04</font></td>
+        </tr>
+        <tr>
+          <td><a href="#about">Website relaunched: hardware, software and security under one roof</a></td>
+          <td align="right"><font class="small">2026-11-07</font></td>
+        </tr>
+        <tr>
+          <td><a href="#contact">ICP filing completed, 粤ICP备2026188874号-1</a></td>
+          <td align="right"><font class="small">2026-11</font></td>
+        </tr>
+        <tr>
+          <td><a href="#business">Four lines open for business: terminals, integration, AI, security</a></td>
+          <td align="right"><font class="small">2026-11</font></td>
+        </tr>
+      </table>
+      <p class="more"><a href="#about">More &gt;&gt;</a></p>
+    </div>
+  </div>
+
+  <div class="panel" id="leaders">
+    <div class="panel-title">Leadership</div>
+    <div class="panel-body">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="newslist">
+        <tr>
+          <td>Roles confirmed: legal representative signs contracts and handles registration and compliance</td>
+          <td align="right" width="80"><font class="small">2026-11</font></td>
+        </tr>
+        <tr>
+          <td>Shareholder / CEO runs operations and delivery, and answers for results</td>
+          <td align="right"><font class="small">2026-11</font></td>
+        </tr>
+        <tr>
+          <td>Algorithm advisor reviews model selection and algorithm plans</td>
+          <td align="right"><font class="small">2026-11</font></td>
+        </tr>
+      </table>
+      <p class="more"><a href="#team">More &gt;&gt;</a></p>
+    </div>
+  </div>
+
   <div class="panel" id="about">
     <div class="panel-title">About us</div>
     <div class="panel-body">
