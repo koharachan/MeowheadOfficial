@@ -140,7 +140,7 @@ pnpm preview    # 预览构建产物
 | 角色 | 域名 | 头像来源 |
 | --- | --- | --- |
 | 法定代表人 | xiaoyanboke.cn | 该站「博主 QQ」公开的 QQ 头像（640×640） |
-| 股东 / CEO | blog.6832.me | `blog.rainchan.com`（旧站 blog.meowhead.cn 的可用镜像）里的 `profile__avatar`（640×640）；换域名后头像未重新抓取 |
+| 股东 / CEO | 66882233.xyz | `blog.rainchan.com`（旧站 blog.meowhead.cn 的可用镜像）里的 `profile__avatar`（640×640）；换域名后头像未重新抓取 |
 | 算法顾问 | luoaowoo.cn | `/images/logo/这是我的头像.jpg`（500×500，本人站点自己标注的头像） |
 
 说明两点：
@@ -207,7 +207,7 @@ MIT 覆盖的是版权；商标（猫猫头、绪方寻美、tible 的名称与�
 | 编号 | 角色 | 链接 |
 | --- | --- | --- |
 | 01 | 法定代表人 | https://xiaoyanboke.cn |
-| 02 | 股东 / CEO | https://blog.6832.me |
+| 02 | 股东 / CEO | https://66882233.xyz |
 | 03 | 算法顾问 | https://luoaowoo.cn |
 
 > 卡片默认只显示「角色 + 域名」。要显示真名，在 `src/i18n/*.ts` 的 `team.members[].name` 填一个字符串即可（组件已有渲染分支）。
