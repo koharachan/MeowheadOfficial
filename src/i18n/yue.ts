@@ -65,7 +65,7 @@ export const yue: Dict = {
   blog: {
     label: '日誌 / BLOG',
     title: '所寫之事。',
-    lede: '工程記錄：取捨、踩過的坑、何以如此選擇。不寫客戶，不寫獎項，不寫行業趨勢。',
+    lede: '工程記錄：取捨、踩過的坑、何以如此選擇。',
     readUnit: '分鐘讀完',
     toc: '本頁目錄 / CONTENTS',
     more: '更多日誌',
@@ -74,7 +74,6 @@ export const yue: Dict = {
     back: '全部日誌',
     all: '日誌',
     home: '返首頁',
-    note: '以上係工程記錄，不含客戶資料與未公開數據。',
   },
 
   meta: {
@@ -212,7 +211,6 @@ export const yue: Dict = {
         bullets: ['安全開發流程同代碼審計', '邊界防護、日誌採集同審計', '數據分級、權限同存取控制設計'],
       },
     ],
-    footnote: '以上能力對應營業執照經營範圍，不包含任何尚未取得嘅資質或許可。',
   },
 
   method: {
@@ -345,7 +343,6 @@ export const yue: Dict = {
         duty: '',
       },
     ],
-    note: '只列對外公開嘅角色；不含未披露的協作方。',
   },
   location: {
     no: '09',
@@ -415,7 +412,6 @@ export const yue: Dict = {
     police: '粤公网安备44020302000376号',
     policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=44020302000376',
     copyright: '© 2026 貓貓頭網絡科技（廣東）有限公司',
-    note: '本站不使用虛構的客戶案例、獎項、營收或合作方。',
     columns: [
       {
         title: '目錄',

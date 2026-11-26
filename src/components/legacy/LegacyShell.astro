@@ -21,7 +21,6 @@
     navItems={[{ label: '公司简介', href: '#about' }, { label: '团队', href: '#team', hot: true }]}
     updatedLabel="最后更新" updated="2026-11-07"
     counterLabel="您是本站第几位访客"
-    footerNote="本站内容仅用于介绍公司，不使用虚构的客户、案例与奖项。"
     backLabel="进入新版网站 »" backHref="/"
     webmasterLabel="管理员信箱"
   >
@@ -41,7 +40,6 @@ interface Props {
   updatedLabel: string;   // 「最后更新」这几个字
   updated: string;        // 更新时间
   counterLabel: string;   // 访客计数器前面的说明字
-  footerNote: string;     // 底部深蓝横条里的说明
   backLabel: string;      // 回新版网站的链接文字
   backHref: string;       // 回新版网站的地址
   webmasterLabel: string; // 站长信箱的说明字。注意：模板里这句话目前是写死的，这个字段没接上，调用方仍在传
@@ -298,10 +296,9 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
           </td>
         </tr>
 
-      {/* 第七行：底部深蓝版权条，说明字由调用方传 */}
+      {/* 第七行：底部深蓝版权条（只留色带，不再挂说明文案） */}
         <tr>
           <td colspan="2" bgcolor="#000080" align="center" height="22">
-            <font color="#ffffff" face="宋体" size="1">&nbsp;{p.footerNote}&nbsp;</font>
           </td>
         </tr>
       </table>

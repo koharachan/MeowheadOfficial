@@ -105,7 +105,6 @@ export interface Dict {
     back: string;
     all: string;
     home: string;
-    note: string;
   };
   meta: {
     title: string;
@@ -167,7 +166,6 @@ export interface Dict {
     title: string;
     lede: string;
     items: CapabilityItem[];
-    footnote: string;
   };
   method: {
     no: string;
@@ -214,7 +212,6 @@ export interface Dict {
     title: string;
     lede: string;
     members: { no: string; role: string; name: string; handle: string; href: string; duty: string; avatar: string; origin: string; email: string }[];
-    note: string;
   };
   location: {
     no: string;
@@ -266,7 +263,6 @@ export interface Dict {
     police: string;
     policeHref: string;
     copyright: string;
-    note: string;
     columns: { title: string; links: Link[] }[];
   };
   teapot: {

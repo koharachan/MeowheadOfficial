@@ -65,7 +65,7 @@ export const ja: Dict = {
   blog: {
     label: 'ブログ / BLOG',
     title: '書き残したこと。',
-    lede: 'エンジニアリングの記録です。実際にした取捨選択、踏んだ落とし穴、なぜそう決めたか。顧客の話も受賞歴も業界トレンドも書きません。',
+    lede: 'エンジニアリングの記録です。実際にした取捨選択、踏んだ落とし穴、なぜそう決めたか。',
     readUnit: '分で読めます',
     toc: '目次 / CONTENTS',
     more: '他の記事',
@@ -74,7 +74,6 @@ export const ja: Dict = {
     back: '記事一覧',
     all: 'ブログ',
     home: 'ホームへ',
-    note: '以上はエンジニアリングの記録で、顧客情報や未公開データは含みません。',
   },
 
   meta: {
@@ -211,7 +210,6 @@ export const ja: Dict = {
         bullets: ['セキュア開発プロセスとコード監査', '境界防御、ログ収集、監査', 'データ分類、権限、アクセス制御の設計'],
       },
     ],
-    footnote: '上記は営業許可証の事業範囲に対応します。未取得の資格・許認可は含みません。',
   },
 
   method: {
@@ -344,7 +342,6 @@ export const ja: Dict = {
         duty: '',
       },
     ],
-    note: '公開している役割のみを記載しています。未公開の協力者は含みません。',
   },
   location: {
     no: '09',
@@ -414,7 +411,6 @@ export const ja: Dict = {
     police: '粤公网安备44020302000376号',
     policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=44020302000376',
     copyright: '© 2026 猫猫頭網絡科技（広東）有限公司',
-    note: '当サイトは架空の導入事例、受賞歴、売上、取引先を掲載しません。',
     columns: [
       {
         title: '目次',

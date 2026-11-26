@@ -61,7 +61,7 @@ export const zh: Dict = {
   blog: {
     label: '日志 / BLOG',
     title: '写下来的东西。',
-    lede: '工程记录：做过的取舍、踩过的坑、为什么这么选。不写客户，不写奖项，不写行业趋势。',
+    lede: '工程记录：做过的取舍、踩过的坑、为什么这么选。',
     readUnit: '分钟读完',
     toc: '本页目录 / CONTENTS',
     more: '更多日志',
@@ -70,7 +70,6 @@ export const zh: Dict = {
     back: '全部日志',
     all: '日志',
     home: '回到首页',
-    note: '以上为工程记录，不包含客户信息与未公开数据。',
   },
 
   meta: {
@@ -208,7 +207,6 @@ export const zh: Dict = {
         bullets: ['安全开发流程与代码审计', '边界防护、日志采集与审计', '数据分级、权限与访问控制设计'],
       },
     ],
-    footnote: '以上能力对应营业执照经营范围，不包含任何尚未取得的资质或许可。',
   },
 
   method: {
@@ -341,7 +339,6 @@ export const zh: Dict = {
         duty: '',
       },
     ],
-    note: '只列对外公开的角色；不含未披露的协作方。',
   },
   location: {
     no: '09',
@@ -411,7 +408,6 @@ export const zh: Dict = {
     police: '粤公网安备44020302000376号',
     policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=44020302000376',
     copyright: '© 2026 猫猫头网络科技（广东）有限公司',
-    note: '本站不使用虚构的客户案例、奖项、营收或合作方。',
     columns: [
       {
         title: '目录',

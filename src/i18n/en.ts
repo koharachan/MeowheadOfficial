@@ -61,7 +61,7 @@ export const en: Dict = {
   blog: {
     label: 'BLOG',
     title: 'Things we wrote down.',
-    lede: 'Engineering notes: the trade-offs we made, the traps we hit, and why we chose what we chose. No clients, no awards, no trend pieces.',
+    lede: 'Engineering notes: the trade-offs we made, the traps we hit, and why we chose what we chose.',
     readUnit: 'min read',
     toc: 'CONTENTS',
     more: 'More posts',
@@ -70,7 +70,6 @@ export const en: Dict = {
     back: 'All posts',
     all: 'Blog',
     home: 'Back home',
-    note: 'Engineering notes only. No client information or undisclosed data.',
   },
 
   meta: {
@@ -217,7 +216,6 @@ export const en: Dict = {
         ],
       },
     ],
-    footnote: 'These capabilities map to our registered business scope. No certification or permit is implied.',
   },
 
   method: {
@@ -350,7 +348,6 @@ export const en: Dict = {
         duty: '',
       },
     ],
-    note: 'Public roles only; undisclosed collaborators are not listed.',
   },
   location: {
     no: '09',
@@ -421,7 +418,6 @@ export const en: Dict = {
     police: '粤公网安备44020302000376号',
     policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=44020302000376',
     copyright: '© 2026 MAOMAOTOU NETWORK TECHNOLOGY (GUANGDONG) CO., LTD.',
-    note: 'No invented clients, awards, revenue or partners on this site.',
     columns: [
       {
         title: 'Index',
