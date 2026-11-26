@@ -172,6 +172,41 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
       .newslist td { border-bottom: 1px dotted #b0a89c; padding: 4px; }
       .newslist .small { color: #666666; }
       .more { text-align: right; margin: 6px 0 0 0; }
+
+      /* 主导航条：整行排开不换行，「建议浏览」浮到右端 */
+      .topnav { white-space: nowrap; }
+      .topnav-hint { float: right; color: #ffffff; font-size: 11px; font-family: 宋体, SimSun, serif; }
+
+      /* ---- 鼠标放上去的反馈 ----
+         老站的「按下感」不是动效，是把上左、下右的亮暗边对调 */
+      .navcell:hover {
+        background-color: #c9c4bb;
+        border-top-color: #808080;
+        border-left-color: #808080;
+        border-right-color: #ffffff;
+        border-bottom-color: #ffffff;
+      }
+      .newslist tr:hover td { background-color: #ffffcc; }
+      .btn:hover, .btn88:hover {
+        background-color: #000099;
+        border-top-color: #808080;
+        border-left-color: #808080;
+        border-right-color: #ffffff;
+        border-bottom-color: #ffffff;
+      }
+
+      /* ---- 窄屏 ----
+         780 定宽是老站的骨架；媒体查询 IE6 不认，所以旧浏览器照旧看到满宽表格，
+         新浏览器才按屏幕收窄（左栏导航交给顶部导航条） */
+      @media screen and (max-width: 820px) {
+        body { background-image: none; }
+        .wrap { width: 100%; margin: 0; border-left: 0; border-right: 0; }
+        .side { display: none; }
+        .main { width: auto; }
+        img.banner { width: 100%; height: auto; }
+        .topnav { white-space: normal; }
+        .topnav-hint { display: none; }
+      }
     </style>
   </head>
 
@@ -184,13 +219,13 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
       {/* 第一行：横幅招牌。GIF 而不是 PNG，因为 IE6 的 PNG 透明通道是坏的 */}
         <tr>
           <td colspan="2" align="center" bgcolor="#000080">
-            <img src={isZh ? '/ie/banner.gif' : '/ie/banner-en.gif'} width="776" height="72" alt={p.siteName} />
+            <img class="banner" src={isZh ? '/ie/banner.gif' : '/ie/banner-en.gif'} width="776" height="72" alt={p.siteName} />
           </td>
         </tr>
 
       {/* 第二行：蓝底白字的主导航条，右边仍挂「建议 800×600 浏览」 */}
         <tr>
-          <td class="bar" height="22" align="left">
+          <td class="bar topnav" colspan="2" height="22" align="left">
             <font face="宋体" size="2">
               <b>
                 <a class="navlink" href="/">{isZh ? '首页' : 'Home'}</a>
@@ -204,11 +239,7 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
                 }
               </b>
             </font>
-          </td>
-          <td class="bar" align="right" width="168">
-            <font color="#ffffff" face="宋体" size="1">
-              &nbsp;{isZh ? '建议使用 800×600 分辨率浏览' : 'Best viewed at 800×600'}&nbsp;
-            </font>
+            <span class="topnav-hint">{isZh ? '建议 800×600 浏览' : 'Best at 800×600'}</span>
           </td>
         </tr>
 
@@ -230,7 +261,7 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
 
       {/* 第四行：左右两栏。左栏 150px 宽、浅色底；右栏白底、宽度吃满剩下 */}
         <tr>
-          <td width="160" valign="top" bgcolor="#f2ece3">
+          <td class="side" width="160" valign="top" bgcolor="#f2ece3">
             {/* 左栏：导航面板（面板头 + 一列链接格） */}
             <table width="100%" border="0" cellpadding="3" cellspacing="0">
               <tr>
@@ -279,7 +310,7 @@ const digits = '000915'.split('');   // 访客计数器显示的数字，写死�
           </td>
 
           {/* 右栏：正文。调用方塞进来的内容全部落在 <slot /> 里 */}
-          <td valign="top" bgcolor="#ffffff">
+          <td class="main" width="616" valign="top" bgcolor="#ffffff">
             <table width="100%" border="0" cellpadding="10" cellspacing="0">
               <tr>
                 <td valign="top">
