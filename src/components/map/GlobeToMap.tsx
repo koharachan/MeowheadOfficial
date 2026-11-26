@@ -21,7 +21,7 @@
   />
 
 页面侧只依赖两件事：
-  - 外层 .loc__track 提供可滚长度（240vh），本组件读它的高度算进度；
+  - 外层 .loc__track 提供可滚长度（280vh），本组件读它的高度算进度；
     没有这层轨道时退回自己的高度，手机端就是这样
   - 样式全在 styles/islands.css 的 .globe* 里，这里只负责 data-phase / data-show 两个开关
 */
@@ -145,15 +145,15 @@ function imageryProvider(Cesium: any, layer: 'img' | 'cia') {
 const RANGE_FAR = 22_000_000; // 单位米，所以 22,000 km
 const RANGE_NEAR = 1_200;     // 1.2 km，比街区高一点，刚好能认出路口
 
-/** 放大在哪一格完成：0.62 之后球不再动。
-    可滚行程 = 240vh 的轨道 − 100vh 的视口 = 140vh，滚过 62%（约 87vh）就拉到底，
-    剩下 38%（约 53vh）留给「最清晰段」驻留：让人看清街区，也来得及往回滑。 */
-const ZOOM_END = 0.62;
+/** 放大在哪一格完成：0.5 之后球不再动。
+    可滚行程 = 280vh 的轨道 − 100vh 的视口 = 180vh，滚过 50%（约 90vh）就拉到底，
+    剩下 50%（约 90vh）留给「最清晰段」驻留：到位后先停一下让人看清街区，再滑走。 */
+const ZOOM_END = 0.5;
 
 /** 把任意数夹回 0~1 */
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
-/** 滚动进度 → 放大进度：0.62 之后一直是 1，球就停住不动了 */
+/** 滚动进度 → 放大进度：0.50 之后一直是 1，球就停住不动了 */
 const zoomOf = (p: number) => clamp01(p / ZOOM_END);
 
 // --- 手机 / 触屏 ---
@@ -381,9 +381,14 @@ export default function GlobeToMap({
         ro.observe(host);
 
         let lastLevel = -1;                             // 上一帧的放大进度，用来判断「用户还在滚吗」
-        const loop = () => {
+        let lastFrame = 0;                              // 上一帧的时间戳（ms）：平滑按时间算，帧率高低手感一致
+        const loop = (now: number) => {
           raf = requestAnimationFrame(loop);
           if (!viewer || disposed) return;
+
+          // 这一帧过了多久：夹在 1~64ms，切标签页回来不会一帧瞬移，掉帧时也不会卡住不动
+          const dt = Math.min(64, Math.max(1, lastFrame ? now - lastFrame : 16)) / 1000;
+          lastFrame = now;
 
           const level = zoomOf(storyProgress.current);  // 故事走到哪儿（滚动和自动播放都写在这里）
           // 手动缩放过之后，滚动继续时慢慢回到叙事轨道：0.06 = 每帧靠回 6%，约一秒归位
@@ -400,9 +405,13 @@ export default function GlobeToMap({
           // 俯角从正上方 -90° 压到 -44°：留一点角度才看得出球面的立体感
           const targetPitch = Cesium.Math.toRadians(-90 + 46 * fall);
 
-          // 每帧追 8.5%：直接赋值会随滚动一格一格跳，这样才是匀速滑过去
-          cameraRange += (targetRange - cameraRange) * 0.085;
-          pitch += (targetPitch - pitch) * 0.085;
+          // 每帧追多少按时间算（约 9 次/秒）：直接赋值会随滚动一格一格跳，这样才是匀速滑过去。
+          // 滚到后段（球已经该到底了）提速到 20 次/秒——这一屏滑走之前球必须真的缩放到位，
+          // 而不是被 sticky 轨道带走时还停在半空
+          const settle = level >= 0.995 ? 20 : 9;
+          const k = Math.min(0.5, 1 - Math.exp(-dt * settle));
+          cameraRange += (targetRange - cameraRange) * k;
+          pitch += (targetPitch - pitch) * k;
 
           viewer.camera.lookAt(target, new Cesium.HeadingPitchRange(0, pitch, cameraRange));
           // 42% 之前地球还太大，针会糊成一团，等球拉近了再出现
@@ -410,7 +419,7 @@ export default function GlobeToMap({
           // 注记从 25% 开始淡入、到 60% 完全显示；乘 0.92 是为了不糊住影像
           labels.alpha = Math.min(1, Math.max(0, (level - 0.25) / 0.35)) * 0.92;
         };
-        loop();
+        loop(performance.now());
 
         // 首帧先摆好位置
         viewer.camera.lookAt(target, new Cesium.HeadingPitchRange(0, pitch, cameraRange));
