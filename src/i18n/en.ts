@@ -416,7 +416,7 @@ export const en: Dict = {
 
   footer: {
     tagline: 'Hardware, software and security from one company.',
-    icp: 'Guangdong ICP filing (in progress)',
+    icp: '粤ICP备2026188874号-1',
     icpHref: 'https://beian.miit.gov.cn/',
     police: 'Public security filing (in progress)',
     policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',

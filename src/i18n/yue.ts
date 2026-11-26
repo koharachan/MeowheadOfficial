@@ -410,7 +410,7 @@ export const yue: Dict = {
 
   footer: {
     tagline: '硬件、軟件同安全，同一間公司交付。',
-    icp: '粵ICP備（辦理中）',
+    icp: '粤ICP备2026188874号-1',
     icpHref: 'https://beian.miit.gov.cn/',
     police: '粵公網安備（辦理中）',
     policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',

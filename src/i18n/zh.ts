@@ -406,7 +406,7 @@ export const zh: Dict = {
 
   footer: {
     tagline: '硬件、软件与安全，同一家公司交付。',
-    icp: '粤ICP备（办理中）',
+    icp: '粤ICP备2026188874号-1',
     icpHref: 'https://beian.miit.gov.cn/',
     police: '粤公网安备（办理中）',
     policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',

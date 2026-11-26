@@ -409,7 +409,7 @@ export const ja: Dict = {
 
   footer: {
     tagline: 'ハードウェア、ソフトウェア、セキュリティを同じ一社が納めます。',
-    icp: '粤ICP備（申請中）',
+    icp: '粤ICP备2026188874号-1',
     icpHref: 'https://beian.miit.gov.cn/',
     police: '粤公網安備（申請中）',
     policeHref: 'https://beian.mps.gov.cn/#/query/webSearch?code=',
